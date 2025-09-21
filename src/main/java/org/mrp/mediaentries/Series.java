@@ -1,12 +1,14 @@
 package org.mrp.mediaentries;
 
+import org.mrp.user.User;
+
 import java.time.Year;
 
 public class Series extends MediaEntry{
     private char type;
 
-    public Series(String title, String description, Year releaseYear, int ageRestriction) {
-        super(title, description, releaseYear, ageRestriction);
+    public Series(String title, String description, Year releaseYear, int ageRestriction, User creator) {
+        super(title, description, releaseYear, ageRestriction, creator);
         this.type = 's';
     }
 
