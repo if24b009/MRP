@@ -5,7 +5,7 @@ import org.mrp.user.User;
 import java.time.Year;
 import java.util.List;
 
-public abstract class MediaEntry {
+public class MediaEntry {
     private int id;
     protected String title;
     protected String description;
@@ -31,6 +31,4 @@ public abstract class MediaEntry {
     public double getAvgScore() {
         return 0; //CHANGE
     }
-
-    public abstract void onlyForTesting(); //REMOVE
 }
