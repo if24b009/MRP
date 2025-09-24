@@ -1,6 +1,4 @@
-package org.mrp.user;
-
-import org.mrp.mediaentries.MediaEntry;
+package org.mrp.modells;
 
 import java.util.List;
 

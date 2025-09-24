@@ -1,6 +1,4 @@
-package org.mrp.mediaentries;
-
-import org.mrp.user.User;
+package org.mrp.modells;
 
 import java.time.Year;
 import java.util.List;

@@ -1,7 +1,7 @@
 package org.mrp;
 
-import org.mrp.mediaentries.MediaEntry;
-import org.mrp.user.User;
+import org.mrp.modells.MediaEntry;
+import org.mrp.modells.User;
 
 import java.time.Year;
 
