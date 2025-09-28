@@ -1,20 +1,31 @@
-package org.mrp.modells;
+package org.mrp.model;
 
 import java.util.List;
 
 public class User {
+    private String userId;
     private String username;
+    private String password_hashed;
 
-    private List<MediaEntry> favorites;
-    //private Profile profile;
-    //private List<Rating> ratingHistory;
-    private List<MediaEntry> recommendations;
-
-    public User(String username) {
+    public User(String userId, String username, String password_hashed) {
+        this.userId = userId;
         this.username = username;
+        this.password_hashed = password_hashed;
     }
 
-    /*public boolean isUserCreator(MediaEntry entry) {
+    public String getUsername() {
+        return username;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public String getPassword() {
+        return password_hashed;
+    }
+
+/*public boolean isUserCreator(MediaEntry entry) {
         if (entry.getCreator() != this) return false;
         return true;
     }*/
@@ -31,17 +42,5 @@ public class User {
 
         }
         else System.out.println("ERROR: This user is not the creator.");
-    }*/
-
-    public String getUsername() {
-        return username;
-    }
-
-    public List<MediaEntry> getFavorites() {
-        return this.favorites;
-    }
-
-    /*public List<Rating> getRatingHistory() {
-        return this.ratingHistory;
     }*/
 }
