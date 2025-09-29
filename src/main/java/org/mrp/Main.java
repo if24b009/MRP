@@ -17,6 +17,7 @@ public class Main {
 
         //Handler for different parts
         server.createContext("/", new AuthHandler());
+        //server.createContext("/media", new MediaHandler());
 
         //Setting Executor (null = Standard-Executor)
         server.setExecutor(null);
