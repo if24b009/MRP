@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.UUID;
 
 public class RatingRepository {
+    public RatingRepository() {
+    }
+
     public Rating save(Rating rating) {
         return null;
     }

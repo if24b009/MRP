@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.UUID;
 
 public class MediaEntryRepository {
+    public MediaEntryRepository() {
+    }
+
     public MediaEntry save(MediaEntry mediaEntry) {
         return null;
     }

@@ -11,14 +11,16 @@ import java.io.IOException;
 
 //for Root/Authentication "/" path
 public class AuthHandler implements HttpHandler {
+    AuthService authService = new AuthService();
+
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         String usedMethod = exchange.getRequestMethod();
         String path = exchange.getRequestURI().getPath();
 
         try {
-            if (path.endsWith("/register") && HttpMethod.POST.name().equals(usedMethod)) AuthService.register(exchange);
-            else if (path.endsWith("/login") && HttpMethod.POST.name().equals(usedMethod)) AuthService.login(exchange);
+            if (path.endsWith("/register") && HttpMethod.POST.name().equals(usedMethod)) authService.register(exchange);
+            else if (path.endsWith("/login") && HttpMethod.POST.name().equals(usedMethod)) authService.login(exchange);
             else if (path.equals("/") || path.equals("/api") || path.equals("/api/")) { //Check: Correct endpoint?
                 JsonHelper.sendResponse(exchange, 200,
                         java.util.Map.of(

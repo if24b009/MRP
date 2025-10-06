@@ -8,27 +8,22 @@ import java.util.List;
 import java.util.UUID;
 
 public class Database {
-    private static final String URL = "jdbc:postgresql://localhost:5433/mrp_db";
-    private static final String USER = "postgres";
-    private static final String PASSWORD = "postgres";
+    private final String url;
+    private final String user;
+    private final String password;
 
-    private static Database instance;
     private Connection connection;
 
-    private Database() {
+    public Database() {
+        this.url = "jdbc:postgresql://localhost:5433/mrp_db";
+        this.user = "postgres";
+        this.password = "postgres";
         connect();
-    }
-
-    public static synchronized Database getInstance() {
-        if (instance == null) {
-            instance = new Database();
-        }
-        return instance;
     }
 
     private void connect() {
         try {
-            connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            connection = DriverManager.getConnection(url, user, password);
             System.out.println("Connected to PostgreSQL database!");
         } catch (SQLException e) {
             System.err.println("Connection failed: " + e.getMessage());
@@ -65,7 +60,7 @@ public class Database {
 
         //Create new params array with UUID as first parameter
         Object[] newParams = new Object[params.length + 1];
-        newParams[0] = uuid.toString();  // Store as string in DB
+        newParams[0] = uuid.toString();
         System.arraycopy(params, 0, newParams, 1, params.length);
 
         PreparedStatement stmt = prepareStatement(sql, newParams);
@@ -128,7 +123,6 @@ public class Database {
     //Handles special cases like UUID conversion to ensure proper database storage
     private void setParameters(PreparedStatement stmt, Object... params) throws SQLException {
         for (int i = 0; i < params.length; i++) {
-            // Convert UUID to string for database storage
             if (params[i] instanceof UUID) {
                 stmt.setString(i + 1, params[i].toString());
             } else {
@@ -150,8 +144,8 @@ public class Database {
         getConnection().setAutoCommit(true);
     }
 
-    // Rolls back the current transaction, undoing all changes since beginTransaction()
-    // Use this in catch blocks when an error occurs during a transaction
+    //Rolls back current transaction, undoing all changes since beginTransaction()
+    //Use this in catch blocks when error occurs during transaction
     public void rollback() throws SQLException {
         getConnection().rollback();
         getConnection().setAutoCommit(true);
@@ -159,14 +153,14 @@ public class Database {
 
     //Helper method to get UUID from ResultSet by column name
     //Safely converts string representation back to UUID object, handling nulls
-    public static UUID getUUID(ResultSet rs, String columnName) throws SQLException {
+    public UUID getUUID(ResultSet rs, String columnName) throws SQLException {
         String uuidString = rs.getString(columnName);
         return uuidString != null ? UUID.fromString(uuidString) : null;
     }
 
     //Helper method to get UUID from ResultSet by column index (1-based)
     //Alternative to column name when you know position but not name
-    public static UUID getUUID(ResultSet rs, int columnIndex) throws SQLException {
+    public UUID getUUID(ResultSet rs, int columnIndex) throws SQLException {
         String uuidString = rs.getString(columnIndex);
         return uuidString != null ? UUID.fromString(uuidString) : null;
     }

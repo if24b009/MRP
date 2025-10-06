@@ -14,8 +14,9 @@ import java.util.Map;
 import java.util.UUID;
 
 public class AuthService {
+    private UserRepository  userRepository = new UserRepository();
 
-    public static void register(HttpExchange exchange) throws IOException, SQLException {
+    public void register(HttpExchange exchange) throws IOException, SQLException {
         Map<String, String> request = JsonHelper.parseRequest(exchange, HashMap.class);
         String username = request.get("username");
         String password = request.get("password");
@@ -40,13 +41,13 @@ public class AuthService {
             //Password hashing
             String passwordHash = BCrypt.withDefaults().hashToString(12, password.toCharArray());
 
-            if(UserRepository.userAlreadyExists(username)) {
+            if(userRepository.userAlreadyExists(username)) {
                 JsonHelper.sendError(exchange, 400, "Username already exists");
                 return;
             }
 
             //userId gets generated while inserting user in database
-            UUID userId = UserRepository.save(username, passwordHash);
+            UUID userId = userRepository.save(username, passwordHash);
 
             //Response
             Map<String, Object> response = new HashMap<>();
@@ -61,7 +62,7 @@ public class AuthService {
         }
     }
 
-    public static void login(HttpExchange exchange) throws IOException, SQLException {
+    public void login(HttpExchange exchange) throws IOException, SQLException {
         Map<String, String> request = JsonHelper.parseRequest(exchange, HashMap.class);
         String username = request.get("username");
         String password = request.get("password");
@@ -79,13 +80,13 @@ public class AuthService {
 
         try {
             //Find user
-            ResultSet resultSet = UserRepository.findByUsername(username);
+            ResultSet resultSet = userRepository.findByUsername(username);
 
             //Data exists?
             if (!resultSet.next()) JsonHelper.sendError(exchange, 400, "Invalid username or password");
 
             //Get userId and password
-            UUID userId = Database.getUUID(resultSet, "user_id");
+            UUID userId = userRepository.getUUID(resultSet, "user_id");
             String passwordHashed = resultSet.getString("password_hashed");
 
             //Verify password
@@ -97,7 +98,7 @@ public class AuthService {
             String token = username + "-" + UUID.randomUUID().toString(); //generate token
 
             //Inster Token in DB (Token-based)
-            UserRepository.update(token, userId);
+            userRepository.update(token, userId);
 
             Map<String, Object> response = new HashMap<>();
             response.put("token", token);

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class UserService {
-    public static List<RatingService> getUserRatings(HttpExchange exchange, UUID userId, UUID mediaEntryId) throws IOException, SQLException {
+    public List<RatingService> getUserRatings(HttpExchange exchange, UUID userId, UUID mediaEntryId) throws IOException, SQLException {
         return null;
     }
 }
