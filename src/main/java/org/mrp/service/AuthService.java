@@ -2,18 +2,19 @@ package org.mrp.service;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.sun.net.httpserver.HttpExchange;
-import org.mrp.model.Token;
-import org.mrp.model.User;
+import org.mrp.repository.UserRepository;
 import org.mrp.utils.JsonHelper;
+import org.mrp.database.Database;
 
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class AuthService {
+
     public static void register(HttpExchange exchange) throws IOException, SQLException {
         Map<String, String> request = JsonHelper.parseRequest(exchange, HashMap.class);
         String username = request.get("username");
@@ -35,18 +36,29 @@ public class AuthService {
             return;
         }
 
-        //Password hashing
-        String passwordHash = BCrypt.withDefaults().hashToString(12, password.toCharArray());
+        try {
+            //Password hashing
+            String passwordHash = BCrypt.withDefaults().hashToString(12, password.toCharArray());
 
-        String userId = "0189e8c6-6b1b-7def-b95b-6f2b8cdffd5a"; //HARDCODED
+            if(UserRepository.userAlreadyExists(username)) {
+                JsonHelper.sendError(exchange, 400, "Username already exists");
+                return;
+            }
 
-        //Response
-        Map<String, Object> response = new HashMap<>();
-        response.put("id", userId);
-        response.put("username", username);
-        response.put("message", "User registered successfully");
+            //userId gets generated while inserting user in database
+            UUID userId = UserRepository.save(username, passwordHash);
 
-        JsonHelper.sendResponse(exchange, 201, response);
+            //Response
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", userId);
+            response.put("username", username);
+            response.put("message", "User registered successfully");
+
+            JsonHelper.sendResponse(exchange, 201, response);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void login(HttpExchange exchange) throws IOException, SQLException {
@@ -54,41 +66,48 @@ public class AuthService {
         String username = request.get("username");
         String password = request.get("password");
 
-        //HARDCODED -> DB !!!!
-        String userId = "0189e8c6-6b1b-7def-b95b-6f2b8cdffd5a";
-        String testUsername = "TestUser";
-        String testPassword = "TestPassword";
-
-
         //Validate username
-        //CHECK WITH DB !!!!
         if (username == null || username.trim().isEmpty()) {
             JsonHelper.sendError(exchange, 400, "Username needs to be entered");
             return;
         }
-        if (!username.equals(testUsername)) {
-            JsonHelper.sendError(exchange, 400, "Invalid username");
-            return;
-        }
-
-        //Verify password
-        //CHECK WITH DB !!!!
+        //Validate password
         if (password == null || password.trim().isEmpty()) {
             JsonHelper.sendError(exchange, 400, "Password needs to be entered");
             return;
         }
-        if (!password.equals(testPassword)) {
-            JsonHelper.sendError(exchange, 400, "Invalid password");
-            return;
+
+        try {
+            //Find user
+            ResultSet resultSet = UserRepository.findByUsername(username);
+
+            //Data exists?
+            if (!resultSet.next()) JsonHelper.sendError(exchange, 400, "Invalid username or password");
+
+            //Get userId and password
+            UUID userId = Database.getUUID(resultSet, "user_id");
+            String passwordHashed = resultSet.getString("password_hashed");
+
+            //Verify password
+            BCrypt.Result passwordIsVerified = BCrypt.verifyer().verify(password.toCharArray(), passwordHashed.toCharArray());
+            if (!passwordIsVerified.verified) JsonHelper.sendError(exchange, 400, "Invalid password");
+
+
+            //Response - Token
+            String token = username + "-" + UUID.randomUUID().toString(); //generate token
+
+            //Inster Token in DB (Token-based)
+            UserRepository.update(token, userId);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", token);
+            response.put("message", "User logged in successfully");
+
+            JsonHelper.sendResponse(exchange, 201, response);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
-        //Response - Token
-        String token = username + "-" + UUID.randomUUID().toString(); //generate token
-        //INSERT TOKEN IN DB !!!!
-        Map<String, Object> response = new HashMap<>();
-        response.put("token", token);
-        response.put("message", "User logged in successfully");
-
-        JsonHelper.sendResponse(exchange, 201, response);
     }
 }

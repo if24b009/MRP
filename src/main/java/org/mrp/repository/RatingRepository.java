@@ -4,11 +4,28 @@ import org.mrp.model.Rating;
 
 import java.util.List;
 
-public interface RatingRepository {
-    public Rating save(Rating rating);
-    public Rating findById(int id);
-    public List<Rating> findByMediaEntryId(int id);
-    public List<Rating> findByUser(int id);
-    public List<Rating> findByUserAndMediaEntry(int userId, int mediaEntryId);
-    public void delete(int id);
+public class RatingRepository {
+    public Rating save(Rating rating) {
+        return null;
+    }
+
+    public Rating findById(int id) {
+        return null;
+    }
+
+    public List<Rating> findByMediaEntryId(int id) {
+        return null;
+    }
+
+    public List<Rating> findByUser(int id) {
+        return null;
+    }
+
+    public List<Rating> findByUserAndMediaEntry(int userId, int mediaEntryId) {
+        return null;
+    }
+
+    public void delete(int id) {
+
+    }
 }
