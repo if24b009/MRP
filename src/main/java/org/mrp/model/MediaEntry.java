@@ -3,9 +3,10 @@ package org.mrp.model;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.List;
+import java.util.UUID;
 
 public class MediaEntry {
-    private int id;
+    private UUID id;
     protected String title;
     protected String description;
     protected MediaEntryType type; //VERWENDUNG: type = MediaEntryType.GAME;
@@ -24,7 +25,7 @@ public class MediaEntry {
         this.creator = creator;
     }
 
-    public int getId() {
+    public UUID getId() {
         return id;
     }
 

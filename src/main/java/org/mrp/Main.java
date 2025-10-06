@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 public class Main {
+
+    //SERVER
     public static void main(String[] args) throws IOException {
 
         //Creating server on Port 8000

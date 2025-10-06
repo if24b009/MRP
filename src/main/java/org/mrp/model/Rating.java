@@ -2,33 +2,34 @@ package org.mrp.model;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public class Rating {
-    private int id;
-    private int userId;
-    private int mediaEntryId;
+    private UUID id;
+    private UUID userId;
+    private UUID mediaEntryId;
     private int starsCt;
     private String comment;
     private boolean isCommentVisible;
     private LocalDateTime timestamp;
     private List<User> likedBy;
 
-    public Rating(int userId, int mediaEntryId, String comment, LocalDateTime timestamp) {
+    public Rating(UUID userId, UUID mediaEntryId, String comment, LocalDateTime timestamp) {
         this.userId = userId;
         this.mediaEntryId = mediaEntryId;
         this.comment = comment;
         this.timestamp = timestamp;
     }
 
-    public int getId() {
+    public UUID getId() {
         return id;
     }
 
-    public int getUserId() {
+    public UUID getUserId() {
         return userId;
     }
 
-    public int getMediaEntryId() {
+    public UUID getMediaEntryId() {
         return mediaEntryId;
     }
 

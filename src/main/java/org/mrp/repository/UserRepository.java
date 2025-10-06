@@ -6,7 +6,6 @@ import org.mrp.model.User;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.List;
 import java.util.UUID;
 
 public class UserRepository {
@@ -31,7 +30,7 @@ public class UserRepository {
         );
     }
 
-    public ResultSet findById(int id) {
+    public ResultSet findById(UUID id) {
         return null;
     }
 
@@ -46,7 +45,7 @@ public class UserRepository {
         return null;
     }
 
-    public void delete(int id) {
+    public void delete(UUID id) {
 
     }
 

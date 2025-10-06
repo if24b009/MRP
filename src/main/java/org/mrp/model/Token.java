@@ -1,16 +1,17 @@
 package org.mrp.model;
 
 import java.sql.Timestamp;
+import java.util.UUID;
 
 public class Token {
     private String token;
-    private String userId;
+    private UUID userId;
     private Timestamp createdAt;
 
     public Token() {
     } //only used for JSON
 
-    public Token(String token, String userId, Timestamp createdAt) {
+    public Token(String token, UUID userId, Timestamp createdAt) {
         this.token = token;
         this.userId = userId;
         this.createdAt = createdAt;
@@ -20,7 +21,7 @@ public class Token {
         return token;
     }
 
-    public String getUserId() {
+    public UUID getUserId() {
         return userId;
     }
 
