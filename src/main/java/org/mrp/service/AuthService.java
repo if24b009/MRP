@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpExchange;
 import org.mrp.repository.UserRepository;
 import org.mrp.utils.JsonHelper;
 import org.mrp.database.Database;
+import org.mrp.utils.UUIDGenerator;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -95,7 +96,7 @@ public class AuthService {
 
 
             //Response - Token
-            String token = username + "-" + UUID.randomUUID().toString(); //generate token
+            String token = username + "-" + UUIDGenerator.generateUUIDv7(); //generate token
 
             //Inster Token in DB (Token-based)
             userRepository.update(token, userId);

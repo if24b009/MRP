@@ -17,7 +17,7 @@ public class UserRepository {
     //for registration (AuthService)
     public UUID save(String username, String passwordHash) throws SQLException {
         return db.insert(
-                "INSERT INTO users (username, password_hased) VALUES (?, ?)",
+                "INSERT INTO app_user (user_id, username, password_hashed) VALUES (?, ?, ?)",
                 username,
                 passwordHash
         );
@@ -26,7 +26,7 @@ public class UserRepository {
     //for login (AuthService)
     public void update(String token, UUID userId) throws SQLException {
         db.update(
-                "INSERT INTO tokens (token, user_id, created_at) VALUES (?, ?, ?)",
+                "INSERT INTO token (token, user_id, created_at) VALUES (?, ?, ?)",
                 token,
                 userId,
                 new Timestamp(System.currentTimeMillis())
@@ -43,7 +43,7 @@ public class UserRepository {
 
     public ResultSet findByUsername(String username) throws SQLException {
         return db.query(
-                "SELECT user_id, username, password_hashed FROM users WHERE username = ?",
+                "SELECT user_id, username, password_hashed FROM app_user WHERE username = ?",
                 username
         );
     }
@@ -57,6 +57,6 @@ public class UserRepository {
     }
 
     public boolean userAlreadyExists(String username) throws SQLException {
-        return db.exists("SELECT * FROM users WHERE username = ?", username);
+        return db.exists("SELECT * FROM app_user WHERE username = ?", username);
     }
 }

@@ -123,6 +123,7 @@ public class Database {
     //Handles special cases like UUID conversion to ensure proper database storage
     private void setParameters(PreparedStatement stmt, Object... params) throws SQLException {
         for (int i = 0; i < params.length; i++) {
+            //Convert UUID to string for database storage
             if (params[i] instanceof UUID) {
                 stmt.setString(i + 1, params[i].toString());
             } else {
@@ -155,7 +156,7 @@ public class Database {
     //Safely converts string representation back to UUID object, handling nulls
     public UUID getUUID(ResultSet rs, String columnName) throws SQLException {
         String uuidString = rs.getString(columnName);
-        return uuidString != null ? UUID.fromString(uuidString) : null;
+        return (uuidString != null) ? UUID.fromString(uuidString) : null;
     }
 
     //Helper method to get UUID from ResultSet by column index (1-based)
