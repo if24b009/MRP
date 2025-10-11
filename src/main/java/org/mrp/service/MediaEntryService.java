@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 public class MediaEntryService {
-    public void createMediaEntry(HttpExchange exchange, UUID userId) throws IOException, SQLException {
+    /*public void createMediaEntry(HttpExchange exchange, UUID userId) throws IOException, SQLException {
 
     }
 
@@ -34,5 +34,5 @@ public class MediaEntryService {
 
     public boolean isUserCreator(HttpExchange exchange, UUID userId, UUID mediaEntryId) throws IOException, SQLException {
         return false;
-    }
+    }*/
 }

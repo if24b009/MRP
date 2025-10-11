@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class MediaEntryRepository {
-    public MediaEntryRepository() {
+    /*public MediaEntryRepository() {
     }
 
     public MediaEntry save(MediaEntry mediaEntry) {
@@ -27,5 +27,5 @@ public class MediaEntryRepository {
 
     public List<MediaEntry> findByCreator(UUID id) {
         return null;
-    }
+    }*/
 }

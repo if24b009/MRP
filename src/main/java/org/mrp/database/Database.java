@@ -73,42 +73,11 @@ public class Database {
         return uuid;
     }
 
-    //Execute INSERT with provided ID (for special cases)
-    public void insertWithId(String sql, Object... params) throws SQLException {
-        PreparedStatement stmt = prepareStatement(sql, params);
-        int affectedRows = stmt.executeUpdate();
-
-        if (affectedRows == 0) {
-            throw new SQLException("Insert failed, no rows affected.");
-        }
-    }
-
     //Check if record exists
     public boolean exists(String sql, Object... params) throws SQLException {
         try (ResultSet rs = query(sql, params)) {
             return rs.next();
         }
-    }
-
-    //Get single value
-    public Object getValue(String sql, Object... params) throws SQLException {
-        try (ResultSet rs = query(sql, params)) {
-            if (rs.next()) {
-                return rs.getObject(1);
-            }
-            return null;
-        }
-    }
-
-    //Get list of values
-    public List<Object> getValues(String sql, Object... params) throws SQLException {
-        List<Object> values = new ArrayList<>();
-        try (ResultSet rs = query(sql, params)) {
-            while (rs.next()) {
-                values.add(rs.getObject(1));
-            }
-        }
-        return values;
     }
 
     //Helper method to create PreparedStatement with parameters safely set
@@ -132,6 +101,57 @@ public class Database {
         }
     }
 
+    //Helper method to get UUID from ResultSet by column name
+    //Safely converts string representation back to UUID object, handling nulls
+    public UUID getUUID(ResultSet rs, String columnName) throws SQLException {
+        String uuidString = rs.getString(columnName);
+        return (uuidString != null) ? UUID.fromString(uuidString) : null;
+    }
+
+    //Closes database connection cleanly
+    //Always call this when application shuts down to free resources
+    public void close() {
+        try {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            System.err.println("Error closing connection: " + e.getMessage());
+        }
+    }
+
+
+
+
+
+    //Helper method to get UUID from ResultSet by column index (1-based)
+    //Alternative to column name when you know position but not name
+    public UUID getUUID(ResultSet rs, int columnIndex) throws SQLException {
+        String uuidString = rs.getString(columnIndex);
+        return uuidString != null ? UUID.fromString(uuidString) : null;
+    }
+
+    //Get single value
+    public Object getValue(String sql, Object... params) throws SQLException {
+        try (ResultSet rs = query(sql, params)) {
+            if (rs.next()) {
+                return rs.getObject(1);
+            }
+            return null;
+        }
+    }
+
+    //Get list of values
+    public List<Object> getValues(String sql, Object... params) throws SQLException {
+        List<Object> values = new ArrayList<>();
+        try (ResultSet rs = query(sql, params)) {
+            while (rs.next()) {
+                values.add(rs.getObject(1));
+            }
+        }
+        return values;
+    }
+
     //Transaction support - begins new transaction by disabling auto-commit
     //Use this when you need multiple operations to succeed or fail as unit
     public void beginTransaction() throws SQLException {
@@ -150,31 +170,5 @@ public class Database {
     public void rollback() throws SQLException {
         getConnection().rollback();
         getConnection().setAutoCommit(true);
-    }
-
-    //Helper method to get UUID from ResultSet by column name
-    //Safely converts string representation back to UUID object, handling nulls
-    public UUID getUUID(ResultSet rs, String columnName) throws SQLException {
-        String uuidString = rs.getString(columnName);
-        return (uuidString != null) ? UUID.fromString(uuidString) : null;
-    }
-
-    //Helper method to get UUID from ResultSet by column index (1-based)
-    //Alternative to column name when you know position but not name
-    public UUID getUUID(ResultSet rs, int columnIndex) throws SQLException {
-        String uuidString = rs.getString(columnIndex);
-        return uuidString != null ? UUID.fromString(uuidString) : null;
-    }
-
-    //Closes database connection cleanly
-    //Always call this when application shuts down to free resources
-    public void close() {
-        try {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
-        } catch (SQLException e) {
-            System.err.println("Error closing connection: " + e.getMessage());
-        }
     }
 }

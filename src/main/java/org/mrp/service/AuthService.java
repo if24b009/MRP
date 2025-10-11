@@ -4,7 +4,6 @@ import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.sun.net.httpserver.HttpExchange;
 import org.mrp.repository.UserRepository;
 import org.mrp.utils.JsonHelper;
-import org.mrp.database.Database;
 import org.mrp.utils.UUIDGenerator;
 
 import java.io.IOException;
@@ -98,9 +97,10 @@ public class AuthService {
             //Response - Token
             String token = username + "-" + UUIDGenerator.generateUUIDv7(); //generate token
 
-            //Inster Token in DB (Token-based)
+            //Insert Token in DB (Token-based login)
             userRepository.update(token, userId);
 
+            //Response
             Map<String, Object> response = new HashMap<>();
             response.put("token", token);
             response.put("message", "User logged in successfully");

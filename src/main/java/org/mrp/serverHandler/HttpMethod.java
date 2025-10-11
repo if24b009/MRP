@@ -1,4 +1,4 @@
-package org.mrp.model;
+package org.mrp.serverHandler;
 
 public enum HttpMethod {
     POST,

@@ -2,7 +2,6 @@ package org.mrp.serverHandler;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.mrp.model.HttpMethod;
 import org.mrp.service.AuthService;
 import org.mrp.utils.JsonHelper;
 
@@ -19,9 +18,11 @@ public class AuthHandler implements HttpHandler {
         String path = exchange.getRequestURI().getPath();
 
         try {
-            if (path.endsWith("/register") && HttpMethod.POST.name().equals(usedMethod)) authService.register(exchange);
-            else if (path.endsWith("/login") && HttpMethod.POST.name().equals(usedMethod)) authService.login(exchange);
-            else if (path.equals("/") || path.equals("/api") || path.equals("/api/")) { //Check: Correct endpoint?
+            if (path.endsWith("/register") && HttpMethod.POST.name().equals(usedMethod)) {
+                authService.register(exchange);
+            } else if (path.endsWith("/login") && HttpMethod.POST.name().equals(usedMethod)) {
+                authService.login(exchange);
+            } else if (path.equals("/") || path.equals("/api") || path.equals("/api/")) { //Check: Correct endpoint?
                 JsonHelper.sendResponse(exchange, 200,
                         java.util.Map.of(
                                 "status", "ok",
@@ -29,7 +30,9 @@ public class AuthHandler implements HttpHandler {
                                 "version", "1.0.0"
                         )
                 );
-            } else JsonHelper.sendError(exchange, 404, "Endpoint not found");
+            } else {
+                JsonHelper.sendError(exchange, 404, "Endpoint not found");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             JsonHelper.sendError(exchange, 500, "Internal server error");

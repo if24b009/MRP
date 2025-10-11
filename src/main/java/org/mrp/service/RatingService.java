@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class RatingService {
-    public void createRating(HttpExchange exchange, UUID userId, UUID mediaEntryId) throws IOException, SQLException {
+    /*public void createRating(HttpExchange exchange, UUID userId, UUID mediaEntryId) throws IOException, SQLException {
 
     }
 
@@ -35,5 +35,5 @@ public class RatingService {
 
     public boolean canBeDeletedBy(HttpExchange exchange, UUID userId, UUID ratingId) throws IOException, SQLException {
         return false;
-    }
+    }*/
 }
