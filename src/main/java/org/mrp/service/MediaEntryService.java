@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 public class MediaEntryService {
+    //Folgt noch
+
     /*public void createMediaEntry(HttpExchange exchange, UUID userId) throws IOException, SQLException {
 
     }

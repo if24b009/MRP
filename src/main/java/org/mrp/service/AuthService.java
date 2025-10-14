@@ -1,8 +1,10 @@
 package org.mrp.service;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.sun.net.httpserver.HttpExchange;
 import org.mrp.repository.UserRepository;
+import org.mrp.transferObjects.UserTO;
 import org.mrp.utils.JsonHelper;
 import org.mrp.utils.UUIDGenerator;
 
@@ -17,7 +19,14 @@ public class AuthService {
     private UserRepository  userRepository = new UserRepository();
 
     public void register(HttpExchange exchange) throws IOException, SQLException {
-        Map<String, String> request = JsonHelper.parseRequest(exchange, HashMap.class);
+        Map<String, String> request;
+        try {
+            request = JsonHelper.parseRequest(exchange, HashMap.class);
+        } catch (JsonParseException e) {
+            JsonHelper.sendError(exchange, 400, "Invalid JSON format");
+            return;
+        }
+
         String username = request.get("username");
         String password = request.get("password");
 
@@ -47,7 +56,7 @@ public class AuthService {
             }
 
             //userId gets generated while inserting user in database
-            UUID userId = userRepository.save(username, passwordHash);
+            UUID userId = userRepository.save(new UserTO(username, passwordHash));
 
             //Response
             Map<String, Object> response = new HashMap<>();
@@ -63,7 +72,15 @@ public class AuthService {
     }
 
     public void login(HttpExchange exchange) throws IOException, SQLException {
-        Map<String, String> request = JsonHelper.parseRequest(exchange, HashMap.class);
+        Map<String, String> request;
+
+        try {
+            request = JsonHelper.parseRequest(exchange, HashMap.class);
+        } catch (JsonParseException e) {
+            JsonHelper.sendError(exchange, 400, "Invalid JSON format");
+            return;
+        }
+
         String username = request.get("username");
         String password = request.get("password");
 
@@ -83,7 +100,10 @@ public class AuthService {
             ResultSet resultSet = userRepository.findByUsername(username);
 
             //Data exists?
-            if (!resultSet.next()) JsonHelper.sendError(exchange, 400, "Invalid username or password");
+            if (!resultSet.next()) {
+                JsonHelper.sendError(exchange, 401, "Invalid username or password");
+                return;
+            }
 
             //Get userId and password
             UUID userId = userRepository.getUUID(resultSet, "user_id");
@@ -91,7 +111,10 @@ public class AuthService {
 
             //Verify password
             BCrypt.Result passwordIsVerified = BCrypt.verifyer().verify(password.toCharArray(), passwordHashed.toCharArray());
-            if (!passwordIsVerified.verified) JsonHelper.sendError(exchange, 400, "Invalid password");
+            if (!passwordIsVerified.verified) {
+                JsonHelper.sendError(exchange, 401, "Invalid password");
+                return;
+            }
 
 
             //Response - Token

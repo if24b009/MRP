@@ -55,6 +55,6 @@ CREATE TABLE rating_likes (
 -- Tokens
 CREATE TABLE token (
     token VARCHAR(255) PRIMARY KEY,
-    user_id VARCHAR(100) REFERENCES app_user(user_id) ON DELETE CASCADE,
+    user_id VARCHAR(100) REFERENCES app_user(user_id) ON DELETE CASCADE UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

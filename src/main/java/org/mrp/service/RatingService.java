@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class RatingService {
+    //Folgt noch
+
     /*public void createRating(HttpExchange exchange, UUID userId, UUID mediaEntryId) throws IOException, SQLException {
 
     }
