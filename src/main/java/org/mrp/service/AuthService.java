@@ -4,7 +4,7 @@ import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.sun.net.httpserver.HttpExchange;
 import org.mrp.repository.UserRepository;
-import org.mrp.transferObjects.UserTO;
+import org.mrp.dto.UserTO;
 import org.mrp.utils.JsonHelper;
 import org.mrp.utils.UUIDGenerator;
 
@@ -101,7 +101,7 @@ public class AuthService {
 
             //Data exists?
             if (!resultSet.next()) {
-                JsonHelper.sendError(exchange, 401, "Invalid username or password");
+                JsonHelper.sendError(exchange, 400, "Invalid username or password");
                 return;
             }
 
@@ -112,7 +112,7 @@ public class AuthService {
             //Verify password
             BCrypt.Result passwordIsVerified = BCrypt.verifyer().verify(password.toCharArray(), passwordHashed.toCharArray());
             if (!passwordIsVerified.verified) {
-                JsonHelper.sendError(exchange, 401, "Invalid password");
+                JsonHelper.sendError(exchange, 400, "Invalid password");
                 return;
             }
 

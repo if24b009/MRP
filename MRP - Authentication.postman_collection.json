@@ -14,32 +14,32 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"// 1. Status code is 201",
+							"//1. Status code should be 201",
 							"pm.test(\"Status code is 201\", function () {",
 							"    pm.response.to.have.status(201);",
 							"});",
 							"",
-							"// 2. Response body is valid JSON",
+							"//2. Response body is valid JSON",
 							"pm.test(\"Response body is valid JSON\", function () {",
 							"    pm.expect(function () {",
 							"        pm.response.json();",
 							"    }).to.not.throw();",
 							"});",
 							"",
-							"// 3. Response contains 'message' key with correct value",
+							"//3. Response contains 'message' key with correct value",
 							"pm.test(\"Response contains 'message' key with value 'User logged in successfully'\", function () {",
 							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData).to.have.property('message', 'User logged in successfully');",
 							"});",
 							"",
-							"// 4. Response contains 'token' key",
+							"//4. Response contains 'token' key",
 							"pm.test(\"Response contains 'token' key\", function () {",
 							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData).to.have.property('token');",
 							"});",
 							"",
-							"// 5. Token is a non-empty string and contains dashes (basic UUID check)",
-							"pm.test(\"Token is a non-empty string and contains dashes (basic UUID check)\", function () {",
+							"//5. Token is a non-empty string and contains dashes (= basic UUID check)",
+							"pm.test(\"Token is a non-empty string and contains dashes (= basic UUID check)\", function () {",
 							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData.token).to.be.a('string').and.not.empty;",
 							"    pm.expect(jsonData.token).to.include('-');",
@@ -54,8 +54,12 @@
 				{
 					"listen": "prerequest",
 					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
 						"packages": {},
-						"type": "text/javascript"
+						"requests": {}
 					}
 				}
 			],
@@ -86,31 +90,90 @@
 			"response": []
 		},
 		{
-			"name": "Login - wrong credentials",
+			"name": "Login - wrong password",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"// 1. Validate response status code is 400",
+							"//1. Status code should be 400",
 							"pm.test(\"Status code is 400\", function () {",
 							"    pm.response.to.have.status(400);",
 							"});",
 							"",
-							"// 2. Validate response body is valid JSON",
+							"//2. Response body is valid JSON",
 							"pm.test(\"Response body is valid JSON\", function () {",
 							"    pm.expect(function () {",
 							"        pm.response.json();",
 							"    }).to.not.throw();",
 							"});",
 							"",
-							"// 3. Validate response contains 'error' key with value 'Invalid username or password'",
+							"//3. Response contains 'error' key with correct value",
+							"pm.test(\"Response contains 'error' key with value 'Invalid password'\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('error', 'Invalid password');",
+							"});",
+							"",
+							"//4. Response doesn't contain 'token' key",
+							"pm.test(\"Response does NOT contain 'token' key when password is invalid\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.not.have.property('token');",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"Max\",\r\n    \"password\": \"TestTest123!!_\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8000/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login - wrong credentials",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//1. Status code should be 400",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"//2. Response body is valid JSON",
+							"pm.test(\"Response body is valid JSON\", function () {",
+							"    pm.expect(function () {",
+							"        pm.response.json();",
+							"    }).to.not.throw();",
+							"});",
+							"",
+							"//3. Response contains 'error' key with correct value",
 							"pm.test(\"Response contains 'error' key with correct value\", function () {",
 							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData).to.have.property('error', 'Invalid username or password');",
 							"});",
 							"",
-							"// 4. Validate response does NOT contain a 'token' key",
+							"//4. Response doesn't contain 'token' key",
 							"pm.test(\"Response does NOT contain 'token' key\", function () {",
 							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData).to.not.have.property('token');",
@@ -151,25 +214,25 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"// 1. Validate response status code is 400",
+							"//1. Status code should be 400",
 							"pm.test(\"Status code is 400\", function () {",
 							"    pm.response.to.have.status(400);",
 							"});",
 							"",
-							"// 2. Validate response body is valid JSON",
+							"//2. Response body is valid JSON",
 							"pm.test(\"Response body is valid JSON\", function () {",
 							"    pm.expect(function () {",
 							"        pm.response.json();",
 							"    }).to.not.throw();",
 							"});",
 							"",
-							"// 3. Validate response contains an 'error' key with value 'Username needs to be entered'",
+							"//3. Rresponse contains an 'error' key with correct value",
 							"pm.test(\"Response contains 'error' key with correct value\", function () {",
 							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData).to.have.property('error', 'Username needs to be entered');",
 							"});",
 							"",
-							"// 4. Validate response does NOT contain a 'token' key",
+							"//4. Response doesn't contain 'token' key",
 							"pm.test(\"Response does NOT contain 'token' key\", function () {",
 							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData).to.not.have.property('token');",
@@ -210,25 +273,25 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"// 1. Validate response status code is 400",
+							"//1. Status code should be 400",
 							"pm.test(\"Status code is 400\", function () {",
 							"    pm.response.to.have.status(400);",
 							"});",
 							"",
-							"// 2. Validate response body is valid JSON",
+							"//2. Response body is valid JSON",
 							"pm.test(\"Response body is valid JSON\", function () {",
 							"    pm.expect(function () {",
 							"        JSON.parse(pm.response.text());",
 							"    }).to.not.throw();",
 							"});",
 							"",
-							"// 3. Validate response contains 'error' key with correct value",
+							"//3. Response contains 'error' key with correct value",
 							"pm.test(\"Response contains 'error' key with correct value\", function () {",
 							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData).to.have.property('error', 'Password needs to be entered');",
 							"});",
 							"",
-							"// 4. Validate response does NOT contain a 'token' key",
+							"//4. Response doesn't contain 'token' key",
 							"pm.test(\"Response does NOT contain 'token' key\", function () {",
 							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData).to.not.have.property('token');",
@@ -269,13 +332,20 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"// Test: Status code should be 400 for missing credentials",
+							"//1. Status code should be 400",
 							"pm.test(\"Status code is 400 for missing credentials\", function () {",
 							"    pm.response.to.have.status(400);",
 							"});",
 							"",
-							"// Test: Error message should mention missing username or credentials",
-							"pm.test(\"Error message indicates missing username or credentials\", function () {",
+							"//2. Response body is valid JSON",
+							"pm.test(\"Response body is valid JSON\", function () {",
+							"    pm.expect(function () {",
+							"        JSON.parse(pm.response.text());",
+							"    }).to.not.throw();",
+							"});",
+							"",
+							"//3. Error message should mention missing credentials",
+							"pm.test(\"Error message indicates missing credentials\", function () {",
 							"    var jsonData = {};",
 							"    try {",
 							"        jsonData = pm.response.json();",
@@ -286,7 +356,7 @@
 							"    });",
 							"});",
 							"",
-							"// Test: Error message must exactly match \"Username needs to be entered\"",
+							"//4. Error message must exactly match \"Username needs to be entered\"",
 							"pm.test(\"Error message is exactly 'Username needs to be entered'\", function () {",
 							"    var jsonData = {};",
 							"    try {",
@@ -296,7 +366,7 @@
 							"    pm.expect(jsonData.error).to.eql(\"Username needs to be entered\");",
 							"});",
 							"",
-							"// Test: No token should be present in response body",
+							"//5. No token should be present in response body",
 							"pm.test(\"No token present in response body\", function () {",
 							"    var jsonData = {};",
 							"    try {",
@@ -305,7 +375,7 @@
 							"    pm.expect(jsonData).to.not.have.property(\"token\");",
 							"});",
 							"",
-							"// Test: No token present in response headers",
+							"//5. No token present in response headers",
 							"pm.test(\"No token present in response headers\", function () {",
 							"    var tokenHeader = pm.response.headers.get(\"token\") || pm.response.headers.get(\"authorization\");",
 							"    pm.expect(tokenHeader).to.be.undefined;",
@@ -340,30 +410,59 @@
 			"response": []
 		},
 		{
-			"name": "Login - wrong password",
+			"name": "Login - invalid JSON",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Status code is 400\", function () {",
-							"    pm.response.to.have.status(400);",
+							"//1. Status code should be 400 or 422",
+							"pm.test(\"Status code is 400 or 422 for invalid JSON\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([400, 422, 500]); //500 -> if backend returns it for parse errors",
 							"});",
 							"",
-							"pm.test(\"Response body is valid JSON\", function () {",
-							"    pm.expect(function () {",
-							"        pm.response.json();",
-							"    }).to.not.throw();",
+							"//2. Response body should contain an error property",
+							"pm.test(\"Response body contains error property\", function () {",
+							"    let jsonData = {};",
+							"    try {",
+							"        jsonData = pm.response.json();",
+							"    } catch (e) {",
+							"        pm.expect.fail(\"Response is not valid JSON\");",
+							"    }",
+							"    pm.expect(jsonData).to.have.property(\"error\");",
 							"});",
 							"",
-							"pm.test(\"Response contains 'error' key with value 'Invalid password'\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData).to.have.property('error', 'Invalid password');",
+							"//3. Error message must exactly match \"Invalid JSON format\"",
+							"pm.test(\"Error message is exactly 'Invalid JSON format'\", function () {",
+							"    let jsonData = {};",
+							"    try {",
+							"        jsonData = pm.response.json();",
+							"    } catch (e) {",
+							"        pm.expect.fail(\"Response is not valid JSON\");",
+							"    }",
+							"    pm.expect(jsonData.error).to.eql(\"Invalid JSON format\");",
 							"});",
 							"",
-							"pm.test(\"Response does NOT contain 'token' key when password is invalid\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData).to.not.have.property('token');",
+							"//4. Error message should mention invalid JSON or parse error",
+							"pm.test(\"Error message indicates invalid JSON or parse error\", function () {",
+							"    let jsonData = {};",
+							"    try {",
+							"        jsonData = pm.response.json();",
+							"    } catch (e) {",
+							"        pm.expect.fail(\"Response is not valid JSON\");",
+							"    }",
+							"    pm.expect(jsonData.error.toLowerCase()).to.satisfy(function(msg) {",
+							"        return msg.includes(\"json\") || msg.includes(\"parse\") || msg.includes(\"syntax\") || msg.includes(\"invalid\");",
+							"    });",
+							"});",
+							"",
+							"//5. No token should be present in response body",
+							"pm.test(\"No token present in response body\", function () {",
+							"    let jsonData = {};",
+							"    try {",
+							"        jsonData = pm.response.json();",
+							"    } catch (e) {}",
+							"    pm.expect(jsonData).to.not.have.property(\"token\");",
 							"});",
 							""
 						],
@@ -378,7 +477,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"username\": \"Max\",\r\n    \"password\": \"TestTest123!!_\"\r\n}"
+					"raw": "{\r\n    \"username\": \"Max\",\r\n    password: \"TestTest123!!_\"\r\n//Missing \"\" and }\r\n"
 				},
 				"url": {
 					"raw": "http://localhost:8000/login",
@@ -395,18 +494,94 @@
 			"response": []
 		},
 		{
+			"name": "Register - duplicate user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//1. Status code should be 400",
+							"pm.test(\"Status code is 400 for duplicate user\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"//2. Response body should contain an error property",
+							"pm.test(\"Response body contains error property\", function () {",
+							"    let jsonData = {};",
+							"    try {",
+							"        jsonData = pm.response.json();",
+							"    } catch (e) {",
+							"        pm.expect.fail(\"Response is not valid JSON\");",
+							"    }",
+							"    pm.expect(jsonData).to.have.property(\"error\");",
+							"});",
+							"",
+							"//3. Error message must exactly match \"Username already exists\"",
+							"pm.test(\"Error message is exactly 'Username already exists'\", function () {",
+							"    let jsonData = {};",
+							"    try {",
+							"        jsonData = pm.response.json();",
+							"    } catch (e) {",
+							"        pm.expect.fail(\"Response is not valid JSON\");",
+							"    }",
+							"    pm.expect(jsonData.error).to.eql(\"Username already exists\");",
+							"});",
+							"",
+							"//4. No token should be present in response body",
+							"pm.test(\"No token present in response body\", function () {",
+							"    let jsonData = {};",
+							"    try {",
+							"        jsonData = pm.response.json();",
+							"    } catch (e) {}",
+							"    pm.expect(jsonData).to.not.have.property(\"token\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"Max\",\r\n    \"password\": \"1234ABcsg!!_\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Register - new user (valid)",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"// Test: Status code should be 201 for successful registration",
+							"//1. Status code should be 201",
 							"pm.test(\"Status code is 201 for successful registration\", function () {",
 							"    pm.response.to.have.status(201);",
 							"});",
 							"",
-							"// Test: Response body should contain a success message or user info",
+							"//2. Response body should contain a success message or user info",
 							"pm.test(\"Response body contains success message or user info\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -418,7 +593,7 @@
 							"    pm.expect(Object.keys(jsonData).length).to.be.above(0);",
 							"});",
 							"",
-							"// Test: Response should not contain an error property",
+							"//3. Response should not contain an error property",
 							"pm.test(\"No error property in response body\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -427,8 +602,8 @@
 							"    pm.expect(jsonData).to.not.have.property(\"error\");",
 							"});",
 							"",
-							"// Test: Token or user id should be present in response (if applicable)",
-							"pm.test(\"Token or user id present in response (if applicable)\", function () {",
+							"//4. Token/user id should be present in response",
+							"pm.test(\"Token or user id present in response\", function () {",
 							"    let jsonData = {};",
 							"    try {",
 							"        jsonData = pm.response.json();",
@@ -440,7 +615,7 @@
 							"    ).to.be.true;",
 							"});",
 							"",
-							"// Test: Response contains id, message, and username properties",
+							"//5. Response contains user id, message and username as properties",
 							"pm.test(\"Response contains id, message, and username\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -453,7 +628,7 @@
 							"    pm.expect(jsonData).to.have.property(\"username\");",
 							"});",
 							"",
-							"// Test: Message is exactly 'User registered successfully'",
+							"//6. Message must exactly match 'User registered successfully'",
 							"pm.test(\"Message is exactly 'User registered successfully'\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -505,12 +680,12 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"// Test: Status code should be 400, 422, or 500 for invalid JSON",
+							"//1. Status code should be 400, 422, or 500",
 							"pm.test(\"Status code is 400, 422, or 500 for invalid JSON\", function () {",
 							"    pm.expect(pm.response.code).to.be.oneOf([400, 422, 500]);",
 							"});",
 							"",
-							"// Test: Response body should contain an error property",
+							"//2. Response body should contain an error property",
 							"pm.test(\"Response body contains error property\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -521,7 +696,7 @@
 							"    pm.expect(jsonData).to.have.property(\"error\");",
 							"});",
 							"",
-							"// Test: Error message must exactly match \"Invalid JSON format\"",
+							"//3. Error message must exactly match \"Invalid JSON format\"",
 							"pm.test(\"Error message is exactly 'Invalid JSON format'\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -532,7 +707,7 @@
 							"    pm.expect(jsonData.error).to.eql(\"Invalid JSON format\");",
 							"});",
 							"",
-							"// Test: Error message should mention invalid JSON or parse error",
+							"//4. Error message should mention invalid JSON or parse error",
 							"pm.test(\"Error message indicates invalid JSON or parse error\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -545,7 +720,7 @@
 							"    });",
 							"});",
 							"",
-							"// Test: No token should be present in response body",
+							"//5. No token should be present in response body",
 							"pm.test(\"No token present in response body\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -594,12 +769,12 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"// Test: Status code should be 400 for missing username",
+							"//1. Status code should be 400",
 							"pm.test(\"Status code is 400 for missing username\", function () {",
 							"    pm.response.to.have.status(400);",
 							"});",
 							"",
-							"// Test: Response body should contain an error property",
+							"//2. Response body should contain an error property",
 							"pm.test(\"Response body contains error property\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -610,7 +785,7 @@
 							"    pm.expect(jsonData).to.have.property(\"error\");",
 							"});",
 							"",
-							"// Test: Error message must exactly match \"Username and password are required\"",
+							"//3. Error message must exactly match \"Username and password are required\"",
 							"pm.test(\"Error message is exactly 'Username and password are required'\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -621,7 +796,7 @@
 							"    pm.expect(jsonData.error).to.eql(\"Username and password are required\");",
 							"});",
 							"",
-							"// Test: No token should be present in response body",
+							"//4. No token should be present in response body",
 							"pm.test(\"No token present in response body\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -670,12 +845,12 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"// Test: Status code should be 400 for missing password",
+							"//1. Status code should be 400",
 							"pm.test(\"Status code is 400 for missing password\", function () {",
 							"    pm.response.to.have.status(400);",
 							"});",
 							"",
-							"// Test: Response body should contain an error property",
+							"//2. Response body should contain an error property",
 							"pm.test(\"Response body contains error property\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -686,7 +861,7 @@
 							"    pm.expect(jsonData).to.have.property(\"error\");",
 							"});",
 							"",
-							"// Test: Error message must exactly match \"Username and password are required\"",
+							"//3. Error message must exactly match \"Username and password are required\"",
 							"pm.test(\"Error message is exactly 'Username and password are required'\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -697,7 +872,7 @@
 							"    pm.expect(jsonData.error).to.eql(\"Username and password are required\");",
 							"});",
 							"",
-							"// Test: No token should be present in response body",
+							"//4. No token should be present in response body",
 							"pm.test(\"No token present in response body\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -746,12 +921,12 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"// Test: Status code should be 400 for missing credentials",
+							"//1. Status code should be 400",
 							"pm.test(\"Status code is 400 for missing credentials\", function () {",
 							"    pm.response.to.have.status(400);",
 							"});",
 							"",
-							"// Test: Response body should contain an error property",
+							"//2. Response body should contain an error property",
 							"pm.test(\"Response body contains error property\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -762,7 +937,7 @@
 							"    pm.expect(jsonData).to.have.property(\"error\");",
 							"});",
 							"",
-							"// Test: Error message must exactly match \"Username and password are required\"",
+							"//3. Error message must exactly match \"Username and password are required\"",
 							"pm.test(\"Error message is exactly 'Username and password are required'\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -773,7 +948,7 @@
 							"    pm.expect(jsonData.error).to.eql(\"Username and password are required\");",
 							"});",
 							"",
-							"// Test: No token should be present in response body",
+							"//4. No token should be present in response body",
 							"pm.test(\"No token present in response body\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -822,12 +997,12 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"// Test: Status code should be 400 for too short username",
+							"//1. Status code should be 400",
 							"pm.test(\"Status code is 400 for too short username\", function () {",
 							"    pm.response.to.have.status(400);",
 							"});",
 							"",
-							"// Test: Response body should contain an error property",
+							"//2. Response body should contain an error property",
 							"pm.test(\"Response body contains error property\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -838,7 +1013,7 @@
 							"    pm.expect(jsonData).to.have.property(\"error\");",
 							"});",
 							"",
-							"// Test: Error message must exactly match \"Username must be between 3 and 50 characters\"",
+							"//3. Error message must exactly match \"Username must be between 3 and 50 characters\"",
 							"pm.test(\"Error message is exactly 'Username must be between 3 and 50 characters'\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -849,7 +1024,7 @@
 							"    pm.expect(jsonData.error).to.eql(\"Username must be between 3 and 50 characters\");",
 							"});",
 							"",
-							"// Test: No token should be present in response body",
+							"//4. No token should be present in response body",
 							"pm.test(\"No token present in response body\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -898,12 +1073,12 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"// Test: Status code should be 400 for too long username",
+							"//1. Status code should be 400",
 							"pm.test(\"Status code is 400 for too long username\", function () {",
 							"    pm.response.to.have.status(400);",
 							"});",
 							"",
-							"// Test: Response body should contain an error property",
+							"//2. Response body should contain an error property",
 							"pm.test(\"Response body contains error property\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -914,7 +1089,7 @@
 							"    pm.expect(jsonData).to.have.property(\"error\");",
 							"});",
 							"",
-							"// Test: Error message must exactly match \"Username must be between 3 and 50 characters\"",
+							"//3. Error message must exactly match \"Username must be between 3 and 50 characters\"",
 							"pm.test(\"Error message is exactly 'Username must be between 3 and 50 characters'\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -925,7 +1100,7 @@
 							"    pm.expect(jsonData.error).to.eql(\"Username must be between 3 and 50 characters\");",
 							"});",
 							"",
-							"// Test: No token should be present in response body",
+							"//4. No token should be present in response body",
 							"pm.test(\"No token present in response body\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -974,12 +1149,12 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"// Test: Status code should be 400 for too short password",
+							"//1. Status code should be 400",
 							"pm.test(\"Status code is 400 for too short password\", function () {",
 							"    pm.response.to.have.status(400);",
 							"});",
 							"",
-							"// Test: Response body should contain an error property",
+							"//2. Response body should contain an error property",
 							"pm.test(\"Response body contains error property\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -990,7 +1165,7 @@
 							"    pm.expect(jsonData).to.have.property(\"error\");",
 							"});",
 							"",
-							"// Test: Error message must exactly match \"Password must be at least 6 characters\"",
+							"//3. Error message must exactly match \"Password must be at least 6 characters\"",
 							"pm.test(\"Error message is exactly 'Password must be at least 6 characters'\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -1001,7 +1176,7 @@
 							"    pm.expect(jsonData.error).to.eql(\"Password must be at least 6 characters\");",
 							"});",
 							"",
-							"// Test: No token should be present in response body",
+							"//4. No token should be present in response body",
 							"pm.test(\"No token present in response body\", function () {",
 							"    let jsonData = {};",
 							"    try {",
@@ -1023,166 +1198,6 @@
 				"body": {
 					"mode": "raw",
 					"raw": "{\r\n    \"username\": \"Anna\",\r\n    \"password\": \"x123\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:8000/register",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8000",
-					"path": [
-						"register"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Login - Invalid JSON",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"// Test: Status code should be 400 or 422 for invalid JSON (adjust if your API uses a different code)",
-							"pm.test(\"Status code is 400 or 422 for invalid JSON\", function () {",
-							"    pm.expect(pm.response.code).to.be.oneOf([400, 422, 500]); // 500 included if backend returns it for parse errors",
-							"});",
-							"",
-							"// Test: Response body should contain an error property",
-							"pm.test(\"Response body contains error property\", function () {",
-							"    let jsonData = {};",
-							"    try {",
-							"        jsonData = pm.response.json();",
-							"    } catch (e) {",
-							"        pm.expect.fail(\"Response is not valid JSON\");",
-							"    }",
-							"    pm.expect(jsonData).to.have.property(\"error\");",
-							"});",
-							"",
-							"// Test: Error message must exactly match \"Invalid JSON format\"",
-							"pm.test(\"Error message is exactly 'Invalid JSON format'\", function () {",
-							"    let jsonData = {};",
-							"    try {",
-							"        jsonData = pm.response.json();",
-							"    } catch (e) {",
-							"        pm.expect.fail(\"Response is not valid JSON\");",
-							"    }",
-							"    pm.expect(jsonData.error).to.eql(\"Invalid JSON format\");",
-							"});",
-							"",
-							"// Test: Error message should mention invalid JSON or parse error",
-							"pm.test(\"Error message indicates invalid JSON or parse error\", function () {",
-							"    let jsonData = {};",
-							"    try {",
-							"        jsonData = pm.response.json();",
-							"    } catch (e) {",
-							"        pm.expect.fail(\"Response is not valid JSON\");",
-							"    }",
-							"    pm.expect(jsonData.error.toLowerCase()).to.satisfy(function(msg) {",
-							"        return msg.includes(\"json\") || msg.includes(\"parse\") || msg.includes(\"syntax\") || msg.includes(\"invalid\");",
-							"    });",
-							"});",
-							"",
-							"// Test: No token should be present in response body",
-							"pm.test(\"No token present in response body\", function () {",
-							"    let jsonData = {};",
-							"    try {",
-							"        jsonData = pm.response.json();",
-							"    } catch (e) {}",
-							"    pm.expect(jsonData).to.not.have.property(\"token\");",
-							"});",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {},
-						"requests": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"username\": \"Max\",\r\n    password: \"TestTest123!!_\"\r\n//Missing \"\" and }\r\n"
-				},
-				"url": {
-					"raw": "http://localhost:8000/login",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8000",
-					"path": [
-						"login"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Register - Duplicate User",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"// Test: Status code should be 400 for duplicate user",
-							"pm.test(\"Status code is 400 for duplicate user\", function () {",
-							"    pm.response.to.have.status(400);",
-							"});",
-							"",
-							"// Test: Response body should contain an error property",
-							"pm.test(\"Response body contains error property\", function () {",
-							"    let jsonData = {};",
-							"    try {",
-							"        jsonData = pm.response.json();",
-							"    } catch (e) {",
-							"        pm.expect.fail(\"Response is not valid JSON\");",
-							"    }",
-							"    pm.expect(jsonData).to.have.property(\"error\");",
-							"});",
-							"",
-							"// Test: Error message must exactly match \"Username already exists\"",
-							"pm.test(\"Error message is exactly 'Username already exists'\", function () {",
-							"    let jsonData = {};",
-							"    try {",
-							"        jsonData = pm.response.json();",
-							"    } catch (e) {",
-							"        pm.expect.fail(\"Response is not valid JSON\");",
-							"    }",
-							"    pm.expect(jsonData.error).to.eql(\"Username already exists\");",
-							"});",
-							"",
-							"// Test: No token should be present in response body",
-							"pm.test(\"No token present in response body\", function () {",
-							"    let jsonData = {};",
-							"    try {",
-							"        jsonData = pm.response.json();",
-							"    } catch (e) {}",
-							"    pm.expect(jsonData).to.not.have.property(\"token\");",
-							"});",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {},
-						"requests": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"username\": \"Max\",\r\n    \"password\": \"1234ABcsg!!_\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"

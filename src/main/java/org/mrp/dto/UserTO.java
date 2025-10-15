@@ -1,6 +1,4 @@
-package org.mrp.transferObjects;
-
-import java.util.UUID;
+package org.mrp.dto;
 
 public class UserTO {
     private String username;

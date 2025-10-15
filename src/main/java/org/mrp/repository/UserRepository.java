@@ -2,7 +2,7 @@ package org.mrp.repository;
 
 import org.mrp.database.Database;
 import org.mrp.model.User;
-import org.mrp.transferObjects.UserTO;
+import org.mrp.dto.UserTO;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

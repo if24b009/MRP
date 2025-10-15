@@ -2,11 +2,10 @@ package org.mrp.repository;
 
 import org.mrp.database.Database;
 import org.mrp.model.MediaEntry;
-import org.mrp.transferObjects.MediaEntryTO;
+import org.mrp.dto.MediaEntryTO;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.UUID;
 
 public class MediaEntryRepository implements Repository<MediaEntry, MediaEntryTO> {
