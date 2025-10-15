@@ -1,0 +1,208 @@
+@startuml
+class org.mrp.service.RatingService {
+}
+enum org.mrp.model.MediaEntryType {
++  MOVIE
++  SERIES
++  GAME
+}
+
+class org.mrp.repository.MediaEntryRepository {
+- Database db
++ UUID save(MediaEntryTO)
++ ResultSet findById(UUID)
++ void delete(UUID)
++ ResultSet findAll()
+}
+
+
+class org.mrp.serverHandler.AuthHandler {
+~ AuthService authService
++ void handle(HttpExchange)
+}
+
+
+class org.mrp.Main {
++ {static} void main(String[])
+}
+
+class org.mrp.repository.RatingRepository {
+- Database db
++ UUID save(RatingTO)
++ ResultSet findById(UUID)
++ void delete(UUID)
++ ResultSet findAll()
+}
+
+
+class org.mrp.model.Token {
+- String token
+- UUID userId
+- Timestamp createdAt
++ String getToken()
++ UUID getUserId()
++ Timestamp getCreatedAt()
+}
+
+
+enum org.mrp.model.Genre {
++  ACTION
++  ADVENTURE
++  COMEDY
++  DRAMA
++  THRILLER
++  SCI_FI
++  HORROR
++  FANTASY
++  ROMANCE
++  DOCUMENTARY
++  ANIMATION
+}
+
+class org.mrp.service.AuthService {
+- UserRepository userRepository
++ void register(HttpExchange)
++ void login(HttpExchange)
+}
+
+
+interface org.mrp.repository.Repository {
+~ UUID save(U)
+~ ResultSet findById(UUID)
++ void delete(UUID)
++ ResultSet findAll()
+}
+
+class org.mrp.utils.UUIDGenerator {
++ {static} UUID generateUUIDv7()
++ {static} boolean isValidUUID(String)
++ {static} UUID parseUUID(String)
+}
+
+class org.mrp.dto.UserTO {
+- String username
+- String password_hashed
++ String getUsername()
++ String getPassword_hashed()
+}
+
+
+enum org.mrp.serverHandler.HttpMethod {
++  POST
++  GET
++  PUT
++  PATCH
++  DELETE
+}
+
+class org.mrp.model.User {
+- UUID userId
+- String username
+- String password_hashed
++ String getUsername()
++ UUID getUserId()
++ String getPassword()
+}
+
+
+class org.mrp.service.MediaEntryService {
+}
+class org.mrp.service.UserService {
+}
+class org.mrp.model.Rating {
+- UUID id
+- UUID userId
+- UUID mediaEntryId
+- int starsCt
+- String comment
+- boolean isCommentVisible
+- LocalDateTime timestamp
+- List<User> likedBy
++ UUID getId()
++ UUID getUserId()
++ UUID getMediaEntryId()
++ int getStarsCt()
++ String getComment()
++ boolean isCommentVisible()
++ void setCommentVisible()
++ int getLikeCount()
+}
+
+
+class org.mrp.repository.UserRepository {
+- Database db
++ UUID save(UserTO)
++ void update(String,UUID)
++ UUID getUUID(ResultSet,String)
++ ResultSet findById(UUID)
++ ResultSet findByUsername(String)
++ ResultSet findAll()
++ void delete(UUID)
++ boolean userAlreadyExists(String)
+}
+
+
+class org.mrp.dto.MediaEntryTO {
+}
+class org.mrp.utils.JsonHelper {
+- {static} ObjectMapper mapper
++ {static} T parseRequest(HttpExchange,Class<T>)
++ {static} T parseJson(String,Class<T>)
++ {static} String toJson(Object)
++ {static} void sendResponse(HttpExchange,int,Object)
++ {static} void sendError(HttpExchange,int,String)
++ {static} void sendSuccess(HttpExchange,String)
++ {static} Map<String,String> parseQueryParams(String)
++ {static} String[] getPathSegments(String)
+}
+
+
+class org.mrp.model.MediaEntry {
+- UUID id
+# String title
+# String description
+# MediaEntryType type
+# Year releaseYear
+# int ageRestriction
+# List<Genre> genres
+- User creator
+- LocalDateTime createdAt
++ UUID getId()
++ User getCreator()
++ double getAvgScore()
+}
+
+
+class org.mrp.dto.RatingTO {
+}
+class org.mrp.database.Database {
+- String url
+- String user
+- String password
+- Connection connection
+- void connect()
++ Connection getConnection()
++ ResultSet query(String,Object)
++ int update(String,Object)
++ UUID insert(String,Object)
++ boolean exists(String,Object)
+- PreparedStatement prepareStatement(String,Object)
+- void setParameters(PreparedStatement,Object)
++ UUID getUUID(ResultSet,String)
++ void close()
++ UUID getUUID(ResultSet,int)
++ Object getValue(String,Object)
++ List<Object> getValues(String,Object)
++ void beginTransaction()
++ void commit()
++ void rollback()
+}
+
+
+
+
+org.mrp.repository.Repository <|.. org.mrp.repository.MediaEntryRepository
+com.sun.net.httpserver.HttpHandler <|.. org.mrp.serverHandler.AuthHandler
+org.mrp.repository.Repository <|.. org.mrp.repository.RatingRepository
+org.mrp.repository.Repository <|.. org.mrp.repository.UserRepository
+@enduml
