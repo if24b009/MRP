@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 import java.util.UUID;
 
 public class UserRepository implements Repository<User, UserTO> {
-    private Database db = new Database();
+    //private Database db = new Database();
 
     public UserRepository() {
     }
@@ -53,14 +53,22 @@ public class UserRepository implements Repository<User, UserTO> {
         );
     }
 
+    public ResultSet findByToken(String token) throws SQLException {
+        return db.query(
+                "SELECT user_id FROM token WHERE token = ?",
+                token
+        );
+    }
+
     @Override
     public ResultSet findAll() {
         return null;
     }
 
     @Override
-    public void delete(UUID id) {
+    public int delete(UUID id) {
 
+        return 0;
     }
 
     public boolean userAlreadyExists(String username) throws SQLException {

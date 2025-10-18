@@ -2,6 +2,7 @@ package org.mrp;
 
 import com.sun.net.httpserver.HttpServer;
 import org.mrp.serverHandler.AuthHandler;
+import org.mrp.serverHandler.MediaEntryHandler;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -16,7 +17,7 @@ public class Main {
 
         //Handler for different parts
         server.createContext("/", new AuthHandler());
-        //server.createContext("/media", new MediaHandler());
+        server.createContext("/mediaEntry", new MediaEntryHandler());
 
         //Setting Executor (null = Standard-Executor)
         server.setExecutor(null);

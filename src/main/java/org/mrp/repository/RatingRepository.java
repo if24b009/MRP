@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 public class RatingRepository implements Repository<Rating, RatingTO> {
-    private Database db = new Database();
+    //private Database db = new Database();
 
     public RatingRepository() {
     }
@@ -25,8 +25,9 @@ public class RatingRepository implements Repository<Rating, RatingTO> {
     }
 
     @Override
-    public void delete(UUID id) {
+    public int delete(UUID id) {
 
+        return 0;
     }
 
     @Override

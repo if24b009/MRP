@@ -1,22 +1,55 @@
 package org.mrp.repository;
 
 import org.mrp.database.Database;
+import org.mrp.model.Genre;
 import org.mrp.model.MediaEntry;
 import org.mrp.dto.MediaEntryTO;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.List;
 import java.util.UUID;
 
 public class MediaEntryRepository implements Repository<MediaEntry, MediaEntryTO> {
-    private Database db = new Database();
+    //private Database db = new Database();
 
     public MediaEntryRepository() {
     }
 
+    private UUID insertMediaEntry(MediaEntryTO object) throws SQLException {
+        return db.insert(
+                "INSERT INTO media_entry (id, title, description, type, release_year, age_restriction, creator_id, created_at) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                object.getTitle(),
+                object.getDescription(),
+                object.getType(),
+                object.getReleaseYear(),
+                object.getAgeRestriction(),
+                object.getCreatorId(),
+                new Timestamp(System.currentTimeMillis())
+        );
+
+    }
+
     @Override
     public UUID save(MediaEntryTO object) throws SQLException {
-        return null;
+        UUID mediaEntryId = insertMediaEntry(object);
+
+        //Insert Genres in die Zwischentabelle
+        for (Genre genre : object.getGenres()) {
+            db.insertWithoutUUID(
+                    "INSERT INTO media_entry_genre (media_entry_id, genre) VALUES (?, ?)",
+                    mediaEntryId.toString(),
+                    genre
+            );
+        }
+
+        return mediaEntryId;
+    }
+
+    public UUID getUUID(ResultSet rs, String columnName) throws SQLException {
+        return db.getUUID(rs, columnName);
     }
 
     @Override
@@ -25,14 +58,60 @@ public class MediaEntryRepository implements Repository<MediaEntry, MediaEntryTO
     }
 
     @Override
-    public void delete(UUID id) {
-
+    public int delete(UUID id) throws SQLException {
+        return db.update("DELETE FROM media_entry WHERE id = ?", id.toString());
     }
 
     @Override
-    public ResultSet findAll() {
-        return null;
+    public ResultSet findAll() throws SQLException {
+        return db.query(
+                "SELECT m.*, u.username AS creator_username, STRING_AGG(meg.genre::TEXT, ',') AS genres " +
+                        "FROM media_entry m " +
+                        "JOIN app_user u ON m.creator_id = u.user_id " +
+                        "LEFT JOIN media_entry_genre meg ON m.id = meg.media_entry_id " +
+                        "GROUP BY m.id, u.username " +
+                        "ORDER BY m.title ASC"
+        );
+        //STRING_AGG(meg.genre::TEXT, ',') -> comma-seperated String with genre names
     }
+
+
+    public Object getCreatorObject(String mediaEntryId) throws SQLException {
+        return db.getValue("SELECT creator_id FROM media_entry WHERE id = ?", mediaEntryId);
+    }
+
+    private void updateGenres(UUID mediaEntryId, List<Genre> genres) throws SQLException {
+        //Delete all old genres
+        db.update("DELETE FROM media_entry_genre WHERE media_entry_id = ?", mediaEntryId.toString());
+
+        //Add new genres
+        for (Genre genre : genres) {
+            db.insertWithoutUUID(
+                    "INSERT INTO media_entry_genre (media_entry_id, genre) VALUES (?, ?)",
+                    mediaEntryId.toString(),
+                    genre
+            );
+        }
+    }
+
+    public int update(MediaEntryTO object) throws SQLException {
+        int rowsAffected = db.update(
+                "UPDATE media_entry SET title = ?, description = ?, type = ?, " +
+                        "release_year = ?, age_restriction = ? WHERE id = ?",
+                object.getTitle(),
+                object.getDescription(),
+                object.getType(),
+                object.getReleaseYear(),
+                object.getAgeRestriction(),
+                object.getId()
+        );
+
+        //Update genres
+        updateGenres(object.getId(), object.getGenres());
+
+        return rowsAffected;
+    }
+
 
     //eventuell benötigt
     /*public List<MediaEntry> findByCreator(UUID id) {

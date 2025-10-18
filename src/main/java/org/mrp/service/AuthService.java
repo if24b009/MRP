@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class AuthService {
-    private UserRepository  userRepository = new UserRepository();
+    private UserRepository userRepository = new UserRepository();
 
     public void register(HttpExchange exchange) throws IOException, SQLException {
         Map<String, String> request;
@@ -50,7 +50,7 @@ public class AuthService {
             //Password hashing
             String passwordHash = BCrypt.withDefaults().hashToString(12, password.toCharArray());
 
-            if(userRepository.userAlreadyExists(username)) {
+            if (userRepository.userAlreadyExists(username)) {
                 JsonHelper.sendError(exchange, 400, "Username already exists");
                 return;
             }
@@ -134,5 +134,26 @@ public class AuthService {
             e.printStackTrace();
         }
 
+    }
+
+    public UUID validateToken(HttpExchange exchange) throws SQLException {
+        String authHeader = exchange.getRequestHeaders().getFirst("Authorization");
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return null;
+        }
+
+        String token = authHeader.substring(7); //Remove "Bearer "
+
+        try {
+            ResultSet resultSet = userRepository.findByToken(token);
+            if (resultSet.next()) {
+                return userRepository.getUUID(resultSet, "user_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

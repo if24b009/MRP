@@ -73,6 +73,21 @@ public class Database {
         return uuid;
     }
 
+    //Execute INSERT with given parameters (no UUID generation)
+    public void insertWithoutUUID(String sql, Object... params) throws SQLException {
+        //Prepare  statement with provided parameters
+        PreparedStatement stmt = prepareStatement(sql, params);
+
+        //Execute INSERT
+        int affectedRows = stmt.executeUpdate();
+
+        //Check if insert was successful
+        if (affectedRows == 0) {
+            throw new SQLException("Insert failed, no rows affected.");
+        }
+    }
+
+
     //Check if record exists
     public boolean exists(String sql, Object... params) throws SQLException {
         try (ResultSet rs = query(sql, params)) {
@@ -90,7 +105,7 @@ public class Database {
 
     //Safely binds parameter values to PreparedStatement placeholders (?)
     //Handles special cases like UUID conversion to ensure proper database storage
-    private void setParameters(PreparedStatement stmt, Object... params) throws SQLException {
+    /*private void setParameters(PreparedStatement stmt, Object... params) throws SQLException {
         for (int i = 0; i < params.length; i++) {
             //Convert UUID to string for database storage
             if (params[i] instanceof UUID) {
@@ -99,7 +114,24 @@ public class Database {
                 stmt.setObject(i + 1, params[i]);
             }
         }
+    }*/
+    private void setParameters(PreparedStatement stmt, Object... params) throws SQLException {
+        for (int i = 0; i < params.length; i++) {
+            Object param = params[i];
+
+            if (param instanceof UUID) {
+                stmt.setString(i + 1, param.toString());
+
+            } else if (param instanceof Enum<?>) {
+                // Wichtig: PostgreSQL-Enums brauchen expliziten Typ
+                stmt.setObject(i + 1, ((Enum<?>) param).name(), java.sql.Types.OTHER);
+
+            } else {
+                stmt.setObject(i + 1, param);
+            }
+        }
     }
+
 
     //Helper method to get UUID from ResultSet by column name
     //Safely converts string representation back to UUID object, handling nulls
