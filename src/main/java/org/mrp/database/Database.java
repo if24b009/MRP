@@ -60,7 +60,7 @@ public class Database {
 
         //Create new params array with UUID as first parameter
         Object[] newParams = new Object[params.length + 1];
-        newParams[0] = uuid.toString();
+        newParams[0] = uuid;
         System.arraycopy(params, 0, newParams, 1, params.length);
 
         PreparedStatement stmt = prepareStatement(sql, newParams);
@@ -105,27 +105,15 @@ public class Database {
 
     //Safely binds parameter values to PreparedStatement placeholders (?)
     //Handles special cases like UUID conversion to ensure proper database storage
-    /*private void setParameters(PreparedStatement stmt, Object... params) throws SQLException {
-        for (int i = 0; i < params.length; i++) {
-            //Convert UUID to string for database storage
-            if (params[i] instanceof UUID) {
-                stmt.setString(i + 1, params[i].toString());
-            } else {
-                stmt.setObject(i + 1, params[i]);
-            }
-        }
-    }*/
     private void setParameters(PreparedStatement stmt, Object... params) throws SQLException {
         for (int i = 0; i < params.length; i++) {
             Object param = params[i];
 
             if (param instanceof UUID) {
-                stmt.setString(i + 1, param.toString());
-
+                stmt.setObject(i + 1, param, java.sql.Types.OTHER);  // PostgreSQL UUID wird als 'OTHER' behandelt
             } else if (param instanceof Enum<?>) {
-                // Wichtig: PostgreSQL-Enums brauchen expliziten Typ
+                //For PostgreSQL-Enums
                 stmt.setObject(i + 1, ((Enum<?>) param).name(), java.sql.Types.OTHER);
-
             } else {
                 stmt.setObject(i + 1, param);
             }
@@ -133,11 +121,11 @@ public class Database {
     }
 
 
+
     //Helper method to get UUID from ResultSet by column name
     //Safely converts string representation back to UUID object, handling nulls
     public UUID getUUID(ResultSet rs, String columnName) throws SQLException {
-        String uuidString = rs.getString(columnName);
-        return (uuidString != null) ? UUID.fromString(uuidString) : null;
+        return rs.getObject(columnName, UUID.class);
     }
 
     //Closes database connection cleanly
@@ -150,17 +138,6 @@ public class Database {
         } catch (SQLException e) {
             System.err.println("Error closing connection: " + e.getMessage());
         }
-    }
-
-
-
-
-
-    //Helper method to get UUID from ResultSet by column index (1-based)
-    //Alternative to column name when you know position but not name
-    public UUID getUUID(ResultSet rs, int columnIndex) throws SQLException {
-        String uuidString = rs.getString(columnIndex);
-        return uuidString != null ? UUID.fromString(uuidString) : null;
     }
 
     //Get single value

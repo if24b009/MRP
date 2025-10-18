@@ -62,13 +62,13 @@ public class MediaEntryService {
     public void updateMediaEntry(HttpExchange exchange, UUID userId, String mediaEntryId) throws IOException, SQLException {
         try {
             //Check if user = creator
-            Object creatorId_object = mediaEntryRepository.getCreatorObject(mediaEntryId);
+            Object creatorId_object = mediaEntryRepository.getCreatorObject(UUID.fromString(mediaEntryId));
             if (creatorId_object == null) {
                 JsonHelper.sendError(exchange, 404, "MediaEntry not found");
                 return;
             }
 
-            UUID creatorId = UUID.fromString((String) creatorId_object);
+            UUID creatorId = (UUID) creatorId_object;
             if (!creatorId.equals(userId)) {
                 JsonHelper.sendError(exchange, 403, "Only the creator can edit this media");
                 return;
@@ -143,17 +143,17 @@ public class MediaEntryService {
     public void deleteMediaEntry(HttpExchange exchange, UUID userId, String mediaEntryId) throws IOException, SQLException {
         try {
             //Check if user = creator
-            Object creatorId_object = mediaEntryRepository.getCreatorObject(mediaEntryId);
+            Object creatorId_object = mediaEntryRepository.getCreatorObject(UUID.fromString(mediaEntryId));
             if (creatorId_object == null) {
                 JsonHelper.sendError(exchange, 404, "MediaEntry not found");
                 return;
             }
-
-            UUID creatorId = UUID.fromString((String) creatorId_object);
+            UUID creatorId = (UUID) creatorId_object;
             if (!creatorId.equals(userId)) {
                 JsonHelper.sendError(exchange, 403, "Only the creator can delete this media");
                 return;
             }
+
             //Delete mediaEntry (cascades to ratings, favorites, ...)
             int deleted = mediaEntryRepository.delete(UUID.fromString(mediaEntryId));
 

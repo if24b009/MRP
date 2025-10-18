@@ -40,7 +40,7 @@ public class MediaEntryRepository implements Repository<MediaEntry, MediaEntryTO
         for (Genre genre : object.getGenres()) {
             db.insertWithoutUUID(
                     "INSERT INTO media_entry_genre (media_entry_id, genre) VALUES (?, ?)",
-                    mediaEntryId.toString(),
+                    mediaEntryId,
                     genre
             );
         }
@@ -59,7 +59,7 @@ public class MediaEntryRepository implements Repository<MediaEntry, MediaEntryTO
 
     @Override
     public int delete(UUID id) throws SQLException {
-        return db.update("DELETE FROM media_entry WHERE id = ?", id.toString());
+        return db.update("DELETE FROM media_entry WHERE id = ?", id);
     }
 
     @Override
@@ -76,19 +76,19 @@ public class MediaEntryRepository implements Repository<MediaEntry, MediaEntryTO
     }
 
 
-    public Object getCreatorObject(String mediaEntryId) throws SQLException {
+    public Object getCreatorObject(UUID mediaEntryId) throws SQLException {
         return db.getValue("SELECT creator_id FROM media_entry WHERE id = ?", mediaEntryId);
     }
 
     private void updateGenres(UUID mediaEntryId, List<Genre> genres) throws SQLException {
         //Delete all old genres
-        db.update("DELETE FROM media_entry_genre WHERE media_entry_id = ?", mediaEntryId.toString());
+        db.update("DELETE FROM media_entry_genre WHERE media_entry_id = ?", mediaEntryId);
 
         //Add new genres
         for (Genre genre : genres) {
             db.insertWithoutUUID(
                     "INSERT INTO media_entry_genre (media_entry_id, genre) VALUES (?, ?)",
-                    mediaEntryId.toString(),
+                    mediaEntryId,
                     genre
             );
         }
