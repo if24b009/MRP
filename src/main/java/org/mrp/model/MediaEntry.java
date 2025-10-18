@@ -64,7 +64,7 @@ public class MediaEntry {
     }
 
     public void setCreator(UUID creatorId) {
-        this.creator = creator;
+        this.creator = creatorId;
     }
 
     public void setId(UUID id) {

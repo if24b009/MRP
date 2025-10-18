@@ -116,7 +116,9 @@ public class MediaEntryService {
         mediaEntry.setCreator(mediaEntryRepository.getUUID(resultSet, "creator_id"));
 
         Timestamp createdAtTS = resultSet.getTimestamp("created_at");
-        if (createdAtTS != null) mediaEntry.setCreatedAt(createdAtTS.toLocalDateTime());
+        if (createdAtTS != null) {
+            mediaEntry.setCreatedAt(createdAtTS.toLocalDateTime());
+        }
 
         //Parse Genres from string -> Set Genres as List<Genre> (Enum)
         String genresString = resultSet.getString("genres");
