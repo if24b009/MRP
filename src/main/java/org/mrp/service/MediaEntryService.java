@@ -56,7 +56,13 @@ public class MediaEntryService {
             e.printStackTrace();
         }
 
-        JsonHelper.sendResponse(exchange, 201, mediaEntry);
+        //Response
+        Map<String, Object> response = new HashMap<>();
+        response.put("userId", userId);
+        response.put("mediaentry", mediaEntry);
+        response.put("message", "MediaEntry created successfully");
+
+        JsonHelper.sendResponse(exchange, 201, response);
     }
 
     public void updateMediaEntry(HttpExchange exchange, UUID userId, String mediaEntryId) throws IOException, SQLException {
@@ -74,13 +80,27 @@ public class MediaEntryService {
                 return;
             }
 
-            MediaEntry mediaEntry = JsonHelper.parseRequest(exchange, MediaEntry.class);
+            MediaEntry mediaEntry = new MediaEntry();
+            try {
+                mediaEntry = JsonHelper.parseRequest(exchange, MediaEntry.class);
+            }
+            catch(IOException e){
+                JsonHelper.sendError(exchange, 400, "Invalid request");
+                return;
+            }
 
             //Update MediaEntry
             int updated = mediaEntryRepository.update(new MediaEntryTO(UUID.fromString(mediaEntryId), mediaEntry.getTitle(), mediaEntry.getDescription(), mediaEntry.getType(), mediaEntry.getReleaseYear(), mediaEntry.getAgeRestriction(), mediaEntry.getGenres(), userId));
             if (updated > 0) {
                 mediaEntry.setId(UUID.fromString(mediaEntryId));
-                JsonHelper.sendResponse(exchange, 200, mediaEntry);
+
+                //Response
+                Map<String, Object> response = new HashMap<>();
+                response.put("userId", userId);
+                response.put("mediaentry", mediaEntry);
+                response.put("message", "MediaEntry updated successfully");
+
+                JsonHelper.sendResponse(exchange, 200, response);
             } else {
                 JsonHelper.sendError(exchange, 500, "Failed to update media");
             }
@@ -98,7 +118,12 @@ public class MediaEntryService {
             mediaEntries.add(mediaEntry);
         }
 
-        JsonHelper.sendResponse(exchange, 200, mediaEntries);
+        //Response
+        Map<String, Object> response = new HashMap<>();
+        response.put("mediaentries", mediaEntries);
+        response.put("message", "MediaEntries read successfully");
+
+        JsonHelper.sendResponse(exchange, 200, response);
     }
 
     private MediaEntry mapResultSetToMediaEntry(ResultSet resultSet) throws SQLException {
@@ -165,5 +190,13 @@ public class MediaEntryService {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void addFavorite(HttpExchange exchange, UUID userId, String mediaEntryId) throws IOException, SQLException {
+        JsonHelper.sendSuccess(exchange, "Will be implemented soon");
+    }
+
+    public void removeFavorite(HttpExchange exchange, UUID userId, String mediaEntryId) throws IOException, SQLException {
+        JsonHelper.sendSuccess(exchange, "Will be implemented soon");
     }
 }

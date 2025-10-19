@@ -60,7 +60,7 @@ public class AuthService {
 
             //Response
             Map<String, Object> response = new HashMap<>();
-            response.put("id", userId);
+            response.put("userId", userId);
             response.put("username", username);
             response.put("message", "User registered successfully");
 
@@ -126,6 +126,7 @@ public class AuthService {
             //Response
             Map<String, Object> response = new HashMap<>();
             response.put("token", token);
+            response.put("userId", userId);
             response.put("message", "User logged in successfully");
 
             JsonHelper.sendResponse(exchange, 201, response);

@@ -10,7 +10,7 @@ public interface Repository<T, U> {
     Database db = new Database();
 
     UUID save(U object) throws SQLException;
-    ResultSet findById(UUID id);
+    ResultSet findById(UUID id) throws SQLException;
     public int delete(UUID id) throws SQLException;
     public ResultSet findAll() throws SQLException;
 }

@@ -53,8 +53,10 @@ public class MediaEntryRepository implements Repository<MediaEntry, MediaEntryTO
     }
 
     @Override
-    public ResultSet findById(UUID id) {
-        return null;
+    public ResultSet findById(UUID id) throws SQLException {
+        return db.query("SELECT id, title, description, type, release_year, age_restriction, creator_id, created_at" +
+                "FROM media_entry WHERE id = (?)",
+                id);
     }
 
     @Override

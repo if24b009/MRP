@@ -29,19 +29,33 @@ public class MediaEntryHandler implements HttpHandler {
 
             String mediaEntryId = extractMediaEntryId(path);
 
-            if (path.endsWith("/create") && HttpMethod.POST.name().equals(usedMethod)) {
+            //Favorites
+            if (path.endsWith("/favorite")) {
+                if (HttpMethod.POST.name().equals(usedMethod)) {
+                    mediaEntryService.addFavorite(exchange, userId, mediaEntryId);
+                } else if (HttpMethod.DELETE.name().equals(usedMethod)) {
+                    mediaEntryService.removeFavorite(exchange, userId, mediaEntryId);
+                }
+            }
+
+            //MediaEntry CRUD
+            else if (HttpMethod.POST.name().equals(usedMethod)) {
                 mediaEntryService.createMediaEntry(exchange, userId);
-            } else if (path.endsWith("/update") && HttpMethod.PUT.name().equals(usedMethod)) {
+            } else if (HttpMethod.PUT.name().equals(usedMethod)) {
                 mediaEntryService.updateMediaEntry(exchange, userId, mediaEntryId);
-            } else if (path.endsWith("/read") && HttpMethod.GET.name().equals(usedMethod)) {
+            } else if (HttpMethod.GET.name().equals(usedMethod)) {
                 mediaEntryService.getMediaEntries(exchange);
-            } else if (path.endsWith("/delete") && HttpMethod.DELETE.name().equals(usedMethod)) {
+            } else if (HttpMethod.DELETE.name().equals(usedMethod)) {
                 mediaEntryService.deleteMediaEntry(exchange, userId, mediaEntryId);
-            } else {
+            }
+
+            //Send Error - Not found
+            else {
                 JsonHelper.sendError(exchange, 404, "Endpoint not found");
             }
+        } catch (IllegalArgumentException e) {
+            JsonHelper.sendError(exchange, 404, "Media entry not found");
         } catch (Exception e) {
-            e.printStackTrace();
             JsonHelper.sendError(exchange, 500, "Internal server error");
         }
     }
@@ -51,6 +65,15 @@ public class MediaEntryHandler implements HttpHandler {
         //Extract id from paths like /mediaEntry/{id}/update
         String[] parts = path.split("/");
         //parts: ["", "mediaEntry", "{id}", ...]
-        return parts.length > 2 ? parts[2] : "";
+        String uuid = parts.length > 2 ? parts[2] : "";
+        try {
+            if (uuid != null && !uuid.isEmpty()) {
+                UUID.fromString(uuid);
+            }
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException();
+        }
+
+        return uuid;
     }
 }

@@ -10,15 +10,15 @@ Die **Media Ratings Platform (MRP)** ist ein REST-basierter Java-HTTP-Server, de
 
 ## Technologien & Tools
 
-| Komponente       | Technologie                         |
-|------------------|-------------------------------------|
-| Programmiersprache | Java (JDK 24)                       |
-| HTTP-Server      | `com.sun.net.httpserver.HttpServer` |
+| Komponente          | Technologie                         |
+|---------------------|-------------------------------------|
+| Programmiersprache  | Java (JDK 24)                       |
+| HTTP-Server         | `com.sun.net.httpserver.HttpServer` |
 | JSON-Serialisierung | Jackson (`com.fasterxml.jackson`)   |
-| Datenbank        | PostgreSQL 16 (mit Docker)          |
-| Authentifizierung | Token-basierte Auth                 |
-| API Testing      | Postman Collection                  |
-| Build Tool       | Maven                               |
+| Datenbank           | PostgreSQL 16 (mit Docker)          |
+| Authentifizierung   | Token-basierte Auth                 |
+| API Testing         | Postman Collection                  |
+| Build Tool          | Maven                               |
 
 
 
@@ -90,40 +90,67 @@ Zur besseren Darstellung der Systemarchitektur zeigt das folgende UML-Diagramm d
 ![UML-Diagramm von MRP](./mrp_uml.svg)
 
 
+## Endpoints
+
+Folgend eine Liste aller im Projekt relevanten Endpoints:
+
+| Methode | Endpoint                      | Beschreibung                         |
+|---------|-------------------------------|--------------------------------------|
+| POST    | `/register`                   | Registrierung                        |
+| POST    | `/login`                      | Login & Token erhalten               |
+| GET     | `/mediaEntry`                 | Liste aller Medieninhalte            |
+| POST    | `/mediaEntry`                 | Neues Medium erstellen               |
+| PUT     | `/mediaEntry/{id}`            | Medium bearbeiten (nur Creator)      |
+| DELETE  | `/mediaEntry/{id}`            | Medium löschen                       |
+| POST    | `/mediaEntry/{id}/favorite`   | Medium als Favorite markieren        |
+| DELETE  | `/mediaEntry/{id}/favorite`   | Medium aus Favorites entfernen       |
+| POST    | `/rating/{id}`                | Bewertung erstellen                  |
+| PUT     | `/rating/{id}`                | Bewertung bearbeiten                 |
+| DELETE  | `/rating/{id}`                | Bewertung löschen                    |
+| POST    | `/rating/{id}/like`           | Bewertung liken                      |
+| POST    | `/rating/{id}/unlike`         | Bewertung nicht mehr liken           |
+| POST    | `/rating/{id}/confirm`        | Rating-Kommentar öffentlich schalten |
+| GET     | `/users/{username}/profile`   | Profil mit Statistiken               |
+| GET     | `/users/{username}/favorites` | Userspezifische Favoriten            |
+| GET     | `/users/{username}/ratings`   | Userspezifische Bewertungen          |
+| GET     | `/users/leaderboard`          | Leaderboard eines Users              |
+| GET     | `/users/recommendations`      | Empfehlungsfunktion                  |
+
+
 ## Testing
 
 Da in diesem Projekt **Integrationstests mit einer Postman Collection** verwendet wurden, deckt die Teststrategie folgende Punkte ab:
 
 ### Testabdeckung
-| Bereich                 | Abgedeckt durch Postman Tests |
-|-------------------------|-------------------------------|
-| Registrierung / Login   | ✅                             |
-| Authentifizierung       | ✅                             |
-| CRUD Media              | ✅                             |
-| Ratings                 | *Noch ausstehend*             |
-| Likes                   | *Noch ausstehend*             |
-| Favoriten               | *Noch ausstehend*             |
-| Leaderboard             | *Noch ausstehend*             |
-| Recommendations         | *Noch ausstehend*             |
-| Fehlerfälle (4xx/5xx)   | ✅                             |
+| Bereich                 | Abgedeckt durch Postman Tests   |
+|-------------------------|---------------------------------|
+| Registrierung / Login   | ✅                               |
+| Authentifizierung       | ✅                               |
+| CRUD Media              | ✅                               |
+| Ratings                 | *Noch ausstehend*               |
+| Likes                   | *Noch ausstehend*               |
+| Favoriten               | *Noch ausstehend*               |
+| Leaderboard             | *Noch ausstehend*               |
+| Recommendations         | *Noch ausstehend*               |
+| Fehlerfälle (4xx/5xx)   | ✅                               |
 
-**Postman Collection Inhalt:**
-- `01_Registration_Login.postman_collection.json`
-- `02_Media_CRUD.postman_collection.json`
-- *Weitere Collection-Tests folgen im Laufe des Projektes*
+**Postman Collection Inhalt von `MRP-IntegrationTests`:**
+- `01_Authentication.postman_collection.json`: Registration und Login
+- `02_MediaEntry-CRUD.postman_collection.json`: Create, Update, Read, Delete
+- *Weitere Tests folgen im Laufe des Projektes*
 
 Die Tests werden manuell in Postman ausgeführt.
 
 
 ## Zeitaufwand (geschätzt)
 
-*Nachdem es sich aktuell um die Zwischenabgabe handelt, sind nur bereits erledigte Aufgaben geschätzt:*
+*Nachdem es sich hierbei um die Zwischenabgabe handelt, sind ausschließlich bereits erledigte Aufgaben zeitlich geschätzt:*
 
 | Aufgabe                                 | Stunden |
 |-----------------------------------------|---------|
-| Setup (Projekt-Grundgerüst, DB, Docker) | 8 h     |
-| User Authentifizierung                  | 3 h     |
-| Media-Entry CRUD                        | 8 h     |
+| Setup (Projekt-Grundgerüst, DB, Docker) | 20 h    |
+| User Authentifizierung                  | 5 h     |
+| Media-Entry CRUD                        | 16 h    |
 | Ratings + Comments + Likes              |         |
 | Sortieren + Filter                      |         |
 | Favoriten                               |         |
@@ -131,7 +158,7 @@ Die Tests werden manuell in Postman ausgeführt.
 | Leaderboard                             |         |
 | Postman Tests & Debugging               |         |
 | Dokumentation (README & Protocol)       |         |
-| **Gesamt**                              |         |
+| **Gesamt**                              | 41 h    |
 
 
 ## Probleme & Lösungen
