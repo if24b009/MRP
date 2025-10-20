@@ -2,16 +2,16 @@ package org.mrp.serverHandler;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.mrp.service.AuthService;
 import org.mrp.service.RatingService;
 import org.mrp.utils.JsonHelper;
+import org.mrp.utils.TokenValidation;
 
 import java.io.IOException;
 import java.util.UUID;
 
 public class RatingHandler implements HttpHandler {
     RatingService ratingService = new RatingService();
-    AuthService authService = new AuthService();
+    TokenValidation tokenValidation = new TokenValidation();
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -21,7 +21,7 @@ public class RatingHandler implements HttpHandler {
         try {
 
             //Check authentication
-            UUID userId = authService.validateToken(exchange);
+            UUID userId = tokenValidation.validateToken(exchange);
             if (userId == null) {
                 JsonHelper.sendError(exchange, 401, "Authentication required");
                 return;

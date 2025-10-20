@@ -136,25 +136,4 @@ public class AuthService {
         }
 
     }
-
-    public UUID validateToken(HttpExchange exchange) throws SQLException {
-        String authHeader = exchange.getRequestHeaders().getFirst("Authorization");
-
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return null;
-        }
-
-        String token = authHeader.substring(7); //Remove "Bearer "
-
-        try {
-            ResultSet resultSet = userRepository.findByToken(token);
-            if (resultSet.next()) {
-                return userRepository.getUUID(resultSet, "user_id");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
 }
