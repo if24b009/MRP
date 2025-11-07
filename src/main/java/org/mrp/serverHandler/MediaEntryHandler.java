@@ -2,11 +2,15 @@ package org.mrp.serverHandler;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import org.mrp.model.MediaEntry;
 import org.mrp.service.MediaEntryService;
 import org.mrp.utils.JsonHelper;
 import org.mrp.utils.TokenValidation;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 public class MediaEntryHandler implements HttpHandler {
@@ -27,41 +31,84 @@ public class MediaEntryHandler implements HttpHandler {
                 return;
             }
 
-            String mediaEntryId = extractMediaEntryId(path);
+            String mediaEntryId = extractMediaEntryId(exchange, path);
 
             //Favorites
             if (path.endsWith("/favorite")) {
                 if (HttpMethod.POST.name().equals(usedMethod)) {
-                    mediaEntryService.addFavorite(exchange, userId, mediaEntryId);
+                    String message = mediaEntryService.addFavorite(userId, mediaEntryId);
+                    JsonHelper.sendSuccess(exchange, message);
                 } else if (HttpMethod.DELETE.name().equals(usedMethod)) {
-                    mediaEntryService.removeFavorite(exchange, userId, mediaEntryId);
+                    String message = mediaEntryService.removeFavorite(userId, mediaEntryId);
+                    JsonHelper.sendSuccess(exchange, message);
                 }
             }
 
+
             //MediaEntry CRUD
             else if (HttpMethod.POST.name().equals(usedMethod)) {
-                mediaEntryService.createMediaEntry(exchange, userId);
+                handleCreateMediaEntry(exchange, userId);
             } else if (HttpMethod.PUT.name().equals(usedMethod)) {
-                mediaEntryService.updateMediaEntry(exchange, userId, mediaEntryId);
+                handleUpdateMediaEntry(exchange, userId, mediaEntryId);
             } else if (HttpMethod.GET.name().equals(usedMethod)) {
-                mediaEntryService.getMediaEntries(exchange);
+                Map<String, Object> response = mediaEntryService.getMediaEntries();
+                JsonHelper.sendResponse(exchange, 200, response);
             } else if (HttpMethod.DELETE.name().equals(usedMethod)) {
-                mediaEntryService.deleteMediaEntry(exchange, userId, mediaEntryId);
+                String message = mediaEntryService.deleteMediaEntry(userId, mediaEntryId);
+                JsonHelper.sendSuccess(exchange, message);
             }
 
             //Send Error - Not found
             else {
                 JsonHelper.sendError(exchange, 404, "Endpoint not found");
             }
+        } catch (NoSuchElementException e) {
+            JsonHelper.sendError(exchange, 404, e.getMessage());
         } catch (IllegalArgumentException e) {
-            JsonHelper.sendError(exchange, 404, "Media entry not found");
+            JsonHelper.sendError(exchange, 400, e.getMessage());
+        } catch (SecurityException e) {
+            JsonHelper.sendError(exchange, 403, e.getMessage());
         } catch (Exception e) {
             JsonHelper.sendError(exchange, 500, "Internal server error");
         }
     }
 
-    //Helperfunction to get the mediaEntry id from the path
-    private String extractMediaEntryId(String path) {
+    private void handleCreateMediaEntry(HttpExchange exchange, UUID userId) throws IOException, SQLException {
+        MediaEntry mediaEntry = parseRequestOrSendError(exchange, MediaEntry.class);
+        if (mediaEntry == null) return;
+
+        try {
+            Map<String, Object> response = mediaEntryService.createMediaEntry(mediaEntry, userId);
+            JsonHelper.sendResponse(exchange, 200, response);
+        } catch (Exception e) {
+            throw e; //throw to "main"-handle methode
+        }
+    }
+
+    private void handleUpdateMediaEntry(HttpExchange exchange, UUID userId, String mediaEntryId) throws IOException, SQLException {
+        MediaEntry mediaEntry = parseRequestOrSendError(exchange, MediaEntry.class);
+        if (mediaEntry == null) return;
+
+        try {
+            Map<String, Object> response = mediaEntryService.updateMediaEntry(mediaEntry, userId, mediaEntryId);
+            JsonHelper.sendResponse(exchange, 200, response);
+        } catch (Exception e) {
+            throw e; //throw to "main"-handle methode
+        }
+    }
+
+    //Helperfunction to parse the request
+    private <T> T parseRequestOrSendError(HttpExchange exchange, Class<T> clazz) throws IOException {
+        try {
+            return JsonHelper.parseRequest(exchange, clazz);
+        } catch (IOException e) {
+            JsonHelper.sendError(exchange, 400, "Invalid request");
+            return null;
+        }
+    }
+
+    //Helper to get the media entry id from the path and parse uuid safely
+    private String extractMediaEntryId(HttpExchange exchange, String path) throws IOException {
         //Extract id from paths like /mediaEntry/{id}/update
         String[] parts = path.split("/");
         //parts: ["", "mediaEntry", "{id}", ...]
@@ -71,9 +118,9 @@ public class MediaEntryHandler implements HttpHandler {
                 UUID.fromString(uuid);
             }
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException();
+            //throw new IllegalArgumentException();
+            JsonHelper.sendError(exchange, 400, "Invalid UUID format");
         }
-
         return uuid;
     }
 }

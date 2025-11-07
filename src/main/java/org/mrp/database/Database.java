@@ -146,8 +146,8 @@ public class Database {
             if (rs.next()) {
                 return rs.getObject(1);
             }
-            return null;
         }
+        return null;
     }
 
     //Get list of values

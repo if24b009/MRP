@@ -11,28 +11,28 @@ import java.util.UUID;
 public class RatingService {
     private RatingRepository ratingRepository = new RatingRepository();
 
-    public void confirmComment(HttpExchange exchange, UUID userId, String ratingId) throws IOException, SQLException {
-        JsonHelper.sendSuccess(exchange, "Will be implemented soon");
+    public String confirmComment(UUID userId, String ratingId) throws IOException, SQLException {
+        return "Will be implemented soon";
     }
 
-    public void likeRating(HttpExchange exchange, UUID userId, String ratingId) throws IOException, SQLException {
-        JsonHelper.sendSuccess(exchange, "Will be implemented soon");
+    public String likeRating(UUID userId, String ratingId) throws IOException, SQLException {
+        return "Will be implemented soon";
     }
 
-    public void unlikeRating(HttpExchange exchange, UUID userId, String ratingId) throws IOException, SQLException {
-        JsonHelper.sendSuccess(exchange, "Will be implemented soon");
+    public String unlikeRating(UUID userId, String ratingId) throws IOException, SQLException {
+        return  "Will be implemented soon";
     }
 
-    public void createRating(HttpExchange exchange, UUID userId) throws IOException, SQLException {
-        JsonHelper.sendSuccess(exchange, "Will be implemented soon");
+    public String createRating(UUID userId) throws IOException, SQLException {
+        return "Will be implemented soon";
     }
 
-    public void updateRating(HttpExchange exchange, UUID userId, String ratingId) throws IOException, SQLException {
-        JsonHelper.sendSuccess(exchange, "Will be implemented soon");
+    public String updateRating(UUID userId, String ratingId) throws IOException, SQLException {
+       return "Will be implemented soon";
     }
 
-    public void deleteRating(HttpExchange exchange, UUID userId, String ratingId) throws IOException, SQLException {
-        JsonHelper.sendSuccess(exchange, "Will be implemented soon");
+    public String deleteRating(UUID userId, String ratingId) throws IOException, SQLException {
+        return "Will be implemented soon";
     }
 
 }

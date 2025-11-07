@@ -114,9 +114,28 @@ public class MediaEntryRepository implements Repository<MediaEntry, MediaEntryTO
         return rowsAffected;
     }
 
+    //Check if media entry is already in favorites
+    public boolean isFavorite(UUID userId, UUID mediaEntryId) throws SQLException {
+        Object result = db.getValue(
+                "SELECT 1 FROM favorite WHERE user_id = ? AND media_entry_id = ?",
+                userId,
+                mediaEntryId
+        );
+        return result != null;
+    }
 
-    //eventuell benötigt
-    /*public List<MediaEntry> findByCreator(UUID id) {
-        return null;
-    }*/
+    //Add media entry to favorites
+    public UUID addFavorite(UUID userId, UUID mediaEntryId) throws SQLException {
+        String sql = "INSERT INTO favorite (id, user_id, media_entry_id) VALUES (?, ?, ?)";
+        return db.insert(sql, userId, mediaEntryId); //UUID is generated inside db.insert
+    }
+
+    //Remove media entry from favorites
+    public int removeFavorite(UUID userId, UUID mediaEntryId) throws SQLException {
+        return db.update(
+                "DELETE FROM favorite WHERE user_id = ? AND media_entry_id = ?",
+                userId,
+                mediaEntryId
+        );
+    }
 }

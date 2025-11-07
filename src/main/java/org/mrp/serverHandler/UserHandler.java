@@ -30,23 +30,31 @@ public class UserHandler implements HttpHandler {
             String username = extractUsername(path);
 
             if (path.endsWith("/profile") && HttpMethod.GET.name().equals(usedMethod)) {
-                userService.getProfile(exchange, username);
+                String message = userService.getProfile(username);
+                JsonHelper.sendSuccess(exchange, message);
             } else if (path.endsWith("/favorites") && HttpMethod.GET.name().equals(usedMethod)) {
-                userService.getFavorites(exchange, username);
+                String message = userService.getFavorites(username);
+                JsonHelper.sendSuccess(exchange, message);
             } else if (path.endsWith("/ratings") && HttpMethod.GET.name().equals(usedMethod)) {
-                userService.getUserRatings(exchange, username, userId);
+                String message = userService.getUserRatings(username, userId);
+                JsonHelper.sendSuccess(exchange, message);
             } else if (path.endsWith("/leaderboard") && HttpMethod.GET.name().equals(usedMethod)) {
-                userService.getLeaderboard(exchange);
+                String message = userService.getLeaderboard();
+                JsonHelper.sendSuccess(exchange, message);
             } else if (path.endsWith("/recommendations") && HttpMethod.GET.name().equals(usedMethod)) {
-                userService.getRecommendations(exchange, userId);
+                String message = userService.getRecommendations(userId);
+                JsonHelper.sendSuccess(exchange, message);
             }
 
             //Send Error - Not found
             else {
                 JsonHelper.sendError(exchange, 404, "Endpoint not found");
             }
+        } catch (IllegalArgumentException e) {
+            JsonHelper.sendError(exchange, 400, e.getMessage());
+        } catch (SecurityException e) {
+            JsonHelper.sendError(exchange, 403, e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
             JsonHelper.sendError(exchange, 500, "Internal server error");
         }
     }

@@ -44,6 +44,13 @@ Die **Media Ratings Platform (MRP)** ist ein REST-basierter Java-HTTP-Server, de
 
 Die Anwendung folgt der **Schichten-Architektur** mit folgenden Layern zur Trennung von Verantwortlichkeiten:
 
+- **Handler-Schicht:**  
+  Zuständig für die Verarbeitung eingehender HTTP-Anfragen.  
+  Die Schicht enthält das Bereitstellen der Endpoints der Anwendung, Auswerten der Anfrage (z. B. HTTP-Methode und Pfad) aus und Aufrufen der passende Service-Methode.
+  Außerdem kümmert sie sich um das Senden von HTTP-Antworten (z. B. JSON-Ausgaben, Fehlercodes) – die direkte Arbeit mit dem HttpExchange findet ausschließlich hier statt.
+  Sie enthält keine Business-Logik, sondern dient als Vermittler zwischen HTTP-Interface und Service-Schicht.  
+  Beispiele: `AuthHandler`, `MediaEntryHandler`.
+
 - **Service-Schicht:**  
   Enthält die Kernlogik (Business-Logik). Führt Validierungen durch, steuert den Ablauf und verarbeitet Daten.  
   Beispiele: `UserService`, `AuthService`.
@@ -150,7 +157,7 @@ Die Tests werden manuell in Postman ausgeführt.
 |-----------------------------------------|---------|
 | Setup (Projekt-Grundgerüst, DB, Docker) | 20 h    |
 | User Authentifizierung                  | 5 h     |
-| Media-Entry CRUD                        | 16 h    |
+| Media-Entry CRUD                        | 18 h    |
 | Ratings + Comments + Likes              |         |
 | Sortieren + Filter                      |         |
 | Favoriten                               |         |
@@ -158,7 +165,7 @@ Die Tests werden manuell in Postman ausgeführt.
 | Leaderboard                             |         |
 | Postman Tests & Debugging               |         |
 | Dokumentation (README & Protocol)       |         |
-| **Gesamt**                              | 41 h    |
+| **Gesamt**                              | 43 h    |
 
 
 ## Probleme & Lösungen

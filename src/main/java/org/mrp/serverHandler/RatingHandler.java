@@ -30,34 +30,43 @@ public class RatingHandler implements HttpHandler {
             String ratingId = extractRatingId(path);
 
             if (path.endsWith("/confirm") && HttpMethod.PUT.name().equals(usedMethod)) {
-                ratingService.confirmComment(exchange, userId, ratingId);
+                String message = ratingService.confirmComment(userId, ratingId);
+                JsonHelper.sendSuccess(exchange, message);
             }
             else if(path.endsWith("/like") && HttpMethod.POST.name().equals(usedMethod)) {
-                ratingService.likeRating(exchange, userId, ratingId);
+                String message = ratingService.likeRating(userId, ratingId);
+                JsonHelper.sendSuccess(exchange, message);
             }
             else if(path.endsWith("/unlike") && HttpMethod.DELETE.name().equals(usedMethod)) {
-                ratingService.unlikeRating(exchange, userId, ratingId);
+                String message = ratingService.unlikeRating(userId, ratingId);
+                JsonHelper.sendSuccess(exchange, message);
             }
 
             //Create
             else if (HttpMethod.POST.name().equals(usedMethod)) {
-                ratingService.createRating(exchange, userId);
+                String message = ratingService.createRating(userId);
+                JsonHelper.sendSuccess(exchange, message);
             }
             //Update
             else if (HttpMethod.PUT.name().equals(usedMethod)) {
-                ratingService.updateRating(exchange, userId, ratingId);
+                String message = ratingService.updateRating(userId, ratingId);
+                JsonHelper.sendSuccess(exchange, message);
             }
             //Delete
             else if (HttpMethod.DELETE.name().equals(usedMethod)) {
-                ratingService.deleteRating(exchange, userId, ratingId);
+                String message = ratingService.deleteRating(userId, ratingId);
+                JsonHelper.sendSuccess(exchange, message);
             }
 
             //Send Error - Not found
             else {
                 JsonHelper.sendError(exchange, 404, "Endpoint not found");
             }
+        } catch (IllegalArgumentException e) {
+            JsonHelper.sendError(exchange, 400, e.getMessage());
+        } catch (SecurityException e) {
+            JsonHelper.sendError(exchange, 403, e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
             JsonHelper.sendError(exchange, 500, "Internal server error");
         }
     }

@@ -24,37 +24,23 @@ public class MediaEntryService {
                         && !mediaEntry.getType().equals(MediaEntryType.GAME));
     }
 
-    public void createMediaEntry(HttpExchange exchange, UUID userId) throws IOException, SQLException {
-        MediaEntry mediaEntry = new MediaEntry();
+    //Media Entry CRUD
 
-        try {
-            mediaEntry = JsonHelper.parseRequest(exchange, MediaEntry.class);
-        }
-        catch(IOException e){
-            JsonHelper.sendError(exchange, 400, "Invalid request");
-            return;
-        }
-
+    public Map<String, Object> createMediaEntry(MediaEntry mediaEntry, UUID userId) throws IOException, SQLException {
         //Input validation
         if (mediaEntry.getTitle() == null || mediaEntry.getTitle().trim().isEmpty()) {
-            JsonHelper.sendError(exchange, 400, "Title is required");
-            return;
+            throw new IllegalArgumentException("Title is required");
         }
         if (isInvalidType(mediaEntry)) {
-            JsonHelper.sendError(exchange, 400, "MediaEntry type must be 'movie', 'series', or 'game'");
-            return;
+            throw new IllegalArgumentException("Media entry type must be 'movie', 'series', or 'game'");
         }
 
-        try {
-            //Insert MediaEntry with UUID in DB
-            UUID mediaEntryId = mediaEntryRepository.save(new MediaEntryTO(null, mediaEntry.getTitle(), mediaEntry.getDescription(), mediaEntry.getType(), mediaEntry.getReleaseYear(), mediaEntry.getAgeRestriction(), mediaEntry.getGenres(), userId));
+        //Insert MediaEntry with UUID in DB
+        UUID mediaEntryId = mediaEntryRepository.save(new MediaEntryTO(null, mediaEntry.getTitle(), mediaEntry.getDescription(), mediaEntry.getType(), mediaEntry.getReleaseYear(), mediaEntry.getAgeRestriction(), mediaEntry.getGenres(), userId));
 
-            //Update MediaEntry with id and creator
-            mediaEntry.setId(mediaEntryId);
-            mediaEntry.setCreator(userId);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        //Update MediaEntry with id and creator
+        mediaEntry.setId(mediaEntryId);
+        mediaEntry.setCreator(userId);
 
         //Response
         Map<String, Object> response = new HashMap<>();
@@ -62,54 +48,38 @@ public class MediaEntryService {
         response.put("mediaentry", mediaEntry);
         response.put("message", "MediaEntry created successfully");
 
-        JsonHelper.sendResponse(exchange, 201, response);
+        return response;
     }
 
-    public void updateMediaEntry(HttpExchange exchange, UUID userId, String mediaEntryId) throws IOException, SQLException {
-        try {
-            //Check if user = creator
-            Object creatorId_object = mediaEntryRepository.getCreatorObject(UUID.fromString(mediaEntryId));
-            if (creatorId_object == null) {
-                JsonHelper.sendError(exchange, 404, "MediaEntry not found");
-                return;
-            }
-
-            UUID creatorId = (UUID) creatorId_object;
-            if (!creatorId.equals(userId)) {
-                JsonHelper.sendError(exchange, 403, "Only the creator can edit this media");
-                return;
-            }
-
-            MediaEntry mediaEntry = new MediaEntry();
-            try {
-                mediaEntry = JsonHelper.parseRequest(exchange, MediaEntry.class);
-            }
-            catch(IOException e){
-                JsonHelper.sendError(exchange, 400, "Invalid request");
-                return;
-            }
-
-            //Update MediaEntry
-            int updated = mediaEntryRepository.update(new MediaEntryTO(UUID.fromString(mediaEntryId), mediaEntry.getTitle(), mediaEntry.getDescription(), mediaEntry.getType(), mediaEntry.getReleaseYear(), mediaEntry.getAgeRestriction(), mediaEntry.getGenres(), userId));
-            if (updated > 0) {
-                mediaEntry.setId(UUID.fromString(mediaEntryId));
-
-                //Response
-                Map<String, Object> response = new HashMap<>();
-                response.put("userId", userId);
-                response.put("mediaentry", mediaEntry);
-                response.put("message", "MediaEntry updated successfully");
-
-                JsonHelper.sendResponse(exchange, 200, response);
-            } else {
-                JsonHelper.sendError(exchange, 500, "Failed to update media");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public Map<String, Object> updateMediaEntry(MediaEntry mediaEntry, UUID userId, String mediaEntryId) throws IOException, SQLException {
+        //Check if user = creator
+        Object creatorId_object = mediaEntryRepository.getCreatorObject(UUID.fromString(mediaEntryId));
+        if (creatorId_object == null) {
+            throw new NoSuchElementException("Media entry not found");
         }
+
+        UUID creatorId = (UUID) creatorId_object;
+        if (!creatorId.equals(userId)) {
+            throw new IllegalArgumentException("Only the creator can edit this media");
+        }
+
+        //Update MediaEntry
+        int updated = mediaEntryRepository.update(new MediaEntryTO(UUID.fromString(mediaEntryId), mediaEntry.getTitle(), mediaEntry.getDescription(), mediaEntry.getType(), mediaEntry.getReleaseYear(), mediaEntry.getAgeRestriction(), mediaEntry.getGenres(), userId));
+        if (updated == 0) {
+            throw new RuntimeException("Failed to update media entry");
+        }
+        mediaEntry.setId(UUID.fromString(mediaEntryId));
+
+        //Response
+        Map<String, Object> response = new HashMap<>();
+        response.put("userId", userId);
+        response.put("mediaentry", mediaEntry);
+        response.put("message", "Media entry updated successfully");
+
+        return response;
     }
 
-    public void getMediaEntries(HttpExchange exchange) throws IOException, SQLException {
+    public Map<String, Object> getMediaEntries() throws IOException, SQLException {
         ResultSet resultSet = mediaEntryRepository.findAll();
         List<MediaEntry> mediaEntries = new ArrayList<>();
 
@@ -121,9 +91,9 @@ public class MediaEntryService {
         //Response
         Map<String, Object> response = new HashMap<>();
         response.put("mediaentries", mediaEntries);
-        response.put("message", "MediaEntries read successfully");
+        response.put("message", "Media entries read successfully");
 
-        JsonHelper.sendResponse(exchange, 200, response);
+        return response;
     }
 
     private MediaEntry mapResultSetToMediaEntry(ResultSet resultSet) throws SQLException {
@@ -165,38 +135,58 @@ public class MediaEntryService {
     }
 
 
-    public void deleteMediaEntry(HttpExchange exchange, UUID userId, String mediaEntryId) throws IOException, SQLException {
-        try {
-            //Check if user = creator
-            Object creatorId_object = mediaEntryRepository.getCreatorObject(UUID.fromString(mediaEntryId));
-            if (creatorId_object == null) {
-                JsonHelper.sendError(exchange, 404, "MediaEntry not found");
-                return;
-            }
-            UUID creatorId = (UUID) creatorId_object;
-            if (!creatorId.equals(userId)) {
-                JsonHelper.sendError(exchange, 403, "Only the creator can delete this media");
-                return;
-            }
-
-            //Delete mediaEntry (cascades to ratings, favorites, ...)
-            int deleted = mediaEntryRepository.delete(UUID.fromString(mediaEntryId));
-
-            if (deleted > 0) {
-                JsonHelper.sendSuccess(exchange, "MediaEntry deleted successfully");
-            } else {
-                JsonHelper.sendError(exchange, 500, "Failed to delete mediaEntry");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public String deleteMediaEntry(UUID userId, String mediaEntryId) throws IOException, SQLException {
+        //Check if user = creator
+        Object creatorId_object = mediaEntryRepository.getCreatorObject(UUID.fromString(mediaEntryId));
+        if (creatorId_object == null) {
+            throw new NoSuchElementException("Media entry not found");
         }
+        UUID creatorId = (UUID) creatorId_object;
+        if (!creatorId.equals(userId)) {
+            throw new IllegalArgumentException("Only the creator can delete this media entry");
+        }
+
+        //Delete mediaEntry (cascades to ratings, favorites, ...)
+        int deleted = mediaEntryRepository.delete(UUID.fromString(mediaEntryId));
+
+        if (deleted == 0) {
+            throw new RuntimeException("Failed to delete media entry");
+        }
+
+        return "Media entry deleted successfully";
     }
 
-    public void addFavorite(HttpExchange exchange, UUID userId, String mediaEntryId) throws IOException, SQLException {
-        JsonHelper.sendSuccess(exchange, "Will be implemented soon");
+
+
+    //Favorites
+
+    public String addFavorite(UUID userId, String mediaEntryId) throws IOException, SQLException {
+        UUID mediaUUID = UUID.fromString(mediaEntryId);
+
+        // Check if media exists
+        Object mediaExists = mediaEntryRepository.getCreatorObject(mediaUUID);
+        if (mediaExists == null) {
+            throw new NoSuchElementException("Media not found");
+        }
+
+        // Check if already favorited
+        if (mediaEntryRepository.isFavorite(userId, mediaUUID)) {
+            throw new IllegalArgumentException("Already in favorites");
+        }
+
+        // Add to favorites
+        mediaEntryRepository.addFavorite(userId, mediaUUID);
+        return "Favorite successfully added";
     }
 
-    public void removeFavorite(HttpExchange exchange, UUID userId, String mediaEntryId) throws IOException, SQLException {
-        JsonHelper.sendSuccess(exchange, "Will be implemented soon");
+    public String removeFavorite(UUID userId, String mediaEntryId) throws IOException, SQLException {
+        UUID mediaUUID = UUID.fromString(mediaEntryId);
+
+        int deleted = mediaEntryRepository.removeFavorite(userId, mediaUUID);
+        if (deleted > 0) {
+            return "Favorite successfully removed";
+        } else {
+            throw new NoSuchElementException("Not in favorites");
+        }
     }
 }

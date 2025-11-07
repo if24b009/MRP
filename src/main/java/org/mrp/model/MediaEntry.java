@@ -15,7 +15,6 @@ public class MediaEntry {
     private List<Genre> genres;
     private UUID creator;
     private LocalDateTime createdAt;
-    //protected List<Rating> ratings;
 
     public MediaEntry() {}
 
