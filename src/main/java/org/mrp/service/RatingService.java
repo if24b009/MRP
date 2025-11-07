@@ -11,15 +11,15 @@ import java.util.UUID;
 public class RatingService {
     private RatingRepository ratingRepository = new RatingRepository();
 
-    public String confirmComment(UUID userId, String ratingId) throws IOException, SQLException {
+    public String confirmComment(UUID userId, UUID ratingId) throws IOException, SQLException {
         return "Will be implemented soon";
     }
 
-    public String likeRating(UUID userId, String ratingId) throws IOException, SQLException {
+    public String likeRating(UUID userId, UUID ratingId) throws IOException, SQLException {
         return "Will be implemented soon";
     }
 
-    public String unlikeRating(UUID userId, String ratingId) throws IOException, SQLException {
+    public String unlikeRating(UUID userId, UUID ratingId) throws IOException, SQLException {
         return  "Will be implemented soon";
     }
 
@@ -27,11 +27,11 @@ public class RatingService {
         return "Will be implemented soon";
     }
 
-    public String updateRating(UUID userId, String ratingId) throws IOException, SQLException {
+    public String updateRating(UUID userId, UUID ratingId) throws IOException, SQLException {
        return "Will be implemented soon";
     }
 
-    public String deleteRating(UUID userId, String ratingId) throws IOException, SQLException {
+    public String deleteRating(UUID userId, UUID ratingId) throws IOException, SQLException {
         return "Will be implemented soon";
     }
 

@@ -11,61 +11,69 @@
 			"name": "01_Authentication",
 			"item": [
 				{
-					"name": "Login - correct credentials",
+					"name": "Register - new user (valid)",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
 									"//1. Status code should be 201",
-									"pm.test(\"Status code is 201\", function () {",
+									"pm.test(\"Status code is 201 for successful registration\", function () {",
 									"    pm.response.to.have.status(201);",
 									"});",
 									"",
-									"//2. Response body is valid JSON",
-									"pm.test(\"Response body is valid JSON\", function () {",
-									"    pm.expect(function () {",
-									"        pm.response.json();",
-									"    }).to.not.throw();",
+									"//2. Response body should contain a success message or user info",
+									"pm.test(\"Response body contains success message or user info\", function () {",
+									"    let jsonData = {};",
+									"    try {",
+									"        jsonData = pm.response.json();",
+									"    } catch (e) {",
+									"        pm.expect.fail(\"Response is not valid JSON\");",
+									"    }",
+									"    pm.expect(jsonData).to.be.an(\"object\");",
+									"    pm.expect(Object.keys(jsonData).length).to.be.above(0);",
 									"});",
 									"",
-									"//3. Response contains 'message' key with correct value",
-									"pm.test(\"Response contains 'message' key with value 'User logged in successfully'\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('message', 'User logged in successfully');",
+									"//3. Response should not contain an error property",
+									"pm.test(\"No error property in response body\", function () {",
+									"    let jsonData = {};",
+									"    try {",
+									"        jsonData = pm.response.json();",
+									"    } catch (e) {}",
+									"    pm.expect(jsonData).to.not.have.property(\"error\");",
 									"});",
 									"",
-									"//4. Response contains 'token' key",
-									"pm.test(\"Response contains 'token' key\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('token');",
+									"//4. Response contains user id, message and username as properties",
+									"pm.test(\"Response contains id, message, and username\", function () {",
+									"    let jsonData = {};",
+									"    try {",
+									"        jsonData = pm.response.json();",
+									"    } catch (e) {",
+									"        pm.expect.fail(\"Response is not valid JSON\");",
+									"    }",
+									"    pm.expect(jsonData).to.have.property(\"userId\");",
+									"    pm.expect(jsonData).to.have.property(\"message\");",
+									"    pm.expect(jsonData).to.have.property(\"username\");",
 									"});",
 									"",
-									"//5. Token is a non-empty string and contains dashes (= basic UUID check)",
-									"pm.test(\"Token is a non-empty string and contains dashes (= basic UUID check)\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.token).to.be.a('string').and.not.empty;",
-									"    pm.expect(jsonData.token).to.include('-');",
+									"//5. Message must exactly match 'User registered successfully'",
+									"pm.test(\"Message is exactly 'User registered successfully'\", function () {",
+									"    let jsonData = {};",
+									"    try {",
+									"        jsonData = pm.response.json();",
+									"    } catch (e) {",
+									"        pm.expect.fail(\"Response is not valid JSON\");",
+									"    }",
+									"    pm.expect(jsonData).to.have.property(\"message\");",
+									"    pm.expect(jsonData.message).to.eql(\"User registered successfully\");",
 									"});",
-									"",
 									"",
 									"//Save token to collection for later access/requests",
 									"const jsonData = pm.response.json();",
 									"",
-									"if (jsonData.token) {",
-									"    pm.collectionVariables.set(\"authToken\", jsonData.token);",
-									"    pm.collectionVariables.set(\"userId\", jsonData.userId);",
-									"}"
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
+									"if (jsonData.username) {",
+									"    pm.collectionVariables.set(\"username\", jsonData.username);",
+									"}",
 									""
 								],
 								"type": "text/javascript",
@@ -79,7 +87,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"Max\",\r\n    \"password\": \"1234ABcsg!!_\"\r\n}",
+							"raw": "{\r\n    \"username\": \"user{{$timestamp}}\",\r\n    \"password\": \"1234xxC4ABcsg!!_\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -87,418 +95,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8000/login",
+							"raw": "http://localhost:8000/register",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8000",
 							"path": [
-								"login"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Login - wrong password",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"//1. Status code should be 400",
-									"pm.test(\"Status code is 400\", function () {",
-									"    pm.response.to.have.status(400);",
-									"});",
-									"",
-									"//2. Response body is valid JSON",
-									"pm.test(\"Response body is valid JSON\", function () {",
-									"    pm.expect(function () {",
-									"        pm.response.json();",
-									"    }).to.not.throw();",
-									"});",
-									"",
-									"//3. Response contains 'error' key with correct value",
-									"pm.test(\"Response contains 'error' key with value 'Invalid password'\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('error', 'Invalid password');",
-									"});",
-									"",
-									"//4. Response doesn't contain 'token' key",
-									"pm.test(\"Response does NOT contain 'token' key when password is invalid\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.not.have.property('token');",
-									"});",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"Max\",\r\n    \"password\": \"TestTest123!!_\"\r\n}"
-						},
-						"url": {
-							"raw": "http://localhost:8000/login",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8000",
-							"path": [
-								"login"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Login - wrong credentials",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"//1. Status code should be 400",
-									"pm.test(\"Status code is 400\", function () {",
-									"    pm.response.to.have.status(400);",
-									"});",
-									"",
-									"//2. Response body is valid JSON",
-									"pm.test(\"Response body is valid JSON\", function () {",
-									"    pm.expect(function () {",
-									"        pm.response.json();",
-									"    }).to.not.throw();",
-									"});",
-									"",
-									"//3. Response contains 'error' key with correct value",
-									"pm.test(\"Response contains 'error' key with correct value\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('error', 'Invalid username or password');",
-									"});",
-									"",
-									"//4. Response doesn't contain 'token' key",
-									"pm.test(\"Response does NOT contain 'token' key\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.not.have.property('token');",
-									"});",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"Sabine\",\r\n    \"password\": \"TestTest123!!_\"\r\n}"
-						},
-						"url": {
-							"raw": "http://localhost:8000/login",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8000",
-							"path": [
-								"login"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Login - missing username",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"//1. Status code should be 400",
-									"pm.test(\"Status code is 400\", function () {",
-									"    pm.response.to.have.status(400);",
-									"});",
-									"",
-									"//2. Response body is valid JSON",
-									"pm.test(\"Response body is valid JSON\", function () {",
-									"    pm.expect(function () {",
-									"        pm.response.json();",
-									"    }).to.not.throw();",
-									"});",
-									"",
-									"//3. Rresponse contains an 'error' key with correct value",
-									"pm.test(\"Response contains 'error' key with correct value\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('error', 'Username needs to be entered');",
-									"});",
-									"",
-									"//4. Response doesn't contain 'token' key",
-									"pm.test(\"Response does NOT contain 'token' key\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.not.have.property('token');",
-									"});",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"\",\r\n    \"password\": \"TestTest123!!_\"\r\n}"
-						},
-						"url": {
-							"raw": "http://localhost:8000/login",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8000",
-							"path": [
-								"login"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Login - missing password",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"//1. Status code should be 400",
-									"pm.test(\"Status code is 400\", function () {",
-									"    pm.response.to.have.status(400);",
-									"});",
-									"",
-									"//2. Response body is valid JSON",
-									"pm.test(\"Response body is valid JSON\", function () {",
-									"    pm.expect(function () {",
-									"        JSON.parse(pm.response.text());",
-									"    }).to.not.throw();",
-									"});",
-									"",
-									"//3. Response contains 'error' key with correct value",
-									"pm.test(\"Response contains 'error' key with correct value\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('error', 'Password needs to be entered');",
-									"});",
-									"",
-									"//4. Response doesn't contain 'token' key",
-									"pm.test(\"Response does NOT contain 'token' key\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.not.have.property('token');",
-									"});",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"Max\",\r\n    \"password\": \"\"\r\n}"
-						},
-						"url": {
-							"raw": "http://localhost:8000/login",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8000",
-							"path": [
-								"login"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Login - missing credentials",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"//1. Status code should be 400",
-									"pm.test(\"Status code is 400 for missing credentials\", function () {",
-									"    pm.response.to.have.status(400);",
-									"});",
-									"",
-									"//2. Response body is valid JSON",
-									"pm.test(\"Response body is valid JSON\", function () {",
-									"    pm.expect(function () {",
-									"        JSON.parse(pm.response.text());",
-									"    }).to.not.throw();",
-									"});",
-									"",
-									"//3. Error message should mention missing credentials",
-									"pm.test(\"Error message indicates missing credentials\", function () {",
-									"    var jsonData = {};",
-									"    try {",
-									"        jsonData = pm.response.json();",
-									"    } catch (e) {}",
-									"    pm.expect(jsonData).to.have.property(\"error\");",
-									"    pm.expect(jsonData.error.toLowerCase()).to.satisfy(function(msg) {",
-									"        return msg.includes(\"username\") || msg.includes(\"credential\");",
-									"    });",
-									"});",
-									"",
-									"//4. Error message must exactly match \"Username needs to be entered\"",
-									"pm.test(\"Error message is exactly 'Username needs to be entered'\", function () {",
-									"    var jsonData = {};",
-									"    try {",
-									"        jsonData = pm.response.json();",
-									"    } catch (e) {}",
-									"    pm.expect(jsonData).to.have.property(\"error\");",
-									"    pm.expect(jsonData.error).to.eql(\"Username needs to be entered\");",
-									"});",
-									"",
-									"//5. No token should be present in response body",
-									"pm.test(\"No token present in response body\", function () {",
-									"    var jsonData = {};",
-									"    try {",
-									"        jsonData = pm.response.json();",
-									"    } catch (e) {}",
-									"    pm.expect(jsonData).to.not.have.property(\"token\");",
-									"});",
-									"",
-									"//5. No token present in response headers",
-									"pm.test(\"No token present in response headers\", function () {",
-									"    var tokenHeader = pm.response.headers.get(\"token\") || pm.response.headers.get(\"authorization\");",
-									"    pm.expect(tokenHeader).to.be.undefined;",
-									"});",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"\",\r\n    \"password\": \"\"\r\n}"
-						},
-						"url": {
-							"raw": "http://localhost:8000/login",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8000",
-							"path": [
-								"login"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Login - invalid JSON",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"//1. Status code should be 400 or 422",
-									"pm.test(\"Status code is 400 or 422 for invalid JSON\", function () {",
-									"    pm.expect(pm.response.code).to.be.oneOf([400, 422, 500]); //500 -> if backend returns it for parse errors",
-									"});",
-									"",
-									"//2. Response body should contain an error property",
-									"pm.test(\"Response body contains error property\", function () {",
-									"    let jsonData = {};",
-									"    try {",
-									"        jsonData = pm.response.json();",
-									"    } catch (e) {",
-									"        pm.expect.fail(\"Response is not valid JSON\");",
-									"    }",
-									"    pm.expect(jsonData).to.have.property(\"error\");",
-									"});",
-									"",
-									"//3. Error message must exactly match \"Invalid JSON format\"",
-									"pm.test(\"Error message is exactly 'Invalid JSON format'\", function () {",
-									"    let jsonData = {};",
-									"    try {",
-									"        jsonData = pm.response.json();",
-									"    } catch (e) {",
-									"        pm.expect.fail(\"Response is not valid JSON\");",
-									"    }",
-									"    pm.expect(jsonData.error).to.eql(\"Invalid JSON format\");",
-									"});",
-									"",
-									"//4. Error message should mention invalid JSON or parse error",
-									"pm.test(\"Error message indicates invalid JSON or parse error\", function () {",
-									"    let jsonData = {};",
-									"    try {",
-									"        jsonData = pm.response.json();",
-									"    } catch (e) {",
-									"        pm.expect.fail(\"Response is not valid JSON\");",
-									"    }",
-									"    pm.expect(jsonData.error.toLowerCase()).to.satisfy(function(msg) {",
-									"        return msg.includes(\"json\") || msg.includes(\"parse\") || msg.includes(\"syntax\") || msg.includes(\"invalid\");",
-									"    });",
-									"});",
-									"",
-									"//5. No token should be present in response body",
-									"pm.test(\"No token present in response body\", function () {",
-									"    let jsonData = {};",
-									"    try {",
-									"        jsonData = pm.response.json();",
-									"    } catch (e) {}",
-									"    pm.expect(jsonData).to.not.have.property(\"token\");",
-									"});",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"Max\",\r\n    password: \"TestTest123!!_\"\r\n//Missing \"\" and }\r\n"
-						},
-						"url": {
-							"raw": "http://localhost:8000/login",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8000",
-							"path": [
-								"login"
+								"register"
 							]
 						}
 					},
@@ -559,98 +163,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"Max\",\r\n    \"password\": \"1234ABcsg!!_\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:8000/register",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8000",
-							"path": [
-								"register"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Register - new user (valid)",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"//1. Status code should be 201",
-									"pm.test(\"Status code is 201 for successful registration\", function () {",
-									"    pm.response.to.have.status(201);",
-									"});",
-									"",
-									"//2. Response body should contain a success message or user info",
-									"pm.test(\"Response body contains success message or user info\", function () {",
-									"    let jsonData = {};",
-									"    try {",
-									"        jsonData = pm.response.json();",
-									"    } catch (e) {",
-									"        pm.expect.fail(\"Response is not valid JSON\");",
-									"    }",
-									"    pm.expect(jsonData).to.be.an(\"object\");",
-									"    pm.expect(Object.keys(jsonData).length).to.be.above(0);",
-									"});",
-									"",
-									"//3. Response should not contain an error property",
-									"pm.test(\"No error property in response body\", function () {",
-									"    let jsonData = {};",
-									"    try {",
-									"        jsonData = pm.response.json();",
-									"    } catch (e) {}",
-									"    pm.expect(jsonData).to.not.have.property(\"error\");",
-									"});",
-									"",
-									"//4. Response contains user id, message and username as properties",
-									"pm.test(\"Response contains id, message, and username\", function () {",
-									"    let jsonData = {};",
-									"    try {",
-									"        jsonData = pm.response.json();",
-									"    } catch (e) {",
-									"        pm.expect.fail(\"Response is not valid JSON\");",
-									"    }",
-									"    pm.expect(jsonData).to.have.property(\"userId\");",
-									"    pm.expect(jsonData).to.have.property(\"message\");",
-									"    pm.expect(jsonData).to.have.property(\"username\");",
-									"});",
-									"",
-									"//5. Message must exactly match 'User registered successfully'",
-									"pm.test(\"Message is exactly 'User registered successfully'\", function () {",
-									"    let jsonData = {};",
-									"    try {",
-									"        jsonData = pm.response.json();",
-									"    } catch (e) {",
-									"        pm.expect.fail(\"Response is not valid JSON\");",
-									"    }",
-									"    pm.expect(jsonData).to.have.property(\"message\");",
-									"    pm.expect(jsonData.message).to.eql(\"User registered successfully\");",
-									"});",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"user{{$timestamp}}\",\r\n    \"password\": \"1234xxC4ABcsg!!_\"\r\n}",
+							"raw": "{\r\n    \"username\": \"{{username}}\",\r\n    \"password\": \"1234ABcsg!!_\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1215,6 +728,500 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Login - correct credentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//1. Status code should be 201",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"//2. Response body is valid JSON",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    pm.expect(function () {",
+									"        pm.response.json();",
+									"    }).to.not.throw();",
+									"});",
+									"",
+									"//3. Response contains 'message' key with correct value",
+									"pm.test(\"Response contains 'message' key with value 'User logged in successfully'\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message', 'User logged in successfully');",
+									"});",
+									"",
+									"//4. Response contains 'token' key",
+									"pm.test(\"Response contains 'token' key\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('token');",
+									"});",
+									"",
+									"//5. Token is a non-empty string and contains dashes (= basic UUID check)",
+									"pm.test(\"Token is a non-empty string and contains dashes (= basic UUID check)\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.token).to.be.a('string').and.not.empty;",
+									"    pm.expect(jsonData.token).to.include('-');",
+									"});",
+									"",
+									"",
+									"//Save token to collection for later access/requests",
+									"const jsonData = pm.response.json();",
+									"",
+									"if (jsonData.token) {",
+									"    pm.collectionVariables.set(\"authToken\", jsonData.token);",
+									"    pm.collectionVariables.set(\"userId\", jsonData.userId);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"{{username}}\",\r\n    \"password\": \"1234xxC4ABcsg!!_\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login - wrong password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//1. Status code should be 400",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"//2. Response body is valid JSON",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    pm.expect(function () {",
+									"        pm.response.json();",
+									"    }).to.not.throw();",
+									"});",
+									"",
+									"//3. Response contains 'error' key with correct value",
+									"pm.test(\"Response contains 'error' key with value 'Invalid password'\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error', 'Invalid password');",
+									"});",
+									"",
+									"//4. Response doesn't contain 'token' key",
+									"pm.test(\"Response does NOT contain 'token' key when password is invalid\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.not.have.property('token');",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"{{username}}\",\r\n    \"password\": \"TestTest123!!_\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login - wrong credentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//1. Status code should be 400",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"//2. Response body is valid JSON",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    pm.expect(function () {",
+									"        pm.response.json();",
+									"    }).to.not.throw();",
+									"});",
+									"",
+									"//3. Response contains 'error' key with correct value",
+									"pm.test(\"Response contains 'error' key with correct value\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error', 'Invalid username or password');",
+									"});",
+									"",
+									"//4. Response doesn't contain 'token' key",
+									"pm.test(\"Response does NOT contain 'token' key\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.not.have.property('token');",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"Sabine\",\r\n    \"password\": \"TestTest123!!_\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login - missing username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//1. Status code should be 400",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"//2. Response body is valid JSON",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    pm.expect(function () {",
+									"        pm.response.json();",
+									"    }).to.not.throw();",
+									"});",
+									"",
+									"//3. Rresponse contains an 'error' key with correct value",
+									"pm.test(\"Response contains 'error' key with correct value\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error', 'Username needs to be entered');",
+									"});",
+									"",
+									"//4. Response doesn't contain 'token' key",
+									"pm.test(\"Response does NOT contain 'token' key\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.not.have.property('token');",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"\",\r\n    \"password\": \"TestTest123!!_\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login - missing password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//1. Status code should be 400",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"//2. Response body is valid JSON",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    pm.expect(function () {",
+									"        JSON.parse(pm.response.text());",
+									"    }).to.not.throw();",
+									"});",
+									"",
+									"//3. Response contains 'error' key with correct value",
+									"pm.test(\"Response contains 'error' key with correct value\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error', 'Password needs to be entered');",
+									"});",
+									"",
+									"//4. Response doesn't contain 'token' key",
+									"pm.test(\"Response does NOT contain 'token' key\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.not.have.property('token');",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"{{username}}\",\r\n    \"password\": \"\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login - missing credentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//1. Status code should be 400",
+									"pm.test(\"Status code is 400 for missing credentials\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"//2. Response body is valid JSON",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    pm.expect(function () {",
+									"        JSON.parse(pm.response.text());",
+									"    }).to.not.throw();",
+									"});",
+									"",
+									"//3. Error message should mention missing credentials",
+									"pm.test(\"Error message indicates missing credentials\", function () {",
+									"    var jsonData = {};",
+									"    try {",
+									"        jsonData = pm.response.json();",
+									"    } catch (e) {}",
+									"    pm.expect(jsonData).to.have.property(\"error\");",
+									"    pm.expect(jsonData.error.toLowerCase()).to.satisfy(function(msg) {",
+									"        return msg.includes(\"username\") || msg.includes(\"credential\");",
+									"    });",
+									"});",
+									"",
+									"//4. Error message must exactly match \"Username needs to be entered\"",
+									"pm.test(\"Error message is exactly 'Username needs to be entered'\", function () {",
+									"    var jsonData = {};",
+									"    try {",
+									"        jsonData = pm.response.json();",
+									"    } catch (e) {}",
+									"    pm.expect(jsonData).to.have.property(\"error\");",
+									"    pm.expect(jsonData.error).to.eql(\"Username needs to be entered\");",
+									"});",
+									"",
+									"//5. No token should be present in response body",
+									"pm.test(\"No token present in response body\", function () {",
+									"    var jsonData = {};",
+									"    try {",
+									"        jsonData = pm.response.json();",
+									"    } catch (e) {}",
+									"    pm.expect(jsonData).to.not.have.property(\"token\");",
+									"});",
+									"",
+									"//5. No token present in response headers",
+									"pm.test(\"No token present in response headers\", function () {",
+									"    var tokenHeader = pm.response.headers.get(\"token\") || pm.response.headers.get(\"authorization\");",
+									"    pm.expect(tokenHeader).to.be.undefined;",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"\",\r\n    \"password\": \"\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login - invalid JSON",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//1. Status code should be 400 or 422",
+									"pm.test(\"Status code is 400 or 422 for invalid JSON\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 422, 500]); //500 -> if backend returns it for parse errors",
+									"});",
+									"",
+									"//2. Response body should contain an error property",
+									"pm.test(\"Response body contains error property\", function () {",
+									"    let jsonData = {};",
+									"    try {",
+									"        jsonData = pm.response.json();",
+									"    } catch (e) {",
+									"        pm.expect.fail(\"Response is not valid JSON\");",
+									"    }",
+									"    pm.expect(jsonData).to.have.property(\"error\");",
+									"});",
+									"",
+									"//3. Error message must exactly match \"Invalid JSON format\"",
+									"pm.test(\"Error message is exactly 'Invalid JSON format'\", function () {",
+									"    let jsonData = {};",
+									"    try {",
+									"        jsonData = pm.response.json();",
+									"    } catch (e) {",
+									"        pm.expect.fail(\"Response is not valid JSON\");",
+									"    }",
+									"    pm.expect(jsonData.error).to.eql(\"Invalid JSON format\");",
+									"});",
+									"",
+									"//4. Error message should mention invalid JSON or parse error",
+									"pm.test(\"Error message indicates invalid JSON or parse error\", function () {",
+									"    let jsonData = {};",
+									"    try {",
+									"        jsonData = pm.response.json();",
+									"    } catch (e) {",
+									"        pm.expect.fail(\"Response is not valid JSON\");",
+									"    }",
+									"    pm.expect(jsonData.error.toLowerCase()).to.satisfy(function(msg) {",
+									"        return msg.includes(\"json\") || msg.includes(\"parse\") || msg.includes(\"syntax\") || msg.includes(\"invalid\");",
+									"    });",
+									"});",
+									"",
+									"//5. No token should be present in response body",
+									"pm.test(\"No token present in response body\", function () {",
+									"    let jsonData = {};",
+									"    try {",
+									"        jsonData = pm.response.json();",
+									"    } catch (e) {}",
+									"    pm.expect(jsonData).to.not.have.property(\"token\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"Max\",\r\n    password: \"TestTest123!!_\"\r\n//Missing \"\" and }\r\n"
+						},
+						"url": {
+							"raw": "http://localhost:8000/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -1284,9 +1291,9 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"//1.) Status code should be 201",
-									"pm.test(\"Status code is 201\", function () {",
-									"    pm.response.to.have.status(201);",
+									"//1.) Status code should be 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
 									"});",
 									"",
 									"//2.) Response body must contain all expected keys",
@@ -1411,9 +1418,9 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"//1.) Status code should be 201",
-									"pm.test(\"Status code is 201\", function () {",
-									"    pm.response.to.have.status(201);",
+									"//1.) Status code should be 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
 									"});",
 									"",
 									"//2.) Response body must contain all expected keys",
@@ -1531,9 +1538,9 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"//1.) Status code should be 201",
-									"pm.test(\"Status code is 201\", function () {",
-									"    pm.response.to.have.status(201);",
+									"//1.) Status code should be 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
 									"});",
 									"",
 									"//2.) Response body must contain all expected keys",
@@ -2070,7 +2077,7 @@
 									"",
 									"//2.) Response body must contain a success message",
 									"pm.test(\"Response contains success message\", function () {",
-									"    pm.expect(jsonData).to.have.property(\"message\", \"MediaEntry updated successfully\");",
+									"    pm.expect(jsonData).to.have.property(\"message\", \"Media entry updated successfully\");",
 									"});",
 									"",
 									"//3.) Response body must contain a mediaentry object",
@@ -2120,7 +2127,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n        \"title\": \"UPDATED - Eclipse Chronicles\",\r\n        \"description\": \"In einer Welt, in der die Sonne verschwunden ist, müssen Überlebende die Geheimnisse einer alten Zivilisation entschlüsseln, um das Licht zurückzubringen. Doch dunkle Mächte sind ihnen stets einen Schritt voraus.\",\r\n        \"type\": \"SERIES\",\r\n        \"releaseYear\": 2024,\r\n        \"ageRestriction\": 18,\r\n        \"genres\": [\r\n            \"SCI_FI\",\r\n            \"DRAMA\"\r\n        ],\r\n        \"creator\": \"0199f924-0d4e-742d-9903-592899ae526c\"\r\n    }",
+							"raw": "{\r\n        \"title\": \"UPDATED - Eclipse Chronicles\",\r\n        \"description\": \"In einer Welt, in der die Sonne verschwunden ist, müssen Überlebende die Geheimnisse einer alten Zivilisation entschlüsseln, um das Licht zurückzubringen. Doch dunkle Mächte sind ihnen stets einen Schritt voraus.\",\r\n        \"type\": \"SERIES\",\r\n        \"releaseYear\": 2024,\r\n        \"ageRestriction\": 18,\r\n        \"genres\": [\r\n            \"SCI_FI\",\r\n            \"DRAMA\"\r\n        ],\r\n        \"creator\": \"{{userId}}\"\r\n    }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2352,7 +2359,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8000/mediaEntry/123FALSCH?Authentication=Bearer {{authToken}}",
+							"raw": "http://localhost:8000/mediaEntry/019a5eda-805e-746a-ae00-3836e8bc82d1?Authentication=Bearer {{authToken}}",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2360,7 +2367,7 @@
 							"port": "8000",
 							"path": [
 								"mediaEntry",
-								"123FALSCH"
+								"019a5eda-805e-746a-ae00-3836e8bc82d1"
 							],
 							"query": [
 								{
@@ -2393,8 +2400,8 @@
 									"}",
 									"",
 									"//2.) Check if the response contains the expected 'message' property with the correct value.",
-									"pm.test(\"Response has 'message' property with value 'MediaEntry deleted successfully'\", function () {",
-									"    pm.expect(jsonData).to.have.property(\"message\", \"MediaEntry deleted successfully\");",
+									"pm.test(\"Response has 'message' property with value 'Media entry deleted successfully'\", function () {",
+									"    pm.expect(jsonData).to.have.property(\"message\", \"Media entry deleted successfully\");",
 									"});",
 									"",
 									"//3.) Check if the response does not contain the 'error' property.",
@@ -2464,7 +2471,7 @@
 									"",
 									"//2.) Check that the response body contains the correct error message.",
 									"pm.test(\"Response has 'error' property with correct value\", function () {",
-									"    pm.expect(jsonData).to.have.property('error', 'MediaEntry not found');",
+									"    pm.expect(jsonData).to.have.property('error', 'Media entry not found');",
 									"});",
 									"",
 									"//3.) Response does NOT include 'userId' property",
@@ -2659,7 +2666,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8000/mediaEntry/123FALSCH",
+							"raw": "http://localhost:8000/mediaEntry/019a5eda-805e-746a-ae00-3836e8bc82d1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2667,7 +2674,7 @@
 							"port": "8000",
 							"path": [
 								"mediaEntry",
-								"123FALSCH"
+								"019a5eda-805e-746a-ae00-3836e8bc82d1"
 							]
 						}
 					},
@@ -2742,6 +2749,73 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "03_Favorites",
+			"item": [
+				{
+					"name": "add existing to favorites - successful",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8000/mediaEntry/{{mediaEntryId}}/favorite",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"mediaEntry",
+								"{{mediaEntryId}}",
+								"favorite"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete favorite - successful",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8000/mediaEntry/{{mediaEntryId}}/favorite",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"mediaEntry",
+								"{{mediaEntryId}}",
+								"favorite"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
@@ -2783,6 +2857,10 @@
 		},
 		{
 			"key": "mediaEntryId_delete",
+			"value": ""
+		},
+		{
+			"key": "username",
 			"value": ""
 		}
 	]

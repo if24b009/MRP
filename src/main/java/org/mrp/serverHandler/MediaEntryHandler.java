@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 import org.mrp.model.MediaEntry;
 import org.mrp.service.MediaEntryService;
 import org.mrp.utils.JsonHelper;
+import org.mrp.utils.PathParameterExtraction;
 import org.mrp.utils.TokenValidation;
 
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.util.UUID;
 public class MediaEntryHandler implements HttpHandler {
     MediaEntryService mediaEntryService = new MediaEntryService();
     TokenValidation tokenValidation = new TokenValidation();
+    PathParameterExtraction pathParameterExtraction = new PathParameterExtraction();
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -31,7 +33,7 @@ public class MediaEntryHandler implements HttpHandler {
                 return;
             }
 
-            String mediaEntryId = extractMediaEntryId(exchange, path);
+            UUID mediaEntryId = pathParameterExtraction.extractId(exchange, path);
 
             //Favorites
             if (path.endsWith("/favorite")) {
@@ -85,7 +87,7 @@ public class MediaEntryHandler implements HttpHandler {
         }
     }
 
-    private void handleUpdateMediaEntry(HttpExchange exchange, UUID userId, String mediaEntryId) throws IOException, SQLException {
+    private void handleUpdateMediaEntry(HttpExchange exchange, UUID userId, UUID mediaEntryId) throws IOException, SQLException {
         MediaEntry mediaEntry = parseRequestOrSendError(exchange, MediaEntry.class);
         if (mediaEntry == null) return;
 
@@ -105,22 +107,5 @@ public class MediaEntryHandler implements HttpHandler {
             JsonHelper.sendError(exchange, 400, "Invalid request");
             return null;
         }
-    }
-
-    //Helper to get the media entry id from the path and parse uuid safely
-    private String extractMediaEntryId(HttpExchange exchange, String path) throws IOException {
-        //Extract id from paths like /mediaEntry/{id}/update
-        String[] parts = path.split("/");
-        //parts: ["", "mediaEntry", "{id}", ...]
-        String uuid = parts.length > 2 ? parts[2] : "";
-        try {
-            if (uuid != null && !uuid.isEmpty()) {
-                UUID.fromString(uuid);
-            }
-        } catch (IllegalArgumentException e) {
-            //throw new IllegalArgumentException();
-            JsonHelper.sendError(exchange, 400, "Invalid UUID format");
-        }
-        return uuid;
     }
 }

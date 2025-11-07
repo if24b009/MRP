@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.mrp.service.UserService;
 import org.mrp.utils.JsonHelper;
+import org.mrp.utils.PathParameterExtraction;
 import org.mrp.utils.TokenValidation;
 
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.util.UUID;
 public class UserHandler implements HttpHandler {
     UserService userService = new UserService();
     TokenValidation tokenValidation = new TokenValidation();
+    PathParameterExtraction pathParameterExtraction = new PathParameterExtraction();
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -27,7 +29,7 @@ public class UserHandler implements HttpHandler {
                 return;
             }
 
-            String username = extractUsername(path);
+            String username = pathParameterExtraction.extractUsername(path);
 
             if (path.endsWith("/profile") && HttpMethod.GET.name().equals(usedMethod)) {
                 String message = userService.getProfile(username);
@@ -57,13 +59,5 @@ public class UserHandler implements HttpHandler {
         } catch (Exception e) {
             JsonHelper.sendError(exchange, 500, "Internal server error");
         }
-    }
-
-    //Helperfunction to get the Username id from the path
-    private String extractUsername(String path) {
-        //Extract id from paths like /users/{username}/update
-        String[] parts = path.split("/");
-        //parts: ["", "users", "{username}", ...]
-        return parts.length > 2 ? parts[2] : "";
     }
 }

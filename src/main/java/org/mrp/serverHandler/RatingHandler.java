@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.mrp.service.RatingService;
 import org.mrp.utils.JsonHelper;
+import org.mrp.utils.PathParameterExtraction;
 import org.mrp.utils.TokenValidation;
 
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.util.UUID;
 public class RatingHandler implements HttpHandler {
     RatingService ratingService = new RatingService();
     TokenValidation tokenValidation = new TokenValidation();
+    PathParameterExtraction pathParameterExtraction = new PathParameterExtraction();
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -27,7 +29,7 @@ public class RatingHandler implements HttpHandler {
                 return;
             }
 
-            String ratingId = extractRatingId(path);
+            UUID ratingId = pathParameterExtraction.extractId(exchange, path);
 
             if (path.endsWith("/confirm") && HttpMethod.PUT.name().equals(usedMethod)) {
                 String message = ratingService.confirmComment(userId, ratingId);
@@ -69,13 +71,5 @@ public class RatingHandler implements HttpHandler {
         } catch (Exception e) {
             JsonHelper.sendError(exchange, 500, "Internal server error");
         }
-    }
-
-    //Helperfunction to get the mediaEntry id from the path
-    private String extractRatingId(String path) {
-        //Extract id from paths like /rating/{id}
-        String[] parts = path.split("/");
-        //parts: ["", "rating", "{id}", ...]
-        return parts.length > 2 ? parts[2] : "";
     }
 }

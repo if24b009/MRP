@@ -51,9 +51,9 @@ public class MediaEntryService {
         return response;
     }
 
-    public Map<String, Object> updateMediaEntry(MediaEntry mediaEntry, UUID userId, String mediaEntryId) throws IOException, SQLException {
+    public Map<String, Object> updateMediaEntry(MediaEntry mediaEntry, UUID userId, UUID mediaEntryId) throws IOException, SQLException {
         //Check if user = creator
-        Object creatorId_object = mediaEntryRepository.getCreatorObject(UUID.fromString(mediaEntryId));
+        Object creatorId_object = mediaEntryRepository.getCreatorObject(mediaEntryId);
         if (creatorId_object == null) {
             throw new NoSuchElementException("Media entry not found");
         }
@@ -64,11 +64,11 @@ public class MediaEntryService {
         }
 
         //Update MediaEntry
-        int updated = mediaEntryRepository.update(new MediaEntryTO(UUID.fromString(mediaEntryId), mediaEntry.getTitle(), mediaEntry.getDescription(), mediaEntry.getType(), mediaEntry.getReleaseYear(), mediaEntry.getAgeRestriction(), mediaEntry.getGenres(), userId));
+        int updated = mediaEntryRepository.update(new MediaEntryTO(mediaEntryId, mediaEntry.getTitle(), mediaEntry.getDescription(), mediaEntry.getType(), mediaEntry.getReleaseYear(), mediaEntry.getAgeRestriction(), mediaEntry.getGenres(), userId));
         if (updated == 0) {
             throw new RuntimeException("Failed to update media entry");
         }
-        mediaEntry.setId(UUID.fromString(mediaEntryId));
+        mediaEntry.setId(mediaEntryId);
 
         //Response
         Map<String, Object> response = new HashMap<>();
@@ -135,9 +135,9 @@ public class MediaEntryService {
     }
 
 
-    public String deleteMediaEntry(UUID userId, String mediaEntryId) throws IOException, SQLException {
+    public String deleteMediaEntry(UUID userId, UUID mediaEntryId) throws IOException, SQLException {
         //Check if user = creator
-        Object creatorId_object = mediaEntryRepository.getCreatorObject(UUID.fromString(mediaEntryId));
+        Object creatorId_object = mediaEntryRepository.getCreatorObject(mediaEntryId);
         if (creatorId_object == null) {
             throw new NoSuchElementException("Media entry not found");
         }
@@ -147,7 +147,7 @@ public class MediaEntryService {
         }
 
         //Delete mediaEntry (cascades to ratings, favorites, ...)
-        int deleted = mediaEntryRepository.delete(UUID.fromString(mediaEntryId));
+        int deleted = mediaEntryRepository.delete(mediaEntryId);
 
         if (deleted == 0) {
             throw new RuntimeException("Failed to delete media entry");
@@ -160,29 +160,25 @@ public class MediaEntryService {
 
     //Favorites
 
-    public String addFavorite(UUID userId, String mediaEntryId) throws IOException, SQLException {
-        UUID mediaUUID = UUID.fromString(mediaEntryId);
-
+    public String addFavorite(UUID userId, UUID mediaEntryId) throws IOException, SQLException {
         // Check if media exists
-        Object mediaExists = mediaEntryRepository.getCreatorObject(mediaUUID);
+        Object mediaExists = mediaEntryRepository.getCreatorObject(mediaEntryId);
         if (mediaExists == null) {
             throw new NoSuchElementException("Media not found");
         }
 
         // Check if already favorited
-        if (mediaEntryRepository.isFavorite(userId, mediaUUID)) {
+        if (mediaEntryRepository.isFavorite(userId, mediaEntryId)) {
             throw new IllegalArgumentException("Already in favorites");
         }
 
         // Add to favorites
-        mediaEntryRepository.addFavorite(userId, mediaUUID);
+        mediaEntryRepository.addFavorite(userId, mediaEntryId);
         return "Favorite successfully added";
     }
 
-    public String removeFavorite(UUID userId, String mediaEntryId) throws IOException, SQLException {
-        UUID mediaUUID = UUID.fromString(mediaEntryId);
-
-        int deleted = mediaEntryRepository.removeFavorite(userId, mediaUUID);
+    public String removeFavorite(UUID userId, UUID mediaEntryId) throws IOException, SQLException {
+        int deleted = mediaEntryRepository.removeFavorite(userId, mediaEntryId);
         if (deleted > 0) {
             return "Favorite successfully removed";
         } else {
