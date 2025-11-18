@@ -11,7 +11,7 @@ import java.util.*;
 public class UserService {
     private UserRepository userRepository = new UserRepository();
 
-    public String getProfile(String username) throws IOException, SQLException {
+    public String getProfile(String username) throws IOException, SQLException {*
         return "Will be implemented soon";
     }
 
