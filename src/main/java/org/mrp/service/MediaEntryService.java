@@ -1,12 +1,10 @@
 package org.mrp.service;
 
-import com.sun.net.httpserver.HttpExchange;
 import org.mrp.dto.MediaEntryTO;
 import org.mrp.model.Genre;
 import org.mrp.model.MediaEntry;
 import org.mrp.model.MediaEntryType;
 import org.mrp.repository.MediaEntryRepository;
-import org.mrp.utils.JsonHelper;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -96,7 +94,8 @@ public class MediaEntryService {
         return response;
     }
 
-    private MediaEntry mapResultSetToMediaEntry(ResultSet resultSet) throws SQLException {
+    //public -> because reused for user get its favorite media entries
+    public MediaEntry mapResultSetToMediaEntry(ResultSet resultSet) throws SQLException {
         MediaEntry mediaEntry = new MediaEntry();
 
         mediaEntry.setId(mediaEntryRepository.getUUID(resultSet, "id"));

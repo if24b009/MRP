@@ -8,6 +8,8 @@ import org.mrp.utils.PathParameterExtraction;
 import org.mrp.utils.TokenValidation;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 public class UserHandler implements HttpHandler {
@@ -35,8 +37,8 @@ public class UserHandler implements HttpHandler {
                 String message = userService.getProfile(username);
                 JsonHelper.sendSuccess(exchange, message);
             } else if (path.endsWith("/favorites") && HttpMethod.GET.name().equals(usedMethod)) {
-                String message = userService.getFavorites(username);
-                JsonHelper.sendSuccess(exchange, message);
+                Map<String, Object> response = userService.getFavorites(username);
+                JsonHelper.sendResponse(exchange, 200, response);
             } else if (path.endsWith("/ratings") && HttpMethod.GET.name().equals(usedMethod)) {
                 String message = userService.getUserRatings(username, userId);
                 JsonHelper.sendSuccess(exchange, message);
@@ -52,6 +54,8 @@ public class UserHandler implements HttpHandler {
             else {
                 JsonHelper.sendError(exchange, 404, "Endpoint not found");
             }
+        } catch (NoSuchElementException e) {
+            JsonHelper.sendError(exchange, 404, e.getMessage());
         } catch (IllegalArgumentException e) {
             JsonHelper.sendError(exchange, 400, e.getMessage());
         } catch (SecurityException e) {

@@ -1,8 +1,6 @@
 package org.mrp.service;
 
-import com.sun.net.httpserver.HttpExchange;
 import org.mrp.repository.RatingRepository;
-import org.mrp.utils.JsonHelper;
 
 import java.io.IOException;
 import java.sql.SQLException;

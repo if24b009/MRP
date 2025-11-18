@@ -160,12 +160,12 @@ Die Tests werden manuell in Postman ausgeführt.
 | Media-Entry CRUD                        | 18 h    |
 | Ratings + Comments + Likes              |         |
 | Sortieren + Filter                      |         |
-| Favoriten                               |         |
+| Favoriten                               | 5 h     |
 | Empfehlungen                            |         |
 | Leaderboard                             |         |
 | Postman Tests & Debugging               |         |
 | Dokumentation (README & Protocol)       |         |
-| **Gesamt**                              | 43 h    |
+| **Gesamt**                              | 48 h    |
 
 
 ## Probleme & Lösungen

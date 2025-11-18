@@ -1,6 +1,5 @@
 package org.mrp.repository;
 
-import org.mrp.database.Database;
 import org.mrp.model.Genre;
 import org.mrp.model.MediaEntry;
 import org.mrp.dto.MediaEntryTO;
@@ -12,8 +11,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class MediaEntryRepository implements Repository<MediaEntry, MediaEntryTO> {
-    //private Database db = new Database();
-
     public MediaEntryRepository() {
     }
 

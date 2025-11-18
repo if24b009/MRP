@@ -1,6 +1,5 @@
 package org.mrp.repository;
 
-import org.mrp.database.Database;
 import org.mrp.model.User;
 import org.mrp.dto.UserTO;
 
@@ -10,8 +9,6 @@ import java.sql.Timestamp;
 import java.util.UUID;
 
 public class UserRepository implements Repository<User, UserTO> {
-    //private Database db = new Database();
-
     public UserRepository() {
     }
 
@@ -67,11 +64,36 @@ public class UserRepository implements Repository<User, UserTO> {
 
     @Override
     public int delete(UUID id) {
-
         return 0;
     }
 
     public boolean userAlreadyExists(String username) throws SQLException {
         return db.exists("SELECT * FROM app_user WHERE username = ?", username);
+    }
+
+    public ResultSet getFavoriteMediaEntries(UUID userId) throws SQLException {
+        return db.query(
+                """
+                        SELECT
+                            m.*,
+                            STRING_AGG(meg.genre::TEXT, ',') AS genres,
+                            u.username AS creator_username,
+                            COALESCE(AVG(r.stars_ct), 0) AS avg_rating,
+                            COUNT(DISTINCT r.id) AS total_ratings
+                        FROM media_entry m
+                        INNER JOIN favorite f
+                            ON m.id = f.media_entry_id
+                        INNER JOIN app_user u
+                            ON m.creator_id = u.user_id
+                        LEFT JOIN rating r
+                            ON m.id = r.media_entry_id
+                        LEFT JOIN media_entry_genre meg
+                            ON m.id = meg.media_entry_id
+                        WHERE f.user_id = ?
+                        GROUP BY m.id, u.username
+                        ORDER BY m.title ASC;
+                        """,
+                userId
+        );
     }
 }

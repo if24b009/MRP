@@ -1,11 +1,8 @@
 package org.mrp.service;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.sun.net.httpserver.HttpExchange;
 import org.mrp.repository.UserRepository;
 import org.mrp.dto.UserTO;
-import org.mrp.utils.JsonHelper;
 import org.mrp.utils.UUIDGenerator;
 
 import java.io.IOException;

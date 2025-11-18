@@ -1,6 +1,5 @@
 package org.mrp.repository;
 
-import org.mrp.database.Database;
 import org.mrp.model.Rating;
 import org.mrp.dto.RatingTO;
 
@@ -9,8 +8,6 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 public class RatingRepository implements Repository<Rating, RatingTO> {
-    //private Database db = new Database();
-
     public RatingRepository() {
     }
 
