@@ -100,9 +100,9 @@ public class MediaEntryHandler implements HttpHandler {
     }
 
     //Helperfunction to parse the request
-    private <T> T parseRequestOrSendError(HttpExchange exchange, Class<T> clazz) throws IOException {
+    private <T> T parseRequestOrSendError(HttpExchange exchange, Class<T> c) throws IOException {
         try {
-            return JsonHelper.parseRequest(exchange, clazz);
+            return JsonHelper.parseRequest(exchange, c);
         } catch (IOException e) {
             JsonHelper.sendError(exchange, 400, "Invalid request");
             return null;

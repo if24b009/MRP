@@ -161,18 +161,18 @@ public class MediaEntryService {
     //Favorites
 
     public String addFavorite(UUID userId, UUID mediaEntryId) throws IOException, SQLException {
-        // Check if media exists
+        //Check if media exists
         Object mediaExists = mediaEntryRepository.getCreatorObject(mediaEntryId);
         if (mediaExists == null) {
             throw new NoSuchElementException("Media not found");
         }
 
-        // Check if already favorited
+        //Check if already favorited
         if (mediaEntryRepository.isFavorite(userId, mediaEntryId)) {
             throw new IllegalArgumentException("Already in favorites");
         }
 
-        // Add to favorites
+        //Add to favorites
         mediaEntryRepository.addFavorite(userId, mediaEntryId);
         return "Favorite successfully added";
     }
