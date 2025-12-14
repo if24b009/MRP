@@ -8,6 +8,7 @@ import org.mrp.utils.PathParameterExtraction;
 import org.mrp.utils.TokenValidation;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -40,11 +41,11 @@ public class UserHandler implements HttpHandler {
                 Map<String, Object> response = userService.getFavorites(username);
                 JsonHelper.sendResponse(exchange, 200, response);
             } else if (path.endsWith("/ratings") && HttpMethod.GET.name().equals(usedMethod)) {
-                String message = userService.getUserRatings(username, userId);
-                JsonHelper.sendSuccess(exchange, message);
+                Map<String, Object> response = userService.getUserRatings(userId);
+                JsonHelper.sendResponse(exchange, 200, response);
             } else if (path.endsWith("/leaderboard") && HttpMethod.GET.name().equals(usedMethod)) {
-                String message = userService.getLeaderboard();
-                JsonHelper.sendSuccess(exchange, message);
+                List<Map<String, Object>> leaderboard = userService.getLeaderboard();
+                JsonHelper.sendResponse(exchange, 200, leaderboard);
             } else if (path.endsWith("/recommendations") && HttpMethod.GET.name().equals(usedMethod)) {
                 String message = userService.getRecommendations(userId);
                 JsonHelper.sendSuccess(exchange, message);

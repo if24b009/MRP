@@ -31,4 +31,15 @@ public class PathParameterExtraction {
         //parts: ["", "users", "{username}", ...]
         return parts.length > 2 ? parts[2] : "";
     }
+
+    //Helperfunction to parse the request
+    public <T> T parseRequestOrSendError(HttpExchange exchange, Class<T> c) throws IOException {
+        try {
+            return JsonHelper.parseRequest(exchange, c);
+        } catch (IOException e) {
+            JsonHelper.sendError(exchange, 400, "Invalid request");
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

@@ -60,6 +60,13 @@ public class MediaEntryHandler implements HttpHandler {
                 JsonHelper.sendSuccess(exchange, message);
             }
 
+
+            //Ratings to specific Media Entry
+            else if (path.endsWith("/ratings") && HttpMethod.GET.name().equals(usedMethod)) {
+                Map<String, Object> response = mediaEntryService.getMediaEntryRatings(mediaEntryId);
+                JsonHelper.sendResponse(exchange, 200, response);
+            }
+
             //Send Error - Not found
             else {
                 JsonHelper.sendError(exchange, 404, "Endpoint not found");
@@ -76,7 +83,7 @@ public class MediaEntryHandler implements HttpHandler {
     }
 
     private void handleCreateMediaEntry(HttpExchange exchange, UUID userId) throws IOException, SQLException {
-        MediaEntry mediaEntry = parseRequestOrSendError(exchange, MediaEntry.class);
+        MediaEntry mediaEntry = pathParameterExtraction.parseRequestOrSendError(exchange, MediaEntry.class);
         if (mediaEntry == null) return;
 
         try {
@@ -88,7 +95,7 @@ public class MediaEntryHandler implements HttpHandler {
     }
 
     private void handleUpdateMediaEntry(HttpExchange exchange, UUID userId, UUID mediaEntryId) throws IOException, SQLException {
-        MediaEntry mediaEntry = parseRequestOrSendError(exchange, MediaEntry.class);
+        MediaEntry mediaEntry = pathParameterExtraction.parseRequestOrSendError(exchange, MediaEntry.class);
         if (mediaEntry == null) return;
 
         try {
@@ -96,16 +103,6 @@ public class MediaEntryHandler implements HttpHandler {
             JsonHelper.sendResponse(exchange, 200, response);
         } catch (Exception e) {
             throw e; //throw to "main"-handle methode
-        }
-    }
-
-    //Helperfunction to parse the request
-    private <T> T parseRequestOrSendError(HttpExchange exchange, Class<T> c) throws IOException {
-        try {
-            return JsonHelper.parseRequest(exchange, c);
-        } catch (IOException e) {
-            JsonHelper.sendError(exchange, 400, "Invalid request");
-            return null;
         }
     }
 }

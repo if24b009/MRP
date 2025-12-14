@@ -26,7 +26,6 @@ public class MediaEntryRepository implements Repository<MediaEntry, MediaEntryTO
                 object.getCreatorId(),
                 new Timestamp(System.currentTimeMillis())
         );
-
     }
 
     @Override

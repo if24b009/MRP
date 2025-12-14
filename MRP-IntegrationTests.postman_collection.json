@@ -2814,6 +2814,133 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "get user's favorites - successful",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8000/users/{{username}}/favorites",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"users",
+								"{{username}}",
+								"favorites"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "04_Ratings",
+			"item": [
+				{
+					"name": "create successfully",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Save rating_id to collection for later access/requests\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"if (jsonData.rating?.id) {\r",
+									"    pm.collectionVariables.set(\"rating_id\", jsonData.rating.id);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"mediaEntryId\": \"{{mediaEntryId}}\",\r\n  \"stars_ct\": 4,\r\n  \"comment\": \"Sehr guter Film mit starker Story\",\r\n  \"timestamp\": \"2025-12-14T15:30:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create successfully Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating/{{rating_id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating",
+								"{{rating_id}}"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}
@@ -2861,6 +2988,10 @@
 		},
 		{
 			"key": "username",
+			"value": ""
+		},
+		{
+			"key": "rating_id",
 			"value": ""
 		}
 	]

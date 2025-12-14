@@ -2,6 +2,7 @@ package org.mrp.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule; // Import für Java Time Module
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
@@ -15,7 +16,12 @@ public class JsonHelper {
     private static final ObjectMapper mapper = new ObjectMapper();
 
     static {
+        // Konfigurieren des ObjectMappers für die Jackson Java Time Unterstützung
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        // Registrieren des JavaTimeModuls für LocalDateTime und andere Java 8 Zeittypen
+        mapper.registerModule(new JavaTimeModule());
+        // Optional: Verhindern, dass Dattums-Objekte als Timestamps geschrieben werden
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
     // Parse JSON from request body

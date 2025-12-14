@@ -2,12 +2,17 @@ package org.mrp.serverHandler;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import org.mrp.model.Rating;
 import org.mrp.service.RatingService;
 import org.mrp.utils.JsonHelper;
 import org.mrp.utils.PathParameterExtraction;
 import org.mrp.utils.TokenValidation;
+import org.postgresql.util.PSQLException;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 public class RatingHandler implements HttpHandler {
@@ -36,23 +41,21 @@ public class RatingHandler implements HttpHandler {
                 JsonHelper.sendSuccess(exchange, message);
             }
             else if(path.endsWith("/like") && HttpMethod.POST.name().equals(usedMethod)) {
-                String message = ratingService.likeRating(userId, ratingId);
-                JsonHelper.sendSuccess(exchange, message);
+                Map<String, Object> response = ratingService.likeRating(userId, ratingId);
+                JsonHelper.sendResponse(exchange, 200, response);
             }
             else if(path.endsWith("/unlike") && HttpMethod.DELETE.name().equals(usedMethod)) {
-                String message = ratingService.unlikeRating(userId, ratingId);
-                JsonHelper.sendSuccess(exchange, message);
+                Map<String, Object> response = ratingService.unlikeRating(userId, ratingId);
+                JsonHelper.sendResponse(exchange, 200, response);
             }
 
             //Create
             else if (HttpMethod.POST.name().equals(usedMethod)) {
-                String message = ratingService.createRating(userId);
-                JsonHelper.sendSuccess(exchange, message);
+                handleCreateRating(exchange, userId);
             }
             //Update
             else if (HttpMethod.PUT.name().equals(usedMethod)) {
-                String message = ratingService.updateRating(userId, ratingId);
-                JsonHelper.sendSuccess(exchange, message);
+                handleUpdateRating(exchange, userId, ratingId);
             }
             //Delete
             else if (HttpMethod.DELETE.name().equals(usedMethod)) {
@@ -64,12 +67,40 @@ public class RatingHandler implements HttpHandler {
             else {
                 JsonHelper.sendError(exchange, 404, "Endpoint not found");
             }
+        } catch (NoSuchElementException e) {
+            JsonHelper.sendError(exchange, 404, e.getMessage());
         } catch (IllegalArgumentException e) {
             JsonHelper.sendError(exchange, 400, e.getMessage());
         } catch (SecurityException e) {
             JsonHelper.sendError(exchange, 403, e.getMessage());
+        } catch (SQLException e) {
+            JsonHelper.sendError(exchange, 409, e.getMessage());
         } catch (Exception e) {
             JsonHelper.sendError(exchange, 500, "Internal server error");
+        }
+    }
+
+    private void handleCreateRating(HttpExchange exchange, UUID userId) throws IOException, SQLException {
+        Rating rating = pathParameterExtraction.parseRequestOrSendError(exchange, Rating.class);
+        if (rating == null) return;
+
+        try {
+            Map<String, Object> response = ratingService.createRating(rating, userId);
+            JsonHelper.sendResponse(exchange, 200, response);
+        } catch (Exception e) {
+            throw e; //throw to "main"-handle methode
+        }
+    }
+
+    private void handleUpdateRating(HttpExchange exchange, UUID userId, UUID ratingId) throws IOException, SQLException {
+        Rating rating = pathParameterExtraction.parseRequestOrSendError(exchange, Rating.class);
+        if (rating == null) return;
+
+        try {
+            Map<String, Object> response = ratingService.updateRating(rating, userId, ratingId);
+            JsonHelper.sendResponse(exchange, 200, response);
+        } catch (Exception e) {
+            throw e; //throw to "main"-handle methode
         }
     }
 }

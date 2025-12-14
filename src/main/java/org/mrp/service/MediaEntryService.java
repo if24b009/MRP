@@ -2,18 +2,22 @@ package org.mrp.service;
 
 import org.mrp.dto.MediaEntryTO;
 import org.mrp.model.Genre;
+import org.mrp.model.Rating;
 import org.mrp.model.MediaEntry;
 import org.mrp.model.MediaEntryType;
 import org.mrp.repository.MediaEntryRepository;
+import org.mrp.repository.RatingRepository;
 
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class MediaEntryService {
     private MediaEntryRepository mediaEntryRepository = new MediaEntryRepository();
+    private RatingRepository ratingRepository = new RatingRepository();
 
     private boolean isInvalidType(MediaEntry mediaEntry) {
         return mediaEntry.getType() == null ||
@@ -55,7 +59,6 @@ public class MediaEntryService {
         if (creatorId_object == null) {
             throw new NoSuchElementException("Media entry not found");
         }
-
         UUID creatorId = (UUID) creatorId_object;
         if (!creatorId.equals(userId)) {
             throw new IllegalArgumentException("Only the creator can edit this media");
@@ -184,4 +187,53 @@ public class MediaEntryService {
             throw new NoSuchElementException("Not in favorites");
         }
     }
+
+    public Map<String, Object> getMediaEntryRatings(UUID mediaEntryId) throws IOException, SQLException {
+        //Query all ratings for the given media entry
+        ResultSet resultSet = ratingRepository.findByMediaEntryId(mediaEntryId);
+        List<Rating> ratings = new ArrayList<>();
+
+        while (resultSet.next()) {
+            Rating rating = mapResultSetToRating(resultSet);
+            ratings.add(rating);
+        }
+
+        //Response
+        Map<String, Object> response = new HashMap<>();
+        response.put("ratings", ratings);
+        response.put("message", "Ratings for media entry read successfully");
+
+        return response;
+    }
+
+    public Rating mapResultSetToRating(ResultSet resultSet) throws SQLException {
+        //Extract columns from ResultSet
+        UUID id = resultSet.getObject("id", UUID.class);
+        UUID userId = resultSet.getObject("user_id", UUID.class);
+        UUID mediaEntryId = resultSet.getObject("media_entry_id", UUID.class);
+        String comment = resultSet.getString("comment");
+        int starsCt = resultSet.getInt("stars_ct");
+        boolean isCommentVisible = resultSet.getBoolean("is_comment_visible");
+
+        LocalDateTime timestamp = null;
+        Timestamp ts = resultSet.getTimestamp("timestamp");
+        if (ts != null) {
+            timestamp = ts.toLocalDateTime();
+        }
+
+        //Create Rating object using your constructor
+        Rating rating = new Rating(userId, mediaEntryId, starsCt, comment, timestamp);
+        rating.setId(id);
+        rating.setStars_ct(starsCt);
+
+        if (isCommentVisible) {
+            rating.setCommentVisible();
+        }
+
+        //Initialize likedBy as empty list using the setter
+        rating.setLikedBy(new ArrayList<>());
+
+        return rating;
+    }
+
 }

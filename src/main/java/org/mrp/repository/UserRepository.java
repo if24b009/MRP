@@ -96,4 +96,22 @@ public class UserRepository implements Repository<User, UserTO> {
                 userId
         );
     }
+
+    public ResultSet getLeaderboard() throws SQLException {
+        return db.query(
+                """
+                            SELECT
+                            u.username,
+                            (SELECT COUNT(*) FROM rating r WHERE r.user_id = u.user_id) AS rating_count,
+                            (SELECT COUNT(*) FROM media_entry m WHERE m.creator_id = u.user_id) AS media_created,
+                            (SELECT COUNT(*) FROM rating_likes rl WHERE rl.user_id = u.user_id) AS likes_given
+                        FROM app_user u
+                        ORDER BY
+                            (SELECT COUNT(*) FROM rating r WHERE r.user_id = u.user_id) +
+                            (SELECT COUNT(*) FROM media_entry m WHERE m.creator_id = u.user_id) +
+                            (SELECT COUNT(*) FROM rating_likes rl WHERE rl.user_id = u.user_id) DESC
+                        LIMIT 10;
+                        """
+        );
+    }
 }

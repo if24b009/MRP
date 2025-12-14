@@ -46,7 +46,8 @@ CREATE TABLE rating
     stars_ct           INT CHECK (stars_ct BETWEEN 1 AND 5),
     comment            TEXT,
     is_comment_visible BOOLEAN   DEFAULT FALSE,
-    timestamp          TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    timestamp          TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(media_entry_id, user_id)
 );
 
 -- Rating Likes (User <-> Rating N:M)
