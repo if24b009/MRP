@@ -1,5 +1,6 @@
 package org.mrp.service;
 
+import org.mrp.exceptions.ForbiddenException;
 import org.mrp.model.Rating;
 import org.mrp.repository.RatingRepository;
 import java.sql.SQLException;
@@ -16,7 +17,7 @@ public class RatingService {
     public String confirmComment(UUID userId, UUID ratingId) throws IOException, SQLException {
         //Check if user = creator
         if (!isUserCreator(ratingId, userId)) {
-            throw new IllegalArgumentException("Only the creator can edit this rating");
+            throw new ForbiddenException("Only the creator can edit this rating");
         }
 
         //Change visibility in DB
@@ -75,6 +76,10 @@ public class RatingService {
     }
 
     public Map<String, Object> createRating(Rating rating, UUID userId) throws IOException, SQLException {
+        if(rating.getStars_ct() > 5 || rating.getStars_ct() < 1) {
+            throw new IllegalArgumentException("Stars can only be between 1 and 5");
+        }
+
         try {
             //Insert Rating with UUID in DB
             UUID ratingId = ratingRepository.save(new Rating(userId, rating.getMediaEntryId(), rating.getStars_ct(), rating.getComment(), rating.getTimestamp()));
@@ -102,7 +107,11 @@ public class RatingService {
     public Map<String, Object> updateRating(Rating rating, UUID userId, UUID ratingId) throws IOException, SQLException {
         //Check if user = creator
         if (!isUserCreator(ratingId, userId)) {
-            throw new IllegalArgumentException("Only the creator can edit this rating");
+            throw new ForbiddenException("Only the creator can edit this rating");
+        }
+
+        if(rating.getStars_ct() > 5 || rating.getStars_ct() < 1) {
+            throw new IllegalArgumentException("Stars can only be between 1 and 5");
         }
 
         //Update Rating
@@ -124,7 +133,7 @@ public class RatingService {
     public String deleteRating(UUID userId, UUID ratingId) throws IOException, SQLException {
         //Check if user = creator
         if (!isUserCreator(ratingId, userId)) {
-            throw new IllegalArgumentException("Only the creator can edit this rating");
+            throw new ForbiddenException("Only the creator can edit this rating");
         }
 
         //Delete rating

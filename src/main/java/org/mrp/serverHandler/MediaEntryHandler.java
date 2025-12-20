@@ -2,6 +2,7 @@ package org.mrp.serverHandler;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import org.mrp.exceptions.ForbiddenException;
 import org.mrp.model.MediaEntry;
 import org.mrp.service.MediaEntryService;
 import org.mrp.utils.JsonHelper;
@@ -73,10 +74,10 @@ public class MediaEntryHandler implements HttpHandler {
             }
         } catch (NoSuchElementException e) {
             JsonHelper.sendError(exchange, 404, e.getMessage());
+        } catch (ForbiddenException | SecurityException e) {
+            JsonHelper.sendError(exchange, 403, e.getMessage());
         } catch (IllegalArgumentException e) {
             JsonHelper.sendError(exchange, 400, e.getMessage());
-        } catch (SecurityException e) {
-            JsonHelper.sendError(exchange, 403, e.getMessage());
         } catch (Exception e) {
             JsonHelper.sendError(exchange, 500, "Internal server error");
         }

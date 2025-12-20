@@ -113,4 +113,50 @@ public class UserRepository implements Repository<User> {
                         """
         );
     }
+
+    public boolean isExistingUsername(String username) throws SQLException {
+        return db.exists("SELECT 1 FROM app_user WHERE username = ?", username);
+    }
+
+    public void updateUsername(UUID userId, String username) throws SQLException {
+        db.update(
+                "UPDATE app_user SET username = ? WHERE user_id = ?",
+                username, userId
+        );
+    }
+
+
+    //For User Statistics (Profile)
+
+    public int getRatings_total(UUID userId) throws SQLException {
+        Object ct = db.getValue(
+                "SELECT COUNT(*) FROM rating WHERE user_id = ?",
+                userId
+        );
+        return ct != null ? ((Number) ct).intValue() : 0;
+    }
+
+    public int getFavorites_total(UUID userId) throws SQLException {
+        Object ct = db.getValue(
+                "SELECT COUNT(*) FROM favorite WHERE user_id = ?",
+                userId
+        );
+        return ct != null ? ((Number) ct).intValue() : 0;
+    }
+
+    public int getMediaEntriesCreated_total(UUID userId) throws SQLException {
+        Object ct = db.getValue(
+                "SELECT COUNT(*) FROM media_entry WHERE creator_id = ?",
+                userId
+        );
+        return ct != null ? ((Number) ct).intValue() : 0;
+    }
+
+    public double getAvgScore(UUID userId) throws SQLException {
+        Object avg = db.getValue(
+                "SELECT COALESCE(AVG(stars_ct), 0) FROM rating WHERE  user_id = ?",
+                userId
+        );
+        return avg != null ? ((Number) avg).doubleValue() : 0.0;
+    }
 }

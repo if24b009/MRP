@@ -2,6 +2,7 @@ package org.mrp.serverHandler;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import org.mrp.exceptions.ForbiddenException;
 import org.mrp.model.Rating;
 import org.mrp.service.RatingService;
 import org.mrp.utils.JsonHelper;
@@ -71,7 +72,7 @@ public class RatingHandler implements HttpHandler {
             JsonHelper.sendError(exchange, 404, e.getMessage());
         } catch (IllegalArgumentException e) {
             JsonHelper.sendError(exchange, 400, e.getMessage());
-        } catch (SecurityException e) {
+        } catch (ForbiddenException | SecurityException e) {
             JsonHelper.sendError(exchange, 403, e.getMessage());
         } catch (SQLException e) {
             JsonHelper.sendError(exchange, 409, e.getMessage());

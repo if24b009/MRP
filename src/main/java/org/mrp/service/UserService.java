@@ -1,7 +1,10 @@
 package org.mrp.service;
 
+import org.mrp.exceptions.DuplicateResourceException;
+import org.mrp.exceptions.ForbiddenException;
 import org.mrp.model.MediaEntry;
 import org.mrp.model.Rating;
+import org.mrp.model.User;
 import org.mrp.repository.RatingRepository;
 import org.mrp.repository.UserRepository;
 
@@ -16,11 +19,76 @@ public class UserService {
     private UserRepository userRepository = new UserRepository();
     private RatingRepository ratingRepository = new RatingRepository();
 
-    public String getProfile(String username) throws IOException, SQLException {
-        return "Will be implemented soon";
+    private User getUserFromUsername(String username) throws IOException, SQLException {
+        //Find user
+        ResultSet rs = userRepository.findByUsername(username);
+
+        if (!rs.next()) {
+            throw new NoSuchElementException("User not found");
+        }
+
+        return new User(
+                rs.getObject("user_id", UUID.class),
+                rs.getString("username"),
+                rs.getString("password_hashed")
+        );
     }
 
-    //public XXX updateProfile()
+    public Map<String, Object> getProfile(String username) throws IOException, SQLException {
+        //Create user
+        User user = getUserFromUsername(username);
+
+        //Load Statistics
+        UUID userId = user.getUserId();
+        user.setRatings_total(userRepository.getRatings_total(userId));
+        user.setFavorites_total(userRepository.getFavorites_total(userId));
+        user.setMediaEntriesCreated_total(userRepository.getMediaEntriesCreated_total(userId));
+        user.setAvgScore(userRepository.getAvgScore(userId));
+
+        //Response
+        Map<String, Object> response = new HashMap<>();
+        response.put("user", user);
+        response.put("message", "User's profile with statistics read successfully");
+
+        return response;
+    }
+
+    //Edit user profile
+    public Map<String, Object> updateProfile(String username, UUID requesterId, Map<String, Object> fieldsToUpdate) throws IOException, SQLException {
+        //Create user
+        User user = getUserFromUsername(username);
+
+        //Check if requester (user) = own profile user
+        if(!user.getUserId().equals(requesterId)) {
+            throw new ForbiddenException("Forbidden: profile ownership mismatch");
+        }
+
+        //Update request-body fields (username
+        if(fieldsToUpdate.containsKey("username")) {
+            String newUsername = fieldsToUpdate.get("username").toString();
+
+            if (newUsername == null || newUsername.trim().isEmpty()) {
+                throw new IllegalArgumentException("Username cannot be empty");
+            }
+            if (newUsername.length() < 3 || newUsername.length() > 50) {
+                throw new IllegalArgumentException("Username must be between 3 and 50 characters");
+            }
+            //newUsername already taken? (by another user)
+            if ((!newUsername.equals(username)) && userRepository.isExistingUsername(newUsername)) {
+                throw new DuplicateResourceException("Username is already in use");
+            }
+
+            userRepository.updateUsername(user.getUserId(), newUsername);
+            user.setUsername(newUsername);
+        }
+
+        //Response
+        Map<String, Object> response = new HashMap<>();
+        response.put("profile", user);
+        response.put("message", "User's profile with statistics read successfully");
+
+        return response;
+    }
 
     public Map<String, Object> getFavorites(String username) throws IOException, SQLException {
         //Find user

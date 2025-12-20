@@ -1,5 +1,6 @@
 package org.mrp.service;
 
+import org.mrp.exceptions.ForbiddenException;
 import org.mrp.model.Genre;
 import org.mrp.model.Rating;
 import org.mrp.model.MediaEntry;
@@ -60,7 +61,7 @@ public class MediaEntryService {
         }
         UUID creatorId = (UUID) creatorId_object;
         if (!creatorId.equals(userId)) {
-            throw new IllegalArgumentException("Only the creator can edit this media");
+            throw new ForbiddenException("Only the creator can edit this media");
         }
 
         //Update MediaEntry
@@ -144,7 +145,7 @@ public class MediaEntryService {
         }
         UUID creatorId = (UUID) creatorId_object;
         if (!creatorId.equals(userId)) {
-            throw new IllegalArgumentException("Only the creator can delete this media entry");
+            throw new ForbiddenException("Only the creator can delete this media entry");
         }
 
         //Delete mediaEntry (cascades to ratings, favorites, ...)
