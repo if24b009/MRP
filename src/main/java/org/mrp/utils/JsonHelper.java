@@ -25,10 +25,21 @@ public class JsonHelper {
     }
 
     // Parse JSON from request body
-    public static <T> T parseRequest(HttpExchange exchange, Class<T> clazz) throws IOException {
+    /*public static <T> T parseRequest(HttpExchange exchange, Class<T> clazz) throws IOException {
         InputStream is = exchange.getRequestBody();
         return mapper.readValue(is, clazz);
+    }*/
+    public static <T> T parseRequest(HttpExchange exchange, Class<T> clazz) throws IOException {
+        byte[] body = exchange.getRequestBody().readAllBytes();
+
+        if (body.length == 0) {
+            throw new IOException("Empty request body");
+        }
+
+        return mapper.readValue(body, clazz);
     }
+
+
 
     // Parse JSON from string
     public static <T> T parseJson(String json, Class<T> clazz) throws IOException {

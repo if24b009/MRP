@@ -7,6 +7,11 @@ public class User {
     private String username;
     private String password_hashed;
 
+    public User(String username, String password_hashed) {
+        this.username = username;
+        this.password_hashed = password_hashed;
+    }
+
     public User(UUID userId, String username, String password_hashed) {
         this.userId = userId;
         this.username = username;
@@ -21,7 +26,7 @@ public class User {
         return userId;
     }
 
-    public String getPassword() {
+    public String getPassword_hashed() {
         return password_hashed;
     }
 

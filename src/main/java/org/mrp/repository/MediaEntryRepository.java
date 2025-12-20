@@ -2,7 +2,6 @@ package org.mrp.repository;
 
 import org.mrp.model.Genre;
 import org.mrp.model.MediaEntry;
-import org.mrp.dto.MediaEntryTO;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,11 +9,11 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
-public class MediaEntryRepository implements Repository<MediaEntry, MediaEntryTO> {
+public class MediaEntryRepository implements Repository<MediaEntry> {
     public MediaEntryRepository() {
     }
 
-    private UUID insertMediaEntry(MediaEntryTO object) throws SQLException {
+    private UUID insertMediaEntry(MediaEntry object) throws SQLException {
         return db.insert(
                 "INSERT INTO media_entry (id, title, description, type, release_year, age_restriction, creator_id, created_at) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
@@ -29,7 +28,7 @@ public class MediaEntryRepository implements Repository<MediaEntry, MediaEntryTO
     }
 
     @Override
-    public UUID save(MediaEntryTO object) throws SQLException {
+    public UUID save(MediaEntry object) throws SQLException {
         UUID mediaEntryId = insertMediaEntry(object);
 
         //Insert Genres in die Zwischentabelle
@@ -92,7 +91,7 @@ public class MediaEntryRepository implements Repository<MediaEntry, MediaEntryTO
         }
     }
 
-    public int update(MediaEntryTO object) throws SQLException {
+    public int update(MediaEntry object) throws SQLException {
         int rowsAffected = db.update(
                 "UPDATE media_entry SET title = ?, description = ?, type = ?, " +
                         "release_year = ?, age_restriction = ? WHERE id = ?",

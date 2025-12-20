@@ -1,6 +1,5 @@
 package org.mrp.service;
 
-import org.mrp.dto.MediaEntryTO;
 import org.mrp.model.Genre;
 import org.mrp.model.Rating;
 import org.mrp.model.MediaEntry;
@@ -38,7 +37,7 @@ public class MediaEntryService {
         }
 
         //Insert MediaEntry with UUID in DB
-        UUID mediaEntryId = mediaEntryRepository.save(new MediaEntryTO(null, mediaEntry.getTitle(), mediaEntry.getDescription(), mediaEntry.getType(), mediaEntry.getReleaseYear(), mediaEntry.getAgeRestriction(), mediaEntry.getGenres(), userId));
+        UUID mediaEntryId = mediaEntryRepository.save(new MediaEntry(null, mediaEntry.getTitle(), mediaEntry.getDescription(), mediaEntry.getType(), mediaEntry.getReleaseYear(), mediaEntry.getAgeRestriction(), mediaEntry.getGenres(), userId));
 
         //Update MediaEntry with id and creator
         mediaEntry.setId(mediaEntryId);
@@ -65,7 +64,7 @@ public class MediaEntryService {
         }
 
         //Update MediaEntry
-        int updated = mediaEntryRepository.update(new MediaEntryTO(mediaEntryId, mediaEntry.getTitle(), mediaEntry.getDescription(), mediaEntry.getType(), mediaEntry.getReleaseYear(), mediaEntry.getAgeRestriction(), mediaEntry.getGenres(), userId));
+        int updated = mediaEntryRepository.update(new MediaEntry(mediaEntryId, mediaEntry.getTitle(), mediaEntry.getDescription(), mediaEntry.getType(), mediaEntry.getReleaseYear(), mediaEntry.getAgeRestriction(), mediaEntry.getGenres(), userId));
         if (updated == 0) {
             throw new RuntimeException("Failed to update media entry");
         }

@@ -1,13 +1,10 @@
 package org.mrp.service;
 
-import org.mrp.dto.MediaEntryTO;
-import org.mrp.dto.RatingTO;
 import org.mrp.model.Rating;
 import org.mrp.repository.RatingRepository;
 import java.sql.SQLException;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -80,7 +77,7 @@ public class RatingService {
     public Map<String, Object> createRating(Rating rating, UUID userId) throws IOException, SQLException {
         try {
             //Insert Rating with UUID in DB
-            UUID ratingId = ratingRepository.save(new RatingTO(userId, rating.getMediaEntryId(), rating.getStars_ct(), rating.getComment(), rating.getTimestamp()));
+            UUID ratingId = ratingRepository.save(new Rating(userId, rating.getMediaEntryId(), rating.getStars_ct(), rating.getComment(), rating.getTimestamp()));
 
             //Update Rating with id
             rating.setId(ratingId);
@@ -109,7 +106,7 @@ public class RatingService {
         }
 
         //Update Rating
-        int updated = ratingRepository.update(new RatingTO(ratingId, userId, rating.getMediaEntryId(), rating.getStars_ct(), rating.getComment(), rating.getTimestamp()));
+        int updated = ratingRepository.update(new Rating(ratingId, userId, rating.getMediaEntryId(), rating.getStars_ct(), rating.getComment(), rating.getTimestamp()));
         if (updated == 0) {
             throw new RuntimeException("Failed to update rating");
         }

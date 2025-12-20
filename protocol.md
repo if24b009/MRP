@@ -33,8 +33,7 @@ Die **Media Ratings Platform (MRP)** ist ein REST-basierter Java-HTTP-Server, de
 ├── 📁 repository/        → Datenbankzugriffe (DAO/Repository Pattern)
 ├── 📁 serverHandler/     → HTTP-Endpunkte & Request-Routing
 ├── 📁 service/           → Business-Logik
-├── 📁 dto/               → DataTransferObjects: Datenbehälter
-├── 📁 util/              → Helferklassen
+├── 📁 utils/             → Helferklassen
 └── Main.java             → Einstiegspunkt & Server-Initialisierung
 ```
 
@@ -70,9 +69,6 @@ Zudem gibt es ebenfalls Packages für:
 - **Server-Handler**  
   Das `serverHandler`-Package enthält alle Klassen, die als zentrale **Ansprechpartner für HTTP-Anfragen** fungieren. Jede Handler-Klasse ist einer oder mehreren spezifischen Routen (Endpoints) zugeordnet und wird direkt vom Server bei eingehenden Requests aufgerufen.  
   Zum Beispiel: `AuthHandler`
-
-- **Data Transfer Objects**  
-  Das `dto`-Package enthält alle **Data Transfer Objects (DTOs)**, die für die Kommunikation zwischen Client (z.B. Postman, Frontend) und Server verwendet werden. Diese Objekte dienen als **strukturierte Datencontainer**, um eingehende und ausgehende JSON-Daten vom/zum Server zu serialisieren bzw. deserialisieren.
 
 - **Utils**  
   Das `utils`-Package enthält **Hilfsklassen**, die allgemeine, wiederverwendbare Funktionen bereitstellen und **nicht direkt zur Geschäftslogik** gehören. Diese Klassen unterstützen andere Schichten (Handler, Service, Repository) und sorgen für sauberen, wartbaren Code.
@@ -129,21 +125,25 @@ Folgend eine Liste aller im Projekt relevanten Endpoints:
 Da in diesem Projekt **Integrationstests mit einer Postman Collection** verwendet wurden, deckt die Teststrategie folgende Punkte ab:
 
 ### Testabdeckung
-| Bereich                 | Abgedeckt durch Postman Tests   |
-|-------------------------|---------------------------------|
-| Registrierung / Login   | ✅                               |
-| Authentifizierung       | ✅                               |
-| CRUD Media              | ✅                               |
-| Ratings                 | *Noch ausstehend*               |
-| Likes                   | *Noch ausstehend*               |
-| Favoriten               | *Noch ausstehend*               |
-| Leaderboard             | *Noch ausstehend*               |
-| Recommendations         | *Noch ausstehend*               |
-| Fehlerfälle (4xx/5xx)   | ✅                               |
+| Bereich               | Abgedeckt durch Postman Tests |
+|-----------------------|-------------------------------|
+| Registrierung / Login | ✅                             |
+| Authentifizierung     | ✅                             |
+| Profil                | *Noch ausstehend*             |
+| CRUD Media            | ✅                             |
+| Ratings               | ✅                             |
+| Likes                 | ✅                             |
+| Favoriten             | ✅                             |
+| Leaderboard           | ✅                             |
+| Recommendations       | *Noch ausstehend*             |
+| Fehlerfälle (4xx/5xx) | ✅                             |
 
 **Postman Collection Inhalt von `MRP-IntegrationTests`:**
 - `01_Authentication.postman_collection.json`: Registration und Login
 - `02_MediaEntry-CRUD.postman_collection.json`: Create, Update, Read, Delete
+- `03_Favorites.postman_collection.json`: Add, Remove, Get User's Favorites
+- `04_Ratings.postman_collection.json`: Comment-Visibility, Like/Unlike, Create, Update, Delete User-Ratings zu Media Entries
+- `05_Leaderboard.postman_collection.json`: User-Rankings basierend auf den Likes ihrer Media Entries
 - *Weitere Tests folgen im Laufe des Projektes*
 
 Die Tests werden manuell in Postman ausgeführt.
@@ -158,14 +158,14 @@ Die Tests werden manuell in Postman ausgeführt.
 | Setup (Projekt-Grundgerüst, DB, Docker) | 20 h    |
 | User Authentifizierung                  | 5 h     |
 | Media-Entry CRUD                        | 18 h    |
-| Ratings + Comments + Likes              |         |
+| Ratings + Comments + Likes              | 15 h    |
 | Sortieren + Filter                      |         |
 | Favoriten                               | 5 h     |
 | Empfehlungen                            |         |
-| Leaderboard                             |         |
+| Leaderboard                             | 2 h     |
 | Postman Tests & Debugging               |         |
 | Dokumentation (README & Protocol)       |         |
-| **Gesamt**                              | 48 h    |
+| **Gesamt**                              | 65 h    |
 
 
 ## Probleme & Lösungen

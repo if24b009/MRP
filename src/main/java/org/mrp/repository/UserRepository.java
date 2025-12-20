@@ -1,20 +1,19 @@
 package org.mrp.repository;
 
 import org.mrp.model.User;
-import org.mrp.dto.UserTO;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.UUID;
 
-public class UserRepository implements Repository<User, UserTO> {
+public class UserRepository implements Repository<User> {
     public UserRepository() {
     }
 
     //for registration (AuthService)
     @Override
-    public UUID save(UserTO user) throws SQLException {
+    public UUID save(User user) throws SQLException {
         return db.insert(
                 "INSERT INTO app_user (user_id, username, password_hashed) VALUES (?, ?, ?)",
                 user.getUsername(),

@@ -9,8 +9,8 @@ public class Rating {
     private UUID id;
     private UUID userId;
     private UUID mediaEntryId;
+    private int stars_ct;
     private String comment;
-    int stars_ct;
     private boolean isCommentVisible;
     private LocalDateTime timestamp;
     private List<User> likedBy = new ArrayList<>();
@@ -24,6 +24,16 @@ public class Rating {
         this.stars_ct = stars_ct;
         this.comment = comment;
         this.isCommentVisible = false;
+        this.timestamp = timestamp;
+    }
+
+    public Rating(UUID id, UUID userId, UUID mediaEntryId, int stars_ct, String comment, LocalDateTime timestamp) {
+        this.id = id;
+        this.userId = userId;
+        this.mediaEntryId = mediaEntryId;
+        this.stars_ct = stars_ct;
+        this.isCommentVisible = false;
+        this.comment = comment;
         this.timestamp = timestamp;
     }
 

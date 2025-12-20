@@ -1,7 +1,6 @@
 package org.mrp.model;
 
 import java.time.LocalDateTime;
-import java.time.Year;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,29 +12,32 @@ public class MediaEntry {
     private int releaseYear;
     private int ageRestriction;
     private List<Genre> genres;
-    private UUID creator;
+    private UUID creatorId;
     private LocalDateTime createdAt;
 
     public MediaEntry() {}
 
-    public MediaEntry(String title, String description, int releaseYear, int ageRestriction, UUID creator) {
+    public MediaEntry(String title, String description, int releaseYear, int ageRestriction, UUID creatorId) {
         this.title = title;
         this.description = description;
         this.releaseYear = releaseYear;
         this.ageRestriction = ageRestriction;
-        this.creator = creator;
+        this.creatorId = creatorId;
+    }
+
+    public MediaEntry(UUID id, String title, String description, MediaEntryType type, int releaseYear, int ageRestriction, List<Genre> genres,  UUID creatorId) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.type = type;
+        this.releaseYear = releaseYear;
+        this.ageRestriction = ageRestriction;
+        this.genres = genres;
+        this.creatorId = creatorId;
     }
 
     public UUID getId() {
         return id;
-    }
-
-    public UUID getCreator() {
-        return creator;
-    }
-
-    public double getAvgScore() {
-        return 0; //CHANGE
     }
 
     public String getTitle() {
@@ -62,8 +64,12 @@ public class MediaEntry {
         return genres;
     }
 
+    public UUID getCreatorId() {
+        return creatorId;
+    }
+
     public void setCreator(UUID creatorId) {
-        this.creator = creatorId;
+        this.creatorId = creatorId;
     }
 
     public void setId(UUID id) {

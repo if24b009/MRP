@@ -1,8 +1,8 @@
 package org.mrp.service;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
+import org.mrp.model.User;
 import org.mrp.repository.UserRepository;
-import org.mrp.dto.UserTO;
 import org.mrp.utils.UUIDGenerator;
 
 import java.io.IOException;
@@ -37,7 +37,7 @@ public class AuthService {
         }
 
         //userId gets generated while inserting user in database
-        UUID userId = userRepository.save(new UserTO(username, passwordHash));
+        UUID userId = userRepository.save(new User(username, passwordHash));
 
         //Response
         Map<String, Object> response = new HashMap<>();

@@ -38,7 +38,6 @@ public class PathParameterExtraction {
             return JsonHelper.parseRequest(exchange, c);
         } catch (IOException e) {
             JsonHelper.sendError(exchange, 400, "Invalid request");
-            e.printStackTrace();
             return null;
         }
     }

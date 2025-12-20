@@ -1,9 +1,6 @@
 package org.mrp.repository;
 
-import org.mrp.dto.MediaEntryTO;
-import org.mrp.model.Genre;
 import org.mrp.model.Rating;
-import org.mrp.dto.RatingTO;
 import org.mrp.model.User;
 
 import java.sql.ResultSet;
@@ -12,11 +9,11 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
-public class RatingRepository implements Repository<Rating, RatingTO> {
+public class RatingRepository implements Repository<Rating> {
     public RatingRepository() {
     }
 
-    private UUID insertRating(RatingTO object) throws SQLException {
+    private UUID insertRating(Rating object) throws SQLException {
         return db.insert(
                 "INSERT INTO rating (id, user_id, media_entry_id, stars_ct, comment, is_comment_visible, timestamp) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -30,7 +27,7 @@ public class RatingRepository implements Repository<Rating, RatingTO> {
     }
 
     @Override
-    public UUID save(RatingTO object) throws SQLException {
+    public UUID save(Rating object) throws SQLException {
         UUID ratingId = insertRating(object);
 
         //Insert User likes in die Zwischentabelle
@@ -64,7 +61,7 @@ public class RatingRepository implements Repository<Rating, RatingTO> {
 
 
 
-    public int update(RatingTO object) throws SQLException {
+    public int update(Rating object) throws SQLException {
         int rowsAffected = db.update(
                 "UPDATE rating SET stars_ct = ?, comment = ?, is_comment_visible = ? " +
                         "WHERE id = ?",
