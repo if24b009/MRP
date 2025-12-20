@@ -129,7 +129,7 @@ Da in diesem Projekt **Integrationstests mit einer Postman Collection** verwende
 |-----------------------|-------------------------------|
 | Registrierung / Login | ✅                             |
 | Authentifizierung     | ✅                             |
-| Profil                | *Noch ausstehend*             |
+| Profil                | ✅                             |
 | CRUD Media            | ✅                             |
 | Ratings               | ✅                             |
 | Likes                 | ✅                             |
@@ -157,6 +157,7 @@ Die Tests werden manuell in Postman ausgeführt.
 |-----------------------------------------|---------|
 | Setup (Projekt-Grundgerüst, DB, Docker) | 20 h    |
 | User Authentifizierung                  | 5 h     |
+| User Profil                             | 5 h     |
 | Media-Entry CRUD                        | 18 h    |
 | Ratings + Comments + Likes              | 15 h    |
 | Sortieren + Filter                      |         |
@@ -165,7 +166,7 @@ Die Tests werden manuell in Postman ausgeführt.
 | Leaderboard                             | 2 h     |
 | Postman Tests & Debugging               |         |
 | Dokumentation (README & Protocol)       |         |
-| **Gesamt**                              | 65 h    |
+| **Gesamt**                              | 70 h    |
 
 
 ## Probleme & Lösungen
