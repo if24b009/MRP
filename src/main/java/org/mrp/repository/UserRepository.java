@@ -1,13 +1,21 @@
 package org.mrp.repository;
 
+import org.mrp.model.Genre;
+import org.mrp.model.MediaEntry;
+import org.mrp.model.MediaEntryType;
 import org.mrp.model.User;
+import org.mrp.service.MediaEntryService;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class UserRepository implements Repository<User> {
+    private MediaEntryService mediaEntryService = new MediaEntryService();
+
     public UserRepository() {
     }
 
@@ -159,4 +167,92 @@ public class UserRepository implements Repository<User> {
         );
         return avg != null ? ((Number) avg).doubleValue() : 0.0;
     }
+
+
+    //Recommendations
+
+    //rated from user
+    public ResultSet getUserTopRatedMediaEntries(UUID userId) throws SQLException {
+        return db.query(
+                """
+                        SELECT
+                            me.id,
+                            me.type,
+                            me.age_restriction,
+                            STRING_AGG(meg.genre::TEXT, ',') AS genres
+                        FROM rating r
+                        JOIN media_entry me ON r.media_entry_id = me.id
+                        JOIN media_entry_genre meg ON me.id = meg.media_entry_id
+                        WHERE r.user_id = ?
+                          AND r.stars_ct >= 4
+                        GROUP BY me.id;
+                        """,
+                userId
+        );
+    }
+
+    public List<MediaEntry> findRecommendations(UUID userId, List<Genre> favoriteGenres, List<MediaEntryType> favoriteMediaTypes, List<Integer> preferredAgeRestrictions) throws SQLException {
+        if (favoriteGenres.isEmpty() && favoriteMediaTypes.isEmpty() && preferredAgeRestrictions.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        StringBuilder filterConditions = new StringBuilder(); //StringBuilder = efficient way to build string
+        //filterConditions = added WHERE-Klausel
+        List<Object> filterParams = new ArrayList<>(); //List -> unsure how many parameters
+
+        //Exclude already from user rated media entries
+        filterParams.add(userId);
+
+        //Genre: Build Genre-WHERE-Klausel
+        if (!favoriteGenres.isEmpty()) appendINClause("meg.genre", favoriteGenres, filterConditions, filterParams);
+
+        //Media Entry Type: Build MediaType-WHERE-Klausel
+        if (!favoriteMediaTypes.isEmpty()) appendINClause("m.type", favoriteMediaTypes, filterConditions, filterParams);
+
+        //Age Restriction: Build AgeRestriction-WHERE-Klausel
+        if (!preferredAgeRestrictions.isEmpty()) appendINClause("m.age_restriction", preferredAgeRestrictions, filterConditions, filterParams);
+
+        ResultSet rs = getRecommendationsBasedOnConditions(filterConditions, filterParams);
+
+        List<MediaEntry> recommendations = new ArrayList<>();
+        while (rs.next()) {
+            recommendations.add(mediaEntryService.mapResultSetToMediaEntry(rs));
+        }
+        return recommendations;
+    }
+
+    private ResultSet getRecommendationsBasedOnConditions(StringBuilder conditions, List<Object> params) throws SQLException {
+        return db.query("SELECT m.*, u.username AS creator_username, " +
+                "COALESCE(AVG(r.stars_ct), 0) AS avg_rating, " +
+                "COUNT(DISTINCT r.id) AS total_ratings, " +
+                "STRING_AGG(meg.genre::TEXT, ',') AS genres " +
+                "FROM media_entry m " +
+                "JOIN app_user u ON m.creator_id = u.user_id " +
+                "LEFT JOIN media_entry_genre meg ON m.id = meg.media_entry_id " +
+                "LEFT JOIN rating r ON m.id = r.media_entry_id " +
+                "WHERE m.id NOT IN ( " +
+                "    SELECT media_entry_id FROM rating WHERE user_id = ? " +
+                ") " +
+                "AND (" + conditions + ") " +
+                "GROUP BY m.id, u.username " +
+                "HAVING COALESCE(AVG(r.stars_ct), 0) >= 3.5 OR COUNT(DISTINCT r.id) = 0 " +
+                "ORDER BY avg_rating DESC, total_ratings DESC " +
+                "LIMIT 10", params.toArray());
+    }
+
+
+    private <T> void appendINClause(String columnName, List<T> values, StringBuilder filterConditions, List<Object> filterParams) {
+        if (values == null || values.isEmpty()) return;
+
+        if(!filterConditions.isEmpty()) filterConditions.append(" OR ");
+
+        filterConditions.append(columnName).append(" IN (");
+        for (int i = 0; i < values.size(); i++) {
+            if (i > 0) filterConditions.append(", ");
+            filterConditions.append("?");
+            filterParams.add(values.get(i));
+        }
+        filterConditions.append(")");
+    }
+
 }

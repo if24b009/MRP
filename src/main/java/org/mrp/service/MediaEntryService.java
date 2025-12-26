@@ -211,9 +211,9 @@ public class MediaEntryService {
         UUID id = resultSet.getObject("id", UUID.class);
         UUID userId = resultSet.getObject("user_id", UUID.class);
         UUID mediaEntryId = resultSet.getObject("media_entry_id", UUID.class);
-        String comment = resultSet.getString("comment");
-        int starsCt = resultSet.getInt("stars_ct");
         boolean isCommentVisible = resultSet.getBoolean("is_comment_visible");
+        String comment = isCommentVisible ? resultSet.getString("comment") : "";
+        int starsCt = resultSet.getInt("stars_ct");
 
         LocalDateTime timestamp = null;
         Timestamp ts = resultSet.getTimestamp("timestamp");

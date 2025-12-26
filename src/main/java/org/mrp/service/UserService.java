@@ -2,9 +2,7 @@ package org.mrp.service;
 
 import org.mrp.exceptions.DuplicateResourceException;
 import org.mrp.exceptions.ForbiddenException;
-import org.mrp.model.MediaEntry;
-import org.mrp.model.Rating;
-import org.mrp.model.User;
+import org.mrp.model.*;
 import org.mrp.repository.RatingRepository;
 import org.mrp.repository.UserRepository;
 
@@ -59,12 +57,12 @@ public class UserService {
         User user = getUserFromUsername(username);
 
         //Check if requester (user) = own profile user
-        if(!user.getUserId().equals(requesterId)) {
+        if (!user.getUserId().equals(requesterId)) {
             throw new ForbiddenException("Forbidden: profile ownership mismatch");
         }
 
-        //Update request-body fields (username
-        if(fieldsToUpdate.containsKey("username")) {
+        //Update request-body fields (username)
+        if (fieldsToUpdate.containsKey("username")) {
             String newUsername = fieldsToUpdate.get("username").toString();
 
             if (newUsername == null || newUsername.trim().isEmpty()) {
@@ -85,7 +83,7 @@ public class UserService {
         //Response
         Map<String, Object> response = new HashMap<>();
         response.put("profile", user);
-        response.put("message", "User's profile with statistics read successfully");
+        response.put("message", "User's profile with statistics updated successfully");
 
         return response;
     }
@@ -101,7 +99,7 @@ public class UserService {
         UUID userId = userRepository.getUUID(rs, "user_id");
 
         ResultSet favoritesRS = userRepository.getFavoriteMediaEntries(userId);
-        if(favoritesRS == null) {
+        if (favoritesRS == null) {
             throw new NoSuchElementException("No favorites for this user found");
         }
 
@@ -144,9 +142,9 @@ public class UserService {
         UUID id = resultSet.getObject("id", UUID.class);
         UUID userId = resultSet.getObject("user_id", UUID.class);
         UUID mediaEntryId = resultSet.getObject("media_entry_id", UUID.class);
-        String comment = resultSet.getString("comment");
-        int starsCt = resultSet.getInt("stars_ct");
         boolean isCommentVisible = resultSet.getBoolean("is_comment_visible");
+        String comment = isCommentVisible ? resultSet.getString("comment") : "";
+        int starsCt = resultSet.getInt("stars_ct");
 
         LocalDateTime timestamp = null;
         Timestamp ts = resultSet.getTimestamp("timestamp");
@@ -170,7 +168,6 @@ public class UserService {
     }
 
 
-
     public List<Map<String, Object>> getLeaderboard() throws IOException, SQLException {
         ResultSet rs = userRepository.getLeaderboard();
         List<Map<String, Object>> leaderboard = new ArrayList<>();
@@ -191,7 +188,82 @@ public class UserService {
         return leaderboard;
     }
 
-    public String getRecommendations(UUID userId) throws IOException, SQLException {
-        return "Will be implemented soon";
+
+    //Recommendations
+
+    public Map<String, Object> getRecommendations(UUID userId) throws IOException, SQLException {
+
+        // Get user's preferences from highly rated media (4+ stars)
+        ResultSet preferences = userRepository.getUserTopRatedMediaEntries(userId);
+
+        EnumMap<Genre, Integer> genre_ct = new EnumMap<>(Genre.class);
+        EnumMap<MediaEntryType, Integer> mediaType_ct = new EnumMap<>(MediaEntryType.class);
+        Map<Integer, Integer> ageRestriction_ct = new HashMap<>();
+
+        //Check if at least 1 top-rated media entry is found
+        if (!preferences.isBeforeFirst()) {
+            throw new NoSuchElementException("No top-rated media entries from the user");
+        }
+
+        while (preferences.next()) {
+            //Genres
+            String genresStr = preferences.getString("genres");
+            if (genresStr != null && !genresStr.isEmpty()) {
+                Arrays.stream(genresStr.split(","))      // split by comma
+                        .map(String::trim)                 // remove extra whitespace
+                        .map(g -> toEnum(g, Genre.class))  // convert to enum
+                        .forEach(g -> incrementCount(genre_ct, g));
+            }
+
+            //Media entry type
+            incrementCount(mediaType_ct, toEnum(preferences.getString("type"), MediaEntryType.class));
+
+            //Age restriction
+            int ageRestriction = preferences.getInt("age_restriction");
+            if (!preferences.wasNull()) {
+                incrementCount(ageRestriction_ct, ageRestriction);
+            }
+        }
+
+        List<Genre> favoriteGenres = getTopKeys(genre_ct, 5); //Get top 5 favorite genres
+        List<MediaEntryType> favoriteMediaTypes = getTopKeys(mediaType_ct, 2); //Get preferred media types (top 2)
+        List<Integer> preferredAgeRestrictions = getTopKeys(ageRestriction_ct, 2); //Get preferred age restrictions (top 2)
+
+        List<MediaEntry> recommendations = userRepository.findRecommendations(userId, favoriteGenres, favoriteMediaTypes, preferredAgeRestrictions);
+
+        //Response
+        Map<String, Object> response = new HashMap<>();
+        response.put("recommendations", recommendations);
+        response.put("criteriaGenres", favoriteGenres);
+        response.put("criteriaMediaTypes", favoriteMediaTypes);
+        response.put("criteriaAgeRestrictions", preferredAgeRestrictions);
+
+        return response;
     }
+
+    //Helper method
+    private static <K> List<K> getTopKeys(Map<K, Integer> map, int topN) {
+        return map.entrySet().stream()
+                .sorted(Map.Entry.<K, Integer>comparingByValue().reversed())
+                .limit(topN)
+                .map(Map.Entry::getKey)
+                .toList();
+    }
+
+    //Helper methode
+    private <K> void incrementCount(Map<K, Integer> map, K key) {
+        if (key != null) {
+            map.put(key, map.getOrDefault(key, 0) + 1);
+        }
+    }
+
+    //Helper methode: convert String to Enum
+    private <E extends Enum<E>> E toEnum(String value, Class<E> enumClass) { //E extends Enum<E> -> Type only can be Enum
+        if (value == null) return null;
+        return Enum.valueOf(enumClass, value);
+    }
+
+
+
+
 }

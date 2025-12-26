@@ -8,7 +8,6 @@ import org.mrp.service.RatingService;
 import org.mrp.utils.JsonHelper;
 import org.mrp.utils.PathParameterExtraction;
 import org.mrp.utils.TokenValidation;
-import org.postgresql.util.PSQLException;
 
 import java.io.IOException;
 import java.sql.SQLException;

@@ -58,4 +58,20 @@ public class User {
     public void setAvgScore(double avgScore) {
         this.avgScore = avgScore;
     }
+
+    public int getRatings_total() {
+        return ratings_total;
+    }
+
+    public int getFavorites_total() {
+        return favorites_total;
+    }
+
+    public int getMediaEntriesCreated_total() {
+        return mediaEntriesCreated_total;
+    }
+
+    public double getAvgScore() {
+        return avgScore;
+    }
 }

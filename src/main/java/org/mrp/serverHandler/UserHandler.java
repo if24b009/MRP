@@ -4,8 +4,6 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.mrp.exceptions.DuplicateResourceException;
 import org.mrp.exceptions.ForbiddenException;
-import org.mrp.model.Rating;
-import org.mrp.model.User;
 import org.mrp.service.UserService;
 import org.mrp.utils.JsonHelper;
 import org.mrp.utils.PathParameterExtraction;
@@ -63,8 +61,8 @@ public class UserHandler implements HttpHandler {
 
             //Recommendations
             else if (path.endsWith("/recommendations") && HttpMethod.GET.name().equals(usedMethod)) {
-                String message = userService.getRecommendations(userId);
-                JsonHelper.sendSuccess(exchange, message);
+                Map<String, Object> response = userService.getRecommendations(userId);
+                JsonHelper.sendResponse(exchange, 200, response);
             }
 
             //Send Error - Not found
@@ -99,7 +97,8 @@ public class UserHandler implements HttpHandler {
         if (Objects.equals(username, "")) return;
 
         try {
-            //@SuppressWarnings("unchecked") //Java-Annotation -> compiler ignores/suppresses specific warning (about unchecked casts)
+            @SuppressWarnings("unchecked") //Java-Annotation -> compiler ignores/suppresses specific warning (about unchecked casts)
+                    //-> to verify fieldsToUpdate is Map<String, Object>
             Map<String, Object> fieldsToUpdate = JsonHelper.parseRequest(exchange, HashMap.class); //PATCH - request-body (contains fields to be updated)
             Map<String, Object> response = userService.updateProfile(username, userId, fieldsToUpdate);
             JsonHelper.sendResponse(exchange, 200, response);

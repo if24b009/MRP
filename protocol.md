@@ -162,11 +162,11 @@ Die Tests werden manuell in Postman ausgeführt.
 | Ratings + Comments + Likes              | 15 h    |
 | Sortieren + Filter                      |         |
 | Favoriten                               | 5 h     |
-| Empfehlungen                            |         |
+| Empfehlungen                            | 10 h    |
 | Leaderboard                             | 2 h     |
 | Postman Tests & Debugging               |         |
 | Dokumentation (README & Protocol)       |         |
-| **Gesamt**                              | 70 h    |
+| **Gesamt**                              | 80 h    |
 
 
 ## Probleme & Lösungen
