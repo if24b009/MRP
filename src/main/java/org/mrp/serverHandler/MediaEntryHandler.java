@@ -2,7 +2,9 @@ package org.mrp.serverHandler;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import org.mrp.exceptions.DuplicateResourceException;
 import org.mrp.exceptions.ForbiddenException;
+import org.mrp.exceptions.InvalidQueryParameterException;
 import org.mrp.model.MediaEntry;
 import org.mrp.service.MediaEntryService;
 import org.mrp.utils.JsonHelper;
@@ -48,6 +50,11 @@ public class MediaEntryHandler implements HttpHandler {
                 }
             }
 
+            //Ratings to specific Media Entry
+            else if (path.endsWith("/ratings") && HttpMethod.GET.name().equals(usedMethod)) {
+                Map<String, Object> response = mediaEntryService.getMediaEntryRatings(mediaEntryId);
+                JsonHelper.sendResponse(exchange, 200, response);
+            }
 
             //MediaEntry CRUD
             else if (HttpMethod.POST.name().equals(usedMethod)) {
@@ -61,13 +68,6 @@ public class MediaEntryHandler implements HttpHandler {
                 JsonHelper.sendSuccess(exchange, message);
             }
 
-
-            //Ratings to specific Media Entry
-            else if (path.endsWith("/ratings") && HttpMethod.GET.name().equals(usedMethod)) {
-                Map<String, Object> response = mediaEntryService.getMediaEntryRatings(mediaEntryId);
-                JsonHelper.sendResponse(exchange, 200, response);
-            }
-
             //Send Error - Not found
             else {
                 JsonHelper.sendError(exchange, 404, "Endpoint not found");
@@ -76,7 +76,9 @@ public class MediaEntryHandler implements HttpHandler {
             JsonHelper.sendError(exchange, 404, e.getMessage());
         } catch (ForbiddenException | SecurityException e) {
             JsonHelper.sendError(exchange, 403, e.getMessage());
-        } catch (IllegalArgumentException e) {
+        } catch (DuplicateResourceException e) {
+            JsonHelper.sendError(exchange, 409, e.getMessage());
+        } catch (InvalidQueryParameterException | IllegalArgumentException e) {
             JsonHelper.sendError(exchange, 400, e.getMessage());
         } catch (Exception e) {
             JsonHelper.sendError(exchange, 500, "Internal server error");
@@ -112,6 +114,7 @@ public class MediaEntryHandler implements HttpHandler {
 
         try {
             String sortBy = parameters.getOrDefault("sortBy", "title"); //default sorted by title (sortBy != null)
+            parameters.remove("sortBy"); //remove sortBy from filters -> avoid validation errors
             Map<String, Object> response = mediaEntryService.getMediaEntries(parameters, sortBy);
             JsonHelper.sendResponse(exchange, 200, response);
         } catch (Exception e) {

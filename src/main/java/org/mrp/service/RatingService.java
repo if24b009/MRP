@@ -2,6 +2,7 @@ package org.mrp.service;
 
 import org.mrp.exceptions.ForbiddenException;
 import org.mrp.model.Rating;
+import org.mrp.repository.MediaEntryRepository;
 import org.mrp.repository.RatingRepository;
 import java.sql.SQLException;
 
@@ -13,14 +14,17 @@ import java.util.UUID;
 
 public class RatingService {
     private RatingRepository ratingRepository;
+    private MediaEntryRepository mediaEntryRepository;
 
     public RatingService() {
         this.ratingRepository = new RatingRepository();
+        this.mediaEntryRepository = new MediaEntryRepository();
     }
 
     //Unit Tests: Constructor for testing with mocked repository
     RatingService(RatingRepository ratingRepository) {
         this.ratingRepository = ratingRepository;
+        this.mediaEntryRepository = new MediaEntryRepository();
     }
     public String confirmComment(UUID userId, UUID ratingId) throws IOException, SQLException {
         //Check if user = creator
@@ -84,6 +88,16 @@ public class RatingService {
     }
 
     public Map<String, Object> createRating(Rating rating, UUID userId) throws IOException, SQLException {
+        //Validate if mediaEntryId is provided
+        if (rating.getMediaEntryId() == null) {
+            throw new IllegalArgumentException("mediaEntryId is required");
+        }
+
+        //Check if media entry exists
+        if (mediaEntryRepository.getCreatorObject(rating.getMediaEntryId()) == null) {
+            throw new NoSuchElementException("Media entry not found");
+        }
+
         if(rating.getStars_ct() > 5 || rating.getStars_ct() < 1) {
             throw new IllegalArgumentException("Stars can only be between 1 and 5");
         }

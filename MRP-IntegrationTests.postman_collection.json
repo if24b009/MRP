@@ -1,12 +1,81 @@
 {
 	"info": {
-		"_postman_id": "1aa06aa4-7114-4ad2-a1d9-e1e56a8c5c9d",
+		"_postman_id": "dbb4d9ac-113b-4d16-84fd-6b543ac783bd",
 		"name": "MRP-IntegrationTests",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "48874562",
-		"_collection_link": "https://if24b009-7017893.postman.co/workspace/L's-Workspace~ce232350-0779-47bb-88d9-5cf028d4942d/collection/48874562-1aa06aa4-7114-4ad2-a1d9-e1e56a8c5c9d?action=share&source=collection_link&creator=48874562"
+		"_collection_link": "https://if24b009-7017893.postman.co/workspace/L's-Workspace~ce232350-0779-47bb-88d9-5cf028d4942d/collection/48874562-dbb4d9ac-113b-4d16-84fd-6b543ac783bd?action=share&source=collection_link&creator=48874562"
 	},
 	"item": [
+		{
+			"name": "00_API_Info",
+			"item": [
+				{
+					"name": "API Info - successful",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 for API info\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains status property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('status');",
+									"});",
+									"",
+									"pm.test(\"Response contains service property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('service');",
+									"});",
+									"",
+									"pm.test(\"Response contains version property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('version');",
+									"});",
+									"",
+									"pm.test(\"No error property in response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.not.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
 		{
 			"name": "01_Authentication",
 			"item": [
@@ -1307,8 +1376,7 @@
 									"        \"releaseYear\",",
 									"        \"ageRestriction\",",
 									"        \"genres\",",
-									"        \"creator\",",
-									"        \"avgScore\"",
+									"        \"creatorId\"",
 									"    ];",
 									"    expectedKeys.forEach(function(key) {",
 									"        pm.expect(jsonData.mediaentry).to.have.property(key);",
@@ -1331,8 +1399,7 @@
 									"    pm.expect(jsonData.mediaentry.releaseYear).to.be.a('number');",
 									"    pm.expect(jsonData.mediaentry.ageRestriction).to.be.a('number');",
 									"    pm.expect(jsonData.mediaentry.genres).to.be.an('array');",
-									"    pm.expect(jsonData.mediaentry.creator).to.be.a('string');",
-									"    pm.expect(jsonData.mediaentry.avgScore).to.be.a('number');",
+									"    pm.expect(jsonData.mediaentry.creatorId).to.be.a('string');",
 									"});",
 									"",
 									"//5.) Response is valid JSON and Content-Type is application/json",
@@ -1434,8 +1501,7 @@
 									"        \"releaseYear\",",
 									"        \"ageRestriction\",",
 									"        \"genres\",",
-									"        \"creator\",",
-									"        \"avgScore\"",
+									"        \"creatorId\"",
 									"    ];",
 									"    expectedKeys.forEach(function(key) {",
 									"        pm.expect(jsonData.mediaentry).to.have.property(key);",
@@ -1458,8 +1524,7 @@
 									"    pm.expect(jsonData.mediaentry.releaseYear).to.be.a('number');",
 									"    pm.expect(jsonData.mediaentry.ageRestriction).to.be.a('number');",
 									"    pm.expect(jsonData.mediaentry.genres).to.be.an('array');",
-									"    pm.expect(jsonData.mediaentry.creator).to.be.a('string');",
-									"    pm.expect(jsonData.mediaentry.avgScore).to.be.a('number');",
+									"    pm.expect(jsonData.mediaentry.creatorId).to.be.a('string');",
 									"});",
 									"",
 									"//5.) Response is valid JSON and Content-Type is application/json",
@@ -1554,8 +1619,7 @@
 									"        \"releaseYear\",",
 									"        \"ageRestriction\",",
 									"        \"genres\",",
-									"        \"creator\",",
-									"        \"avgScore\"",
+									"        \"creatorId\"",
 									"    ];",
 									"    expectedKeys.forEach(function(key) {",
 									"        pm.expect(jsonData.mediaentry).to.have.property(key);",
@@ -1578,8 +1642,7 @@
 									"    pm.expect(jsonData.mediaentry.releaseYear).to.be.a('number');",
 									"    pm.expect(jsonData.mediaentry.ageRestriction).to.be.a('number');",
 									"    pm.expect(jsonData.mediaentry.genres).to.be.an('array');",
-									"    pm.expect(jsonData.mediaentry.creator).to.be.a('string');",
-									"    pm.expect(jsonData.mediaentry.avgScore).to.be.a('number');",
+									"    pm.expect(jsonData.mediaentry.creatorId).to.be.a('string');",
 									"});",
 									"",
 									"//5.) Response is valid JSON and Content-Type is application/json",
@@ -1763,8 +1826,7 @@
 									"        \"releaseYear\",",
 									"        \"ageRestriction\",",
 									"        \"genres\",",
-									"        \"creator\",",
-									"        \"avgScore\"",
+									"        \"creatorId\"",
 									"    ];",
 									"    jsonData.mediaentries.forEach(function(item, idx) {",
 									"        expectedKeys.forEach(function(key) {",
@@ -2094,7 +2156,7 @@
 									"    pm.expect(entry).to.have.property(\"releaseYear\").that.is.a(\"number\");",
 									"    pm.expect(entry).to.have.property(\"ageRestriction\").that.is.a(\"number\");",
 									"    pm.expect(entry).to.have.property(\"genres\").that.is.an(\"array\");",
-									"    pm.expect(entry).to.have.property(\"creator\").that.is.a(\"string\");",
+									"    pm.expect(entry).to.have.property(\"creatorId\").that.is.a(\"string\");",
 									"});",
 									"",
 									"//5.) Test if the response contains the correct type value \"SERIES\"",
@@ -2107,7 +2169,7 @@
 									"pm.test(\"creator matches logged-in user\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    const userId = pm.collectionVariables.get(\"userId\"); ",
-									"    pm.expect(jsonData.mediaentry.creator).to.eql(userId);",
+									"    pm.expect(jsonData.mediaentry.creatorId).to.eql(userId);",
 									"});"
 								],
 								"type": "text/javascript",
@@ -2747,6 +2809,854 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "read - filter by genre",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 for genre filter\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains mediaentries array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('mediaentries');",
+									"    pm.expect(jsonData.mediaentries).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Response contains filters property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('filters');",
+									"});",
+									"",
+									"pm.test(\"No error property in response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.not.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/mediaEntry?genre=ACTION",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"mediaEntry"
+							],
+							"query": [
+								{
+									"key": "genre",
+									"value": "ACTION"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "read - filter by type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 for type filter\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains mediaentries array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('mediaentries');",
+									"    pm.expect(jsonData.mediaentries).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"No error property in response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.not.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/mediaEntry?type=MOVIE",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"mediaEntry"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "MOVIE"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "read - filter by releaseYear",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 for releaseYear filter\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains mediaentries array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('mediaentries');",
+									"    pm.expect(jsonData.mediaentries).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"No error property in response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.not.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/mediaEntry?releaseYear=2024",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"mediaEntry"
+							],
+							"query": [
+								{
+									"key": "releaseYear",
+									"value": "2024"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "read - filter by ageRestriction",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 for ageRestriction filter\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains mediaentries array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('mediaentries');",
+									"    pm.expect(jsonData.mediaentries).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"No error property in response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.not.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/mediaEntry?ageRestriction=16",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"mediaEntry"
+							],
+							"query": [
+								{
+									"key": "ageRestriction",
+									"value": "16"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "read - filter by rating",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 for rating filter\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains mediaentries array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('mediaentries');",
+									"    pm.expect(jsonData.mediaentries).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"No error property in response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.not.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/mediaEntry?rating=4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"mediaEntry"
+							],
+							"query": [
+								{
+									"key": "rating",
+									"value": "4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "read - sort by title",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 for sort by title\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains mediaentries array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('mediaentries');",
+									"    pm.expect(jsonData.mediaentries).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Response contains sortedBy property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('sortedBy');",
+									"    pm.expect(jsonData.sortedBy).to.eql('title');",
+									"});",
+									"",
+									"pm.test(\"No error property in response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.not.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/mediaEntry?sortBy=title",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"mediaEntry"
+							],
+							"query": [
+								{
+									"key": "sortBy",
+									"value": "title"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "read - sort by year",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 for sort by year\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains mediaentries array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('mediaentries');",
+									"    pm.expect(jsonData.mediaentries).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Response contains sortedBy property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('sortedBy');",
+									"    pm.expect(jsonData.sortedBy).to.eql('year');",
+									"});",
+									"",
+									"pm.test(\"No error property in response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.not.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/mediaEntry?sortBy=year",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"mediaEntry"
+							],
+							"query": [
+								{
+									"key": "sortBy",
+									"value": "year"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "read - sort by score",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 for sort by score\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains mediaentries array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('mediaentries');",
+									"    pm.expect(jsonData.mediaentries).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Response contains sortedBy property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('sortedBy');",
+									"    pm.expect(jsonData.sortedBy).to.eql('score');",
+									"});",
+									"",
+									"pm.test(\"No error property in response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.not.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/mediaEntry?sortBy=score",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"mediaEntry"
+							],
+							"query": [
+								{
+									"key": "sortBy",
+									"value": "score"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "read - invalid filter param",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 for invalid filter param\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains error property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/mediaEntry?invalidFilter=test",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"mediaEntry"
+							],
+							"query": [
+								{
+									"key": "invalidFilter",
+									"value": "test"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "read - invalid filter value type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 for invalid filter value type\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains error property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/mediaEntry?releaseYear=notANumber",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"mediaEntry"
+							],
+							"query": [
+								{
+									"key": "releaseYear",
+									"value": "notANumber"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get media entry ratings - successful",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 for successful media entry ratings retrieval\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains ratings array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('ratings');",
+									"    pm.expect(jsonData.ratings).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Response contains message property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});",
+									"",
+									"pm.test(\"No error property in response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.not.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/mediaEntry/{{mediaEntryId}}/ratings",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"mediaEntry",
+								"{{mediaEntryId}}",
+								"ratings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get media entry ratings - invalid Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer InvalidToken123",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/mediaEntry/{{mediaEntryId}}/ratings",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"mediaEntry",
+								"{{mediaEntryId}}",
+								"ratings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get media entry ratings - non-existing mediaEntryId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404 for non-existing media entry\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains error property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/mediaEntry/00000000-0000-0000-0000-000000000000/ratings",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"mediaEntry",
+								"00000000-0000-0000-0000-000000000000",
+								"ratings"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -2755,6 +3665,41 @@
 			"item": [
 				{
 					"name": "add existing to favorites - successful",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 for successful favorite add\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains message property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});",
+									"",
+									"pm.test(\"No error property in response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.not.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [
@@ -2786,6 +3731,41 @@
 				},
 				{
 					"name": "delete favorite - successful",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 for successful favorite delete\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains message property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});",
+									"",
+									"pm.test(\"No error property in response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.not.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -2817,6 +3797,47 @@
 				},
 				{
 					"name": "get user's favorites - successful",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 for successful favorites retrieval\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains favorites array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('favorites');",
+									"    pm.expect(jsonData.favorites).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Response contains message property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});",
+									"",
+									"pm.test(\"No error property in response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.not.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -2848,6 +3869,330 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "add - invalid Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer InvalidToken123",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8000/mediaEntry/{{mediaEntryId}}/favorite",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"mediaEntry",
+								"{{mediaEntryId}}",
+								"favorite"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add - non-existing mediaEntryId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404 for non-existing media entry\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains error property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8000/mediaEntry/00000000-0000-0000-0000-000000000000/favorite",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"mediaEntry",
+								"00000000-0000-0000-0000-000000000000",
+								"favorite"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add - already favorited",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409 for already favorited\", function () {",
+									"    pm.response.to.have.status(409);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains error property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8000/mediaEntry/{{mediaEntryId}}/favorite",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"mediaEntry",
+								"{{mediaEntryId}}",
+								"favorite"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete - invalid Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer InvalidToken123",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8000/mediaEntry/{{mediaEntryId}}/favorite",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"mediaEntry",
+								"{{mediaEntryId}}",
+								"favorite"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete - not in favorites",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404 for not in favorites\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains error property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8000/mediaEntry/{{mediaEntryId}}/favorite",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"mediaEntry",
+								"{{mediaEntryId}}",
+								"favorite"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get - invalid Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer InvalidToken123",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8000/users/{{username}}/favorites",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"users",
+								"{{username}}",
+								"favorites"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -2855,17 +4200,169 @@
 			"name": "04_Ratings",
 			"item": [
 				{
-					"name": "create successfully",
+					"name": "Setup - Register second user",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"//Save rating_id to collection for later access/requests\r",
-									"const jsonData = pm.response.json();\r",
-									"\r",
-									"if (jsonData.rating?.id) {\r",
-									"    pm.collectionVariables.set(\"rating_id\", jsonData.rating.id);\r",
+									"pm.test(\"Status code is 201 for successful registration\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"second_username\", \"secondUser\" + Date.now());"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"{{second_username}}\",\r\n  \"password\": \"SecondUser123!!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Setup - Login second user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201 for successful login\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response contains token\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('token');",
+									"});",
+									"",
+									"// Save second user's token",
+									"const jsonData = pm.response.json();",
+									"if (jsonData.token) {",
+									"    pm.collectionVariables.set(\"second_authToken\", jsonData.token);",
+									"}",
+									"if (jsonData.userId) {",
+									"    pm.collectionVariables.set(\"second_userId\", jsonData.userId);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"{{second_username}}\",\r\n  \"password\": \"SecondUser123!!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create - valid/works",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains rating object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('rating');",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});",
+									"",
+									"pm.test(\"Rating has expected properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.rating).to.have.property('id');",
+									"    pm.expect(jsonData.rating).to.have.property('mediaEntryId');",
+									"    pm.expect(jsonData.rating).to.have.property('stars_ct');",
+									"});",
+									"",
+									"pm.test(\"Message is correct\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.eql('Rating created successfully');",
+									"});",
+									"",
+									"// Save rating_id for later tests",
+									"const jsonData = pm.response.json();",
+									"if (jsonData.rating?.id) {",
+									"    pm.collectionVariables.set(\"rating_id\", jsonData.rating.id);",
 									"}"
 								],
 								"type": "text/javascript",
@@ -2893,7 +4390,495 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8000/rating/",
+							"raw": "http://localhost:8000/rating",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create - duplicate rating",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409 for duplicate rating\", function () {",
+									"    pm.response.to.have.status(409);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Error message indicates duplicate\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error).to.include('Duplicate');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"mediaEntryId\": \"{{mediaEntryId}}\",\r\n  \"stars_ct\": 5,\r\n  \"comment\": \"Trying to rate again\",\r\n  \"timestamp\": \"2025-12-14T16:00:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create - invalid Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer InvalidToken123",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"mediaEntryId\": \"{{mediaEntryId}}\",\r\n  \"stars_ct\": 4,\r\n  \"comment\": \"Test comment\",\r\n  \"timestamp\": \"2025-12-14T15:30:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create - missing body",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 for missing body\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create - invalid stars (0)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 for invalid stars\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains error property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{second_authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"mediaEntryId\": \"{{mediaEntryId}}\",\r\n  \"stars_ct\": 0,\r\n  \"comment\": \"Invalid rating\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create - invalid stars (6)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 for invalid stars\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains error property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{second_authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"mediaEntryId\": \"{{mediaEntryId}}\",\r\n  \"stars_ct\": 6,\r\n  \"comment\": \"Invalid rating\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create - missing mediaEntryId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 for missing mediaEntryId\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains error property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{second_authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"stars_ct\": 4,\r\n  \"comment\": \"Missing media entry ID\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create - non-existing mediaEntryId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404 for non-existing mediaEntryId\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains error property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{second_authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"mediaEntryId\": \"00000000-0000-0000-0000-000000000000\",\r\n  \"stars_ct\": 4,\r\n  \"comment\": \"Non-existing media entry\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update - valid/works",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains updated rating\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('rating');",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});",
+									"",
+									"pm.test(\"Message is correct\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.eql('Rating updated successfully');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"mediaEntryId\": \"{{mediaEntryId}}\",\r\n  \"stars_ct\": 5,\r\n  \"comment\": \"Updated comment - even better than I thought!\",\r\n  \"timestamp\": \"2025-12-14T16:00:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating/{{rating_id}}",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2901,14 +4886,896 @@
 							"port": "8000",
 							"path": [
 								"rating",
-								""
+								"{{rating_id}}"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "create successfully Copy",
+					"name": "update - not creator",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 or 403 for not creator\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 403]);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Error message indicates not creator\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error).to.include('creator');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{second_authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"mediaEntryId\": \"{{mediaEntryId}}\",\r\n  \"stars_ct\": 1,\r\n  \"comment\": \"Trying to change someone else's rating\",\r\n  \"timestamp\": \"2025-12-14T16:00:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating/{{rating_id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating",
+								"{{rating_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update - invalid Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer InvalidToken123",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"mediaEntryId\": \"{{mediaEntryId}}\",\r\n  \"stars_ct\": 3,\r\n  \"comment\": \"Test\",\r\n  \"timestamp\": \"2025-12-14T16:00:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating/{{rating_id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating",
+								"{{rating_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update - non-existing ratingId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404 for non-existing rating\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"mediaEntryId\": \"{{mediaEntryId}}\",\r\n  \"stars_ct\": 3,\r\n  \"comment\": \"Test\",\r\n  \"timestamp\": \"2025-12-14T16:00:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating/00000000-0000-0000-0000-000000000000",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating",
+								"00000000-0000-0000-0000-000000000000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "confirm - valid/works",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Message is correct\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.include('confirmed');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating/{{rating_id}}/confirm",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating",
+								"{{rating_id}}",
+								"confirm"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "confirm - not creator",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 or 403 for not creator\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 403]);",
+									"});",
+									"",
+									"pm.test(\"Error message indicates not creator\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error).to.include('creator');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{second_authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating/{{rating_id}}/confirm",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating",
+								"{{rating_id}}",
+								"confirm"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "confirm - invalid Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer InvalidToken123",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating/{{rating_id}}/confirm",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating",
+								"{{rating_id}}",
+								"confirm"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "like - valid/works",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains rating object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('rating');",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});",
+									"",
+									"pm.test(\"Message is correct\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.eql('Rating liked successfully');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{second_authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating/{{rating_id}}/like",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating",
+								"{{rating_id}}",
+								"like"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "like - already liked",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 for already liked\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error message indicates already liked\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error).to.include('already liked');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{second_authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating/{{rating_id}}/like",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating",
+								"{{rating_id}}",
+								"like"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "like - invalid Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer InvalidToken123",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating/{{rating_id}}/like",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating",
+								"{{rating_id}}",
+								"like"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "like - non-existing ratingId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404 for non-existing rating\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{second_authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating/00000000-0000-0000-0000-000000000000/like",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating",
+								"00000000-0000-0000-0000-000000000000",
+								"like"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "unlike - valid/works",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains rating object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('rating');",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});",
+									"",
+									"pm.test(\"Message is correct\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.eql('Rating unliked successfully');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{second_authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating/{{rating_id}}/unlike",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating",
+								"{{rating_id}}",
+								"unlike"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "unlike - not liked yet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 for not liked yet\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error message indicates not liked\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error).to.include('not liked');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{second_authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating/{{rating_id}}/unlike",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating",
+								"{{rating_id}}",
+								"unlike"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "unlike - invalid Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer InvalidToken123",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating/{{rating_id}}/unlike",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating",
+								"{{rating_id}}",
+								"unlike"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete - not creator",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 or 403 for not creator\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 403]);",
+									"});",
+									"",
+									"pm.test(\"Error message indicates not creator\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error).to.include('creator');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{second_authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating/{{rating_id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating",
+								"{{rating_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete - invalid Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer InvalidToken123",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating/{{rating_id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating",
+								"{{rating_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete - valid/works",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Message is correct\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.eql('Rating deleted successfully');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -2937,6 +5804,926 @@
 							"path": [
 								"rating",
 								"{{rating_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete - non-existing ratingId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404 for non-existing rating\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/rating/{{rating_id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"rating",
+								"{{rating_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user's ratings - successful",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 for successful ratings retrieval\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains ratings array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('ratings');",
+									"    pm.expect(jsonData.ratings).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Response contains message property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});",
+									"",
+									"pm.test(\"No error property in response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.not.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/users/ratings",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"users",
+								"ratings"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "05_Leaderboard",
+			"item": [
+				{
+					"name": "get leaderboard - successful",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 for successful leaderboard retrieval\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response is an array (leaderboard entries)\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Leaderboard entries have expected properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.length > 0) {",
+									"        pm.expect(jsonData[0]).to.have.property('rank');",
+									"        pm.expect(jsonData[0]).to.have.property('username');",
+									"        pm.expect(jsonData[0]).to.have.property('totalActivity');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8000/users/leaderboard",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"users",
+								"leaderboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get leaderboard - invalid Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer InvalidToken123",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8000/users/leaderboard",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"users",
+								"leaderboard"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "06_Profile",
+			"item": [
+				{
+					"name": "read profile statistics - successful",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 for successful profile retrieval\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains user property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('user');",
+									"});",
+									"",
+									"pm.test(\"User has expected profile properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.user).to.have.property('username');",
+									"    pm.expect(jsonData.user).to.have.property('userId');",
+									"});",
+									"",
+									"pm.test(\"Response contains message property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});",
+									"",
+									"pm.test(\"No error property in response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.not.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/users/{{username}}/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"users",
+								"{{username}}",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update profile statistics - successful Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 for successful profile update\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains profile property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('profile');",
+									"});",
+									"",
+									"pm.test(\"Response contains message property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});",
+									"",
+									"pm.test(\"No error property in response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.not.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"neuerUsername\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/users/neuerUsername123/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"users",
+								"neuerUsername123",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "read - invalid Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer InvalidToken123",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/users/{{username}}/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"users",
+								"{{username}}",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "read - non-existing user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404 for non-existing user\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains error property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/users/nonExistingUser12345/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"users",
+								"nonExistingUser12345",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update - invalid Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer InvalidToken123",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"newName\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/users/{{username}}/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"users",
+								"{{username}}",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update - not owner",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403 for not owner\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains error property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{second_authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"newName\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/users/{{username}}/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"users",
+								"{{username}}",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update - duplicate username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409 for duplicate username\", function () {",
+									"    pm.response.to.have.status(409);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains error property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"{{second_username}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/users/{{username}}/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"users",
+								"{{username}}",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update - too short username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 for too short username\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains error property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"ab\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/users/{{username}}/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"users",
+								"{{username}}",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update - too long username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 for too long username\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains error property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"thisIsAVeryLongUsernameThatExceedsTheFiftyCharacterLimit123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/users/{{username}}/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"users",
+								"{{username}}",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "07_Recommendations",
+			"item": [
+				{
+					"name": "get recommendations - successful",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 for successful recommendations retrieval\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response contains recommendations array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('recommendations');",
+									"    pm.expect(jsonData.recommendations).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Response contains criteria properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('criteriaGenres');",
+									"    pm.expect(jsonData).to.have.property('criteriaMediaTypes');",
+									"    pm.expect(jsonData).to.have.property('criteriaAgeRestrictions');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/users/recommendations",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"users",
+								"recommendations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get recommendations - invalid Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer InvalidToken123",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/users/recommendations",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"users",
+								"recommendations"
 							]
 						}
 					},
@@ -2992,6 +6779,18 @@
 		},
 		{
 			"key": "rating_id",
+			"value": ""
+		},
+		{
+			"key": "second_authToken",
+			"value": ""
+		},
+		{
+			"key": "second_userId",
+			"value": ""
+		},
+		{
+			"key": "second_username",
 			"value": ""
 		}
 	]

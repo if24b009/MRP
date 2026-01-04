@@ -211,9 +211,15 @@ public class UserService {
         EnumMap<MediaEntryType, Integer> mediaType_ct = new EnumMap<>(MediaEntryType.class);
         Map<Integer, Integer> ageRestriction_ct = new HashMap<>();
 
-        //Check if at least 1 top-rated media entry is found
+        //Check if at least 1 top-rated media entry is found - return empty recommendations if none
         if (!preferences.isBeforeFirst()) {
-            throw new NoSuchElementException("No top-rated media entries from the user");
+            Map<String, Object> response = new HashMap<>();
+            response.put("recommendations", new ArrayList<MediaEntry>());
+            response.put("criteriaGenres", new ArrayList<Genre>());
+            response.put("criteriaMediaTypes", new ArrayList<MediaEntryType>());
+            response.put("criteriaAgeRestrictions", new ArrayList<Integer>());
+            response.put("message", "No top-rated media entries found to base recommendations on");
+            return response;
         }
 
         while (preferences.next()) {

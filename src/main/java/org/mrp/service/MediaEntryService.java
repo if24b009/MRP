@@ -1,5 +1,6 @@
 package org.mrp.service;
 
+import org.mrp.exceptions.DuplicateResourceException;
 import org.mrp.exceptions.ForbiddenException;
 import org.mrp.exceptions.InvalidQueryParameterException;
 import org.mrp.model.Genre;
@@ -226,7 +227,7 @@ public class MediaEntryService {
 
         //Check if already favorited
         if (mediaEntryRepository.isFavorite(userId, mediaEntryId)) {
-            throw new IllegalArgumentException("Already in favorites");
+            throw new DuplicateResourceException ("Already in favorites");
         }
 
         //Add to favorites
@@ -244,6 +245,11 @@ public class MediaEntryService {
     }
 
     public Map<String, Object> getMediaEntryRatings(UUID mediaEntryId) throws IOException, SQLException {
+        //Check if media entry exists
+        if (mediaEntryRepository.getCreatorObject(mediaEntryId) == null) {
+            throw new NoSuchElementException("Media entry not found");
+        }
+
         //Query all ratings for the given media entry
         ResultSet resultSet = ratingRepository.findByMediaEntryId(mediaEntryId);
         List<Rating> ratings = new ArrayList<>();

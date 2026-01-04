@@ -119,19 +119,17 @@ public class MediaEntryRepository implements Repository<MediaEntry> {
             queryParams.add("%" + search + "%");
         }
 
-        //Media Entry Type
+        //Media Entry Type - cast to PostgreSQL enum type
         String type = filters.get("type");
         if (type != null && !type.isEmpty()) {
-            sql.append("AND me.type = ? ");
+            sql.append("AND me.type = ?::media_entry_type ");
             queryParams.add(type.toUpperCase());
         }
 
-        //Genre
+        //Genre - cast to PostgreSQL enum type
         String genre = filters.get("genre");
         if (genre != null && !genre.isEmpty()) {
-            sql.append(
-                    "AND me.id IN (SELECT media_entry_id FROM media_entry_genre WHERE genre = ?) "
-            );
+            sql.append("AND me.id IN (SELECT media_entry_id FROM media_entry_genre WHERE genre = ?::genre) ");
             queryParams.add(genre.toUpperCase());
         }
 
@@ -162,7 +160,7 @@ public class MediaEntryRepository implements Repository<MediaEntry> {
     private void applySorting(String sortBy, StringBuilder sql) {
         if ("year".equals(sortBy)) {
             sql.append("ORDER BY me.release_year DESC");
-        } else if ("rating".equals(sortBy)) {
+        } else if ("score".equals(sortBy)) {
             sql.append("ORDER BY avg_rating DESC");
         } else {
             sql.append("ORDER BY me.title ASC");
