@@ -6,7 +6,9 @@ import org.mrp.model.MediaEntry;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class MediaEntryRepository implements Repository<MediaEntry> {
@@ -49,8 +51,12 @@ public class MediaEntryRepository implements Repository<MediaEntry> {
 
     @Override
     public ResultSet findById(UUID id) throws SQLException {
-        return db.query("SELECT id, title, description, type, release_year, age_restriction, creator_id, created_at" +
-                "FROM media_entry WHERE id = (?)",
+        return db.query("SELECT m.*" +
+                        "COALESCE(AVG(r.stars_ct), 0) AS avg_rating" +
+                        "FROM media_entry m " +
+                        "LEFT JOIN rating r ON m.id = r.media_entry_id " +
+                        "WHERE m.id = ? " +
+                        "GROUP BY m.id, m.creator_id",
                 id);
     }
 
@@ -59,17 +65,108 @@ public class MediaEntryRepository implements Repository<MediaEntry> {
         return db.update("DELETE FROM media_entry WHERE id = ?", id);
     }
 
+    //findAll() without Filters & Sort
     @Override
     public ResultSet findAll() throws SQLException {
         return db.query(
-                "SELECT m.*, u.username AS creator_username, STRING_AGG(meg.genre::TEXT, ',') AS genres " +
+                "SELECT m.*, u.username AS creator_username, " +
+                        "COALESCE(AVG(r.stars_ct), 0) AS avg_rating, " +
+                        "COUNT(DISTINCT r.id) AS total_ratings, " +
+                        "STRING_AGG(meg.genre::TEXT, ',') AS genres " +
                         "FROM media_entry m " +
                         "JOIN app_user u ON m.creator_id = u.user_id " +
                         "LEFT JOIN media_entry_genre meg ON m.id = meg.media_entry_id " +
+                        "LEFT JOIN rating r ON m.id = r.media_entry_id " +
                         "GROUP BY m.id, u.username " +
                         "ORDER BY m.title ASC"
         );
         //STRING_AGG(meg.genre::TEXT, ',') -> comma-seperated String with genre names
+    }
+
+    //findAll() with Filters & Sort
+    public ResultSet findAll(Map<String, String> filters, String sortBy) throws SQLException {
+        StringBuilder sql = new StringBuilder(
+                "SELECT me.*, u.username AS creator_username, " +
+                        "COALESCE(AVG(r.stars_ct), 0) AS avg_rating, " +
+                        "COUNT(DISTINCT r.id) AS total_ratings, " +
+                        "STRING_AGG(meg.genre::TEXT, ',') AS genres " +
+                        "FROM media_entry me " +
+                        "JOIN app_user u ON me.creator_id = u.user_id " +
+                        "LEFT JOIN media_entry_genre meg ON me.id = meg.media_entry_id " +
+                        "LEFT JOIN rating r ON me.id = r.media_entry_id " +
+                        "WHERE 1=1 "
+        );
+        //WHERE 1=1 -> always true -> to append starting with AND
+
+        List<Object> queryParams = new ArrayList<>();
+
+        //Filters
+        applyFilters(filters, sql, queryParams);
+
+        //Sorting
+        applySorting(sortBy, sql);
+
+        return db.query(sql.toString(), queryParams.toArray());
+    }
+
+    private void applyFilters(Map<String, String> filters, StringBuilder sql, List<Object> queryParams) {
+        if (filters == null) return;
+
+        //Search by title
+        String search = filters.get("search");
+        if (search != null && !search.isEmpty()) {
+            sql.append("AND LOWER(me.title) LIKE LOWER(?) ");
+            queryParams.add("%" + search + "%");
+        }
+
+        //Media Entry Type
+        String type = filters.get("type");
+        if (type != null && !type.isEmpty()) {
+            sql.append("AND me.type = ? ");
+            queryParams.add(type.toUpperCase());
+        }
+
+        //Genre
+        String genre = filters.get("genre");
+        if (genre != null && !genre.isEmpty()) {
+            sql.append(
+                    "AND me.id IN (SELECT media_entry_id FROM media_entry_genre WHERE genre = ?) "
+            );
+            queryParams.add(genre.toUpperCase());
+        }
+
+        //Release year
+        String releaseYear = filters.get("releaseYear");
+        if (releaseYear != null && !releaseYear.isEmpty()) {
+            sql.append("AND me.release_year = ? ");
+            queryParams.add(Integer.parseInt(releaseYear));
+        }
+
+        //Age restriction
+        String ageRestriction = filters.get("ageRestriction");
+        if (ageRestriction != null && !ageRestriction.isEmpty()) {
+            sql.append("AND me.age_restriction = ? ");
+            queryParams.add(Integer.parseInt(ageRestriction));
+        }
+
+        //Grouping for aggregates
+        sql.append("GROUP BY me.id, u.username ");
+
+        //Rating (HAVING)
+        String ratingStr = filters.get("rating");
+        if (ratingStr != null && !ratingStr.isEmpty()) {
+            sql.append("HAVING COALESCE(AVG(r.stars_ct), 0) >= ? ");
+            queryParams.add(Double.parseDouble(ratingStr));
+        }
+    }
+    private void applySorting(String sortBy, StringBuilder sql) {
+        if ("year".equals(sortBy)) {
+            sql.append("ORDER BY me.release_year DESC");
+        } else if ("rating".equals(sortBy)) {
+            sql.append("ORDER BY avg_rating DESC");
+        } else {
+            sql.append("ORDER BY me.title ASC");
+        }
     }
 
 
@@ -132,5 +229,11 @@ public class MediaEntryRepository implements Repository<MediaEntry> {
                 userId,
                 mediaEntryId
         );
+    }
+
+
+    //get Timestamp created_at
+    public ResultSet getCreated_at(UUID id) throws SQLException {
+        return db.query("SELECT created_at FROM media_entry WHERE id = ?", id);
     }
 }

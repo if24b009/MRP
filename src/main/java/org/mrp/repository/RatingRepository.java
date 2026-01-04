@@ -140,14 +140,12 @@ public class RatingRepository implements Repository<Rating> {
     //All Ratings of a User (only visible comments)
     public ResultSet findByUserId(UUID userId) throws SQLException {
         return db.query(
-                """
-                        SELECT r.*, COUNT(rl.user_id) AS like_count
-                        FROM rating r
-                        LEFT JOIN rating_likes rl ON r.id = rl.rating_id
-                        WHERE r.user_id = ?
-                        GROUP BY r.id
-                        ORDER BY r.timestamp DESC
-                        """,
+                "SELECT r.*, COUNT(rl.user_id) AS like_count " +
+                        "FROM rating r " +
+                        "LEFT JOIN rating_likes rl ON r.id = rl.rating_id " +
+                        "WHERE r.user_id = ? " +
+                        "GROUP BY r.id " +
+                        "ORDER BY r.timestamp DESC",
                 userId
         );
     }

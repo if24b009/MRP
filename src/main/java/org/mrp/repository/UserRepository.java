@@ -80,45 +80,35 @@ public class UserRepository implements Repository<User> {
 
     public ResultSet getFavoriteMediaEntries(UUID userId) throws SQLException {
         return db.query(
-                """
-                        SELECT
-                            m.*,
-                            STRING_AGG(meg.genre::TEXT, ',') AS genres,
-                            u.username AS creator_username,
-                            COALESCE(AVG(r.stars_ct), 0) AS avg_rating,
-                            COUNT(DISTINCT r.id) AS total_ratings
-                        FROM media_entry m
-                        INNER JOIN favorite f
-                            ON m.id = f.media_entry_id
-                        INNER JOIN app_user u
-                            ON m.creator_id = u.user_id
-                        LEFT JOIN rating r
-                            ON m.id = r.media_entry_id
-                        LEFT JOIN media_entry_genre meg
-                            ON m.id = meg.media_entry_id
-                        WHERE f.user_id = ?
-                        GROUP BY m.id, u.username
-                        ORDER BY m.title ASC;
-                        """,
+                "SELECT m.*, " +
+                        "STRING_AGG(meg.genre::TEXT, ',') AS genres, " +
+                        "u.username AS creator_username, " +
+                        "COALESCE(AVG(r.stars_ct), 0) AS avg_rating, " +
+                        "COUNT(DISTINCT r.id) AS total_ratings " +
+                        "FROM media_entry m " +
+                        "INNER JOIN favorite f ON m.id = f.media_entry_id " +
+                        "INNER JOIN app_user u ON m.creator_id = u.user_id " +
+                        "LEFT JOIN rating r ON m.id = r.media_entry_id " +
+                        "LEFT JOIN media_entry_genre meg ON m.id = meg.media_entry_id " +
+                        "WHERE f.user_id = ? " +
+                        "GROUP BY m.id, u.username " +
+                        "ORDER BY m.title ASC",
                 userId
         );
     }
 
     public ResultSet getLeaderboard() throws SQLException {
         return db.query(
-                """
-                            SELECT
-                            u.username,
-                            (SELECT COUNT(*) FROM rating r WHERE r.user_id = u.user_id) AS rating_count,
-                            (SELECT COUNT(*) FROM media_entry m WHERE m.creator_id = u.user_id) AS media_created,
-                            (SELECT COUNT(*) FROM rating_likes rl WHERE rl.user_id = u.user_id) AS likes_given
-                        FROM app_user u
-                        ORDER BY
-                            (SELECT COUNT(*) FROM rating r WHERE r.user_id = u.user_id) +
-                            (SELECT COUNT(*) FROM media_entry m WHERE m.creator_id = u.user_id) +
-                            (SELECT COUNT(*) FROM rating_likes rl WHERE rl.user_id = u.user_id) DESC
-                        LIMIT 10;
-                        """
+                "SELECT u.username, " +
+                        "(SELECT COUNT(*) FROM rating r WHERE r.user_id = u.user_id) AS rating_count, " +
+                        "(SELECT COUNT(*) FROM media_entry m WHERE m.creator_id = u.user_id) AS media_created, " +
+                        "(SELECT COUNT(*) FROM rating_likes rl WHERE rl.user_id = u.user_id) AS likes_given " +
+                        "FROM app_user u " +
+                        "ORDER BY " +
+                        "(SELECT COUNT(*) FROM rating r WHERE r.user_id = u.user_id) + " +
+                        "(SELECT COUNT(*) FROM media_entry m WHERE m.creator_id = u.user_id) + " +
+                        "(SELECT COUNT(*) FROM rating_likes rl WHERE rl.user_id = u.user_id) DESC " +
+                        "LIMIT 10"
         );
     }
 
@@ -174,19 +164,16 @@ public class UserRepository implements Repository<User> {
     //rated from user
     public ResultSet getUserTopRatedMediaEntries(UUID userId) throws SQLException {
         return db.query(
-                """
-                        SELECT
-                            me.id,
-                            me.type,
-                            me.age_restriction,
-                            STRING_AGG(meg.genre::TEXT, ',') AS genres
-                        FROM rating r
-                        JOIN media_entry me ON r.media_entry_id = me.id
-                        JOIN media_entry_genre meg ON me.id = meg.media_entry_id
-                        WHERE r.user_id = ?
-                          AND r.stars_ct >= 4
-                        GROUP BY me.id;
-                        """,
+                "SELECT " +
+                        "me.id, " +
+                        "me.type, " +
+                        "me.age_restriction, " +
+                        "STRING_AGG(meg.genre::TEXT, ',') AS genres " +
+                        "FROM rating r " +
+                        "JOIN media_entry me ON r.media_entry_id = me.id " +
+                        "JOIN media_entry_genre meg ON me.id = meg.media_entry_id " +
+                        "WHERE r.user_id = ? AND r.stars_ct >= 4 " +
+                        "GROUP BY me.id",
                 userId
         );
     }

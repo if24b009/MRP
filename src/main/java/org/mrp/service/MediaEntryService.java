@@ -1,6 +1,7 @@
 package org.mrp.service;
 
 import org.mrp.exceptions.ForbiddenException;
+import org.mrp.exceptions.InvalidQueryParameterException;
 import org.mrp.model.Genre;
 import org.mrp.model.Rating;
 import org.mrp.model.MediaEntry;
@@ -16,8 +17,29 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class MediaEntryService {
-    private MediaEntryRepository mediaEntryRepository = new MediaEntryRepository();
-    private RatingRepository ratingRepository = new RatingRepository();
+    private MediaEntryRepository mediaEntryRepository;
+    private RatingRepository ratingRepository;
+
+    public MediaEntryService() {
+        this.mediaEntryRepository = new MediaEntryRepository();
+        this.ratingRepository = new RatingRepository();
+    }
+
+    //Unit Tests: Constructor for testing with mocked repositories
+    MediaEntryService(MediaEntryRepository mediaEntryRepository, RatingRepository ratingRepository) {
+        this.mediaEntryRepository = mediaEntryRepository;
+        this.ratingRepository = ratingRepository;
+    }
+
+    //Filters & Sort (getMediaEntries)
+    private Set<String> allowedFilters = Set.of(
+            "genre",
+            "type",
+            "releaseYear",
+            "ageRestriction",
+            "rating"
+    );
+    private Set<String> allowedSorts = Set.of("title", "year", "score");
 
     private boolean isInvalidType(MediaEntry mediaEntry) {
         return mediaEntry.getType() == null ||
@@ -40,9 +62,16 @@ public class MediaEntryService {
         //Insert MediaEntry with UUID in DB
         UUID mediaEntryId = mediaEntryRepository.save(new MediaEntry(null, mediaEntry.getTitle(), mediaEntry.getDescription(), mediaEntry.getType(), mediaEntry.getReleaseYear(), mediaEntry.getAgeRestriction(), mediaEntry.getGenres(), userId));
 
-        //Update MediaEntry with id and creator
+        //Update MediaEntry with id, creator and timestamp
         mediaEntry.setId(mediaEntryId);
         mediaEntry.setCreator(userId);
+        ResultSet resultSet = mediaEntryRepository.getCreated_at(mediaEntryId);
+        if(resultSet.next()) {
+            Timestamp createdAtTS = resultSet.getTimestamp("created_at");
+            if (createdAtTS != null) {
+                mediaEntry.setCreatedAt(createdAtTS.toLocalDateTime());
+            }
+        }
 
         //Response
         Map<String, Object> response = new HashMap<>();
@@ -80,8 +109,31 @@ public class MediaEntryService {
         return response;
     }
 
-    public Map<String, Object> getMediaEntries() throws IOException, SQLException {
-        ResultSet resultSet = mediaEntryRepository.findAll();
+    private void validateFilters(Map<String, String> filters) {
+        for (Map.Entry<String, String> entry : filters.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+
+            if (!allowedFilters.contains(key)) {
+                throw new InvalidQueryParameterException("Invalid filter: " + key);
+            }
+
+            if (key.equals("releaseYear") || key.equals("ageRestriction") || key.equals("rating")) {
+                try {
+                    Integer.parseInt(value);
+                } catch (NumberFormatException e) {
+                    throw new InvalidQueryParameterException("Invalid number for filter: " + key);
+                }
+            }
+        }
+    }
+
+    public Map<String, Object> getMediaEntries(Map<String, String> filters, String sortBy) throws IOException, SQLException {
+        //Filters & Sort
+        validateFilters(filters);
+        String finalSortBy = allowedSorts.contains(sortBy) ? sortBy : "title"; //sortBy is allowed key or title
+
+        ResultSet resultSet = mediaEntryRepository.findAll(filters, finalSortBy);
         List<MediaEntry> mediaEntries = new ArrayList<>();
 
         while (resultSet.next()) {
@@ -92,6 +144,8 @@ public class MediaEntryService {
         //Response
         Map<String, Object> response = new HashMap<>();
         response.put("mediaentries", mediaEntries);
+        response.put("sortedBy", finalSortBy);
+        response.put("filters", filters);
         response.put("message", "Media entries read successfully");
 
         return response;
@@ -111,6 +165,7 @@ public class MediaEntryService {
         mediaEntry.setReleaseYear(resultSet.getInt("release_year"));
         mediaEntry.setAgeRestriction(resultSet.getInt("age_restriction"));
         mediaEntry.setCreator(mediaEntryRepository.getUUID(resultSet, "creator_id"));
+        mediaEntry.setAvgRating(resultSet.getDouble("avg_rating"));
 
         Timestamp createdAtTS = resultSet.getTimestamp("created_at");
         if (createdAtTS != null) {

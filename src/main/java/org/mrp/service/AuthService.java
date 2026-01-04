@@ -13,7 +13,15 @@ import java.util.Map;
 import java.util.UUID;
 
 public class AuthService {
-    private UserRepository userRepository = new UserRepository();
+    private UserRepository userRepository;
+
+    public AuthService() {
+        this.userRepository = new UserRepository();
+    }
+    //Unit Testing: Constructor for testing with mocked repository
+    AuthService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public Map<String, Object> register(String username, String password) throws IOException, SQLException {
         //Input validation

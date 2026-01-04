@@ -160,13 +160,14 @@ Die Tests werden manuell in Postman ausgeführt.
 | User Profil                             | 5 h     |
 | Media-Entry CRUD                        | 18 h    |
 | Ratings + Comments + Likes              | 15 h    |
-| Sortieren + Filter                      |         |
+| Sortieren + Filter                      | 8 h     |
 | Favoriten                               | 5 h     |
 | Empfehlungen                            | 10 h    |
 | Leaderboard                             | 2 h     |
-| Postman Tests & Debugging               |         |
-| Dokumentation (README & Protocol)       |         |
-| **Gesamt**                              | 80 h    |
+| Postman Tests & Debugging               | 20 h    |
+| Unit Tests                              | 8 h     |
+| Dokumentation (README & Protocol)       | 5 h     |
+| **Gesamt**                              | 121 h   |
 
 
 ## Probleme & Lösungen

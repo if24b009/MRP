@@ -14,8 +14,19 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class UserService {
-    private UserRepository userRepository = new UserRepository();
-    private RatingRepository ratingRepository = new RatingRepository();
+    private UserRepository userRepository;
+    private RatingRepository ratingRepository;
+
+    public UserService() {
+        this.userRepository = new UserRepository();
+        this.ratingRepository = new RatingRepository();
+    }
+
+    //Unit Tests: Constructor for testing with mocked repositories
+    UserService(UserRepository userRepository, RatingRepository ratingRepository) {
+        this.userRepository = userRepository;
+        this.ratingRepository = ratingRepository;
+    }
 
     private User getUserFromUsername(String username) throws IOException, SQLException {
         //Find user

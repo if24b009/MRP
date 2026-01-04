@@ -12,8 +12,16 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 public class RatingService {
-    private RatingRepository ratingRepository = new RatingRepository();
+    private RatingRepository ratingRepository;
 
+    public RatingService() {
+        this.ratingRepository = new RatingRepository();
+    }
+
+    //Unit Tests: Constructor for testing with mocked repository
+    RatingService(RatingRepository ratingRepository) {
+        this.ratingRepository = ratingRepository;
+    }
     public String confirmComment(UUID userId, UUID ratingId) throws IOException, SQLException {
         //Check if user = creator
         if (!isUserCreator(ratingId, userId)) {

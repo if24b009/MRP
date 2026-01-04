@@ -14,6 +14,7 @@ public class MediaEntry {
     private List<Genre> genres;
     private UUID creatorId;
     private LocalDateTime createdAt;
+    private double avgRating;
 
     public MediaEntry() {}
 
@@ -68,6 +69,14 @@ public class MediaEntry {
         return creatorId;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public double getAvgRating() {
+        return avgRating;
+    }
+
     public void setCreator(UUID creatorId) {
         this.creatorId = creatorId;
     }
@@ -102,5 +111,9 @@ public class MediaEntry {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public void setAvgRating(double avgRating) {
+        this.avgRating = avgRating;
     }
 }

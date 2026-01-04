@@ -1,37 +1,16 @@
 @startuml
-class org.mrp.service.RatingService {
-}
 enum org.mrp.model.MediaEntryType {
 +  MOVIE
 +  SERIES
 +  GAME
 }
 
-class org.mrp.repository.MediaEntryRepository {
-- Database db
-+ UUID save(MediaEntryTO)
-+ ResultSet findById(UUID)
-+ void delete(UUID)
-+ ResultSet findAll()
-}
-
-
 class org.mrp.serverHandler.AuthHandler {
 ~ AuthService authService
 + void handle(HttpExchange)
-}
-
-
-class org.mrp.Main {
-+ {static} void main(String[])
-}
-
-class org.mrp.repository.RatingRepository {
-- Database db
-+ UUID save(RatingTO)
-+ ResultSet findById(UUID)
-+ void delete(UUID)
-+ ResultSet findAll()
+- void handleRegister(HttpExchange)
+- void handleLogin(HttpExchange)
+- Map.Entry<String,String> extractCredentials(HttpExchange)
 }
 
 
@@ -44,6 +23,195 @@ class org.mrp.model.Token {
 + Timestamp getCreatedAt()
 }
 
+
+class org.mrp.exceptions.InvalidQueryParameterException {
+}
+class org.mrp.serverHandler.RatingHandler {
+~ RatingService ratingService
+~ TokenValidation tokenValidation
+~ PathParameterExtraction pathParameterExtraction
++ void handle(HttpExchange)
+- void handleCreateRating(HttpExchange,UUID)
+- void handleUpdateRating(HttpExchange,UUID,UUID)
+}
+
+
+interface org.mrp.repository.Repository {
+~ {static} Database db
+~ UUID save(T)
+~ ResultSet findById(UUID)
+~ int delete(UUID)
+~ ResultSet findAll()
+}
+
+
+class org.mrp.utils.UUIDGenerator {
++ {static} UUID generateUUIDv7()
++ {static} boolean isValidUUID(String)
++ {static} UUID parseUUID(String)
+}
+
+class org.mrp.model.User {
+- UUID userId
+- String username
+- String password_hashed
+- int ratings_total
+- int favorites_total
+- int mediaEntriesCreated_total
+- double avgScore
++ String getUsername()
++ void setUsername(String)
++ UUID getUserId()
++ String getPassword_hashed()
++ void setRatings_total(int)
++ void setFavorites_total(int)
++ void setMediaEntriesCreated_total(int)
++ void setAvgScore(double)
++ int getRatings_total()
++ int getFavorites_total()
++ int getMediaEntriesCreated_total()
++ double getAvgScore()
+}
+
+
+class org.mrp.repository.UserRepository {
+- MediaEntryService mediaEntryService
++ UUID save(User)
++ void update(String,UUID)
++ UUID getUUID(ResultSet,String)
++ ResultSet findById(UUID)
++ ResultSet findByUsername(String)
++ ResultSet findByToken(String)
++ ResultSet findAll()
++ int delete(UUID)
++ boolean userAlreadyExists(String)
++ ResultSet getFavoriteMediaEntries(UUID)
++ ResultSet getLeaderboard()
++ boolean isExistingUsername(String)
++ void updateUsername(UUID,String)
++ int getRatings_total(UUID)
++ int getFavorites_total(UUID)
++ int getMediaEntriesCreated_total(UUID)
++ double getAvgScore(UUID)
++ ResultSet getUserTopRatedMediaEntries(UUID)
++ List<MediaEntry> findRecommendations(UUID,List<Genre>,List<MediaEntryType>,List<Integer>)
+- ResultSet getRecommendationsBasedOnConditions(StringBuilder,List<Object>)
+- void appendINClause(String,List<T>,StringBuilder,List<Object>)
+}
+
+
+class org.mrp.model.Rating {
+- UUID id
+- UUID userId
+- UUID mediaEntryId
+- int stars_ct
+- String comment
+- boolean isCommentVisible
+- LocalDateTime timestamp
+- List<User> likedBy
++ UUID getId()
++ void setId(UUID)
++ void setUserId(UUID)
++ UUID getUserId()
++ UUID getMediaEntryId()
++ String getComment()
++ int getStars_ct()
++ void setStars_ct(int)
++ boolean isCommentVisible()
++ void setCommentVisible()
++ LocalDateTime getTimestamp()
++ List<User> getLikedBy()
++ void setLikedBy(List<User>)
+}
+
+
+class org.mrp.exceptions.ForbiddenException {
+}
+class org.mrp.model.MediaEntry {
+- UUID id
+- String title
+- String description
+- MediaEntryType type
+- int releaseYear
+- int ageRestriction
+- List<Genre> genres
+- UUID creatorId
+- LocalDateTime createdAt
++ UUID getId()
++ String getTitle()
++ String getDescription()
++ MediaEntryType getType()
++ int getReleaseYear()
++ int getAgeRestriction()
++ List<Genre> getGenres()
++ UUID getCreatorId()
++ LocalDateTime getCreatedAt()
++ void setCreator(UUID)
++ void setId(UUID)
++ void setTitle(String)
++ void setDescription(String)
++ void setType(MediaEntryType)
++ void setReleaseYear(int)
++ void setAgeRestriction(int)
++ void setGenres(List<Genre>)
++ void setCreatedAt(LocalDateTime)
+}
+
+
+class org.mrp.service.RatingService {
+- RatingRepository ratingRepository
++ String confirmComment(UUID,UUID)
++ Map<String,Object> likeRating(UUID,UUID)
++ Map<String,Object> unlikeRating(UUID,UUID)
++ Map<String,Object> createRating(Rating,UUID)
++ Map<String,Object> updateRating(Rating,UUID,UUID)
++ String deleteRating(UUID,UUID)
+- boolean isUserCreator(UUID,UUID)
+}
+
+
+class org.mrp.repository.MediaEntryRepository {
+- UUID insertMediaEntry(MediaEntry)
++ UUID save(MediaEntry)
++ UUID getUUID(ResultSet,String)
++ ResultSet findById(UUID)
++ int delete(UUID)
++ ResultSet findAll()
++ ResultSet findAll(Map<String,String>,String)
+- void applyFilters(Map<String,String>,StringBuilder,List<Object>)
+- void applySorting(String,StringBuilder)
++ Object getCreatorObject(UUID)
+- void updateGenres(UUID,List<Genre>)
++ int update(MediaEntry)
++ boolean isFavorite(UUID,UUID)
++ UUID addFavorite(UUID,UUID)
++ int removeFavorite(UUID,UUID)
++ ResultSet getCreated_at(UUID)
+}
+
+class org.mrp.exceptions.DuplicateResourceException {
+}
+class org.mrp.Main {
++ {static} void main(String[])
+}
+
+class org.mrp.repository.RatingRepository {
+- UUID insertRating(Rating)
++ UUID save(Rating)
+- void updateRatingLikes(UUID,List<User>)
++ int update(Rating)
++ ResultSet findById(UUID)
++ int delete(UUID)
++ ResultSet findAll()
++ Object getCreatorObject(UUID)
++ Object getRatingObject(UUID)
++ int changeCommentVisibility(UUID)
++ boolean isAlreadyLikedByUser(UUID,UUID)
++ void addUserLike(UUID,UUID)
++ void removeUserLike(UUID,UUID)
++ ResultSet findByUserId(UUID)
++ ResultSet findByMediaEntryId(UUID)
+}
 
 enum org.mrp.model.Genre {
 +  ACTION
@@ -61,29 +229,41 @@ enum org.mrp.model.Genre {
 
 class org.mrp.service.AuthService {
 - UserRepository userRepository
-+ void register(HttpExchange)
-+ void login(HttpExchange)
++ Map<String,Object> register(String,String)
++ Map<String,Object> login(String,String)
 }
 
 
-interface org.mrp.repository.Repository {
-~ UUID save(U)
-~ ResultSet findById(UUID)
-+ void delete(UUID)
-+ ResultSet findAll()
+class org.mrp.serverHandler.MediaEntryHandler {
+~ MediaEntryService mediaEntryService
+~ TokenValidation tokenValidation
+~ PathParameterExtraction pathParameterExtraction
++ void handle(HttpExchange)
+- void handleCreateMediaEntry(HttpExchange,UUID)
+- void handleUpdateMediaEntry(HttpExchange,UUID,UUID)
+- void handleGetMediaEntries(HttpExchange,String)
 }
 
-class org.mrp.utils.UUIDGenerator {
-+ {static} UUID generateUUIDv7()
-+ {static} boolean isValidUUID(String)
-+ {static} UUID parseUUID(String)
+
+class org.mrp.serverHandler.UserHandler {
+~ UserService userService
+~ TokenValidation tokenValidation
+~ PathParameterExtraction pathParameterExtraction
++ void handle(HttpExchange)
+- void handleGetProfile(HttpExchange,String)
+- void handleUpdateProfile(HttpExchange,String,UUID)
 }
 
-class org.mrp.dto.UserTO {
-- String username
-- String password_hashed
-+ String getUsername()
-+ String getPassword_hashed()
+
+class org.mrp.utils.PathParameterExtraction {
++ UUID extractId(HttpExchange,String)
++ String extractUsername(String)
++ T parseRequestOrSendError(HttpExchange,Class<T>)
+}
+
+class org.mrp.utils.TokenValidation {
+~ UserRepository userRepository
++ UUID validateToken(HttpExchange)
 }
 
 
@@ -95,55 +275,42 @@ enum org.mrp.serverHandler.HttpMethod {
 +  DELETE
 }
 
-class org.mrp.model.User {
-- UUID userId
-- String username
-- String password_hashed
-+ String getUsername()
-+ UUID getUserId()
-+ String getPassword()
-}
-
-
 class org.mrp.service.MediaEntryService {
+- MediaEntryRepository mediaEntryRepository
+- RatingRepository ratingRepository
+- Set<String> allowedFilters
+- Set<String> allowedSorts
+- boolean isInvalidType(MediaEntry)
++ Map<String,Object> createMediaEntry(MediaEntry,UUID)
++ Map<String,Object> updateMediaEntry(MediaEntry,UUID,UUID)
+- void validateFilters(Map<String,String>)
++ Map<String,Object> getMediaEntries(Map<String,String>,String)
++ MediaEntry mapResultSetToMediaEntry(ResultSet)
++ String deleteMediaEntry(UUID,UUID)
++ String addFavorite(UUID,UUID)
++ String removeFavorite(UUID,UUID)
++ Map<String,Object> getMediaEntryRatings(UUID)
++ Rating mapResultSetToRating(ResultSet)
 }
+
+
 class org.mrp.service.UserService {
-}
-class org.mrp.model.Rating {
-- UUID id
-- UUID userId
-- UUID mediaEntryId
-- int starsCt
-- String comment
-- boolean isCommentVisible
-- LocalDateTime timestamp
-- List<User> likedBy
-+ UUID getId()
-+ UUID getUserId()
-+ UUID getMediaEntryId()
-+ int getStarsCt()
-+ String getComment()
-+ boolean isCommentVisible()
-+ void setCommentVisible()
-+ int getLikeCount()
+- UserRepository userRepository
+- RatingRepository ratingRepository
+- User getUserFromUsername(String)
++ Map<String,Object> getProfile(String)
++ Map<String,Object> updateProfile(String,UUID,Map<String,Object>)
++ Map<String,Object> getFavorites(String)
++ Map<String,Object> getUserRatings(UUID)
++ Rating mapResultSetToRating(ResultSet)
++ List<Map<String,Object>> getLeaderboard()
++ Map<String,Object> getRecommendations(UUID)
+- {static} List<K> getTopKeys(Map<K,Integer>,int)
+- void incrementCount(Map<K,Integer>,K)
+- E toEnum(String,Class<E>)
 }
 
 
-class org.mrp.repository.UserRepository {
-- Database db
-+ UUID save(UserTO)
-+ void update(String,UUID)
-+ UUID getUUID(ResultSet,String)
-+ ResultSet findById(UUID)
-+ ResultSet findByUsername(String)
-+ ResultSet findAll()
-+ void delete(UUID)
-+ boolean userAlreadyExists(String)
-}
-
-
-class org.mrp.dto.MediaEntryTO {
-}
 class org.mrp.utils.JsonHelper {
 - {static} ObjectMapper mapper
 + {static} T parseRequest(HttpExchange,Class<T>)
@@ -157,24 +324,6 @@ class org.mrp.utils.JsonHelper {
 }
 
 
-class org.mrp.model.MediaEntry {
-- UUID id
-# String title
-# String description
-# MediaEntryType type
-# Year releaseYear
-# int ageRestriction
-# List<Genre> genres
-- User creator
-- LocalDateTime createdAt
-+ UUID getId()
-+ User getCreator()
-+ double getAvgScore()
-}
-
-
-class org.mrp.dto.RatingTO {
-}
 class org.mrp.database.Database {
 - String url
 - String user
@@ -185,12 +334,12 @@ class org.mrp.database.Database {
 + ResultSet query(String,Object)
 + int update(String,Object)
 + UUID insert(String,Object)
++ void insertWithoutUUID(String,Object)
 + boolean exists(String,Object)
 - PreparedStatement prepareStatement(String,Object)
 - void setParameters(PreparedStatement,Object)
 + UUID getUUID(ResultSet,String)
 + void close()
-+ UUID getUUID(ResultSet,int)
 + Object getValue(String,Object)
 + List<Object> getValues(String,Object)
 + void beginTransaction()
@@ -201,8 +350,14 @@ class org.mrp.database.Database {
 
 
 
-org.mrp.repository.Repository <|.. org.mrp.repository.MediaEntryRepository
 com.sun.net.httpserver.HttpHandler <|.. org.mrp.serverHandler.AuthHandler
-org.mrp.repository.Repository <|.. org.mrp.repository.RatingRepository
+org.mrp.exceptions.RuntimeException <|-- org.mrp.exceptions.InvalidQueryParameterException
+com.sun.net.httpserver.HttpHandler <|.. org.mrp.serverHandler.RatingHandler
 org.mrp.repository.Repository <|.. org.mrp.repository.UserRepository
+org.mrp.exceptions.RuntimeException <|-- org.mrp.exceptions.ForbiddenException
+org.mrp.repository.Repository <|.. org.mrp.repository.MediaEntryRepository
+org.mrp.exceptions.RuntimeException <|-- org.mrp.exceptions.DuplicateResourceException
+org.mrp.repository.Repository <|.. org.mrp.repository.RatingRepository
+com.sun.net.httpserver.HttpHandler <|.. org.mrp.serverHandler.MediaEntryHandler
+com.sun.net.httpserver.HttpHandler <|.. org.mrp.serverHandler.UserHandler
 @enduml

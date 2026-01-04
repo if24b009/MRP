@@ -24,6 +24,7 @@ public class MediaEntryHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         String usedMethod = exchange.getRequestMethod();
         String path = exchange.getRequestURI().getPath();
+        String query = exchange.getRequestURI().getQuery();
 
         try {
 
@@ -54,8 +55,7 @@ public class MediaEntryHandler implements HttpHandler {
             } else if (HttpMethod.PUT.name().equals(usedMethod)) {
                 handleUpdateMediaEntry(exchange, userId, mediaEntryId);
             } else if (HttpMethod.GET.name().equals(usedMethod)) {
-                Map<String, Object> response = mediaEntryService.getMediaEntries();
-                JsonHelper.sendResponse(exchange, 200, response);
+                handleGetMediaEntries(exchange, query);
             } else if (HttpMethod.DELETE.name().equals(usedMethod)) {
                 String message = mediaEntryService.deleteMediaEntry(userId, mediaEntryId);
                 JsonHelper.sendSuccess(exchange, message);
@@ -101,6 +101,18 @@ public class MediaEntryHandler implements HttpHandler {
 
         try {
             Map<String, Object> response = mediaEntryService.updateMediaEntry(mediaEntry, userId, mediaEntryId);
+            JsonHelper.sendResponse(exchange, 200, response);
+        } catch (Exception e) {
+            throw e; //throw to "main"-handle methode
+        }
+    }
+
+    private void handleGetMediaEntries(HttpExchange exchange, String query) throws IOException, SQLException {
+        Map<String, String> parameters = JsonHelper.parseQueryParams(query);
+
+        try {
+            String sortBy = parameters.getOrDefault("sortBy", "title"); //default sorted by title (sortBy != null)
+            Map<String, Object> response = mediaEntryService.getMediaEntries(parameters, sortBy);
             JsonHelper.sendResponse(exchange, 200, response);
         } catch (Exception e) {
             throw e; //throw to "main"-handle methode
