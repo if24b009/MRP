@@ -14,8 +14,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class UserService {
-    private UserRepository userRepository;
-    private RatingRepository ratingRepository;
+    private final UserRepository userRepository;
+    private final RatingRepository ratingRepository;
 
     public UserService() {
         this.userRepository = new UserRepository();

@@ -13,8 +13,8 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 public class RatingService {
-    private RatingRepository ratingRepository;
-    private MediaEntryRepository mediaEntryRepository;
+    private final RatingRepository ratingRepository;
+    private final MediaEntryRepository mediaEntryRepository;
 
     public RatingService() {
         this.ratingRepository = new RatingRepository();

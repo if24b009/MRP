@@ -18,8 +18,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class MediaEntryService {
-    private MediaEntryRepository mediaEntryRepository;
-    private RatingRepository ratingRepository;
+    private final MediaEntryRepository mediaEntryRepository;
+    private final RatingRepository ratingRepository;
 
     public MediaEntryService() {
         this.mediaEntryRepository = new MediaEntryRepository();

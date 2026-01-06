@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class AuthService {
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public AuthService() {
         this.userRepository = new UserRepository();

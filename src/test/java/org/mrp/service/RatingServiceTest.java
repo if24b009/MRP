@@ -29,10 +29,11 @@ class RatingServiceTest {
         ratingService = new RatingService(ratingRepository);
     }
 
+    //1.) Create - Stars only 1-5 -> should throw exception if out of range
     @Test
     void createRating_ShouldThrowException_WhenStarsOutOfRange() {
         Rating rating = new Rating();
-        rating.setStars_ct(0);
+        rating.setStars_ct(0); //mock stars 0 (< 1)
         UUID userId = UUID.randomUUID();
 
         IllegalArgumentException exception = assertThrows(
@@ -41,7 +42,7 @@ class RatingServiceTest {
         );
         assertEquals("Stars can only be between 1 and 5", exception.getMessage());
 
-        rating.setStars_ct(6);
+        rating.setStars_ct(6); //mock stars 6 (> 5)
         IllegalArgumentException exception2 = assertThrows(
                 IllegalArgumentException.class,
                 () -> ratingService.createRating(rating, userId)
@@ -49,12 +50,14 @@ class RatingServiceTest {
         assertEquals("Stars can only be between 1 and 5", exception2.getMessage());
     }
 
+    //2.) Create - Success-Case
     @Test
     void createRating_ShouldSucceed_WhenValidRating() throws Exception {
         UUID userId = UUID.randomUUID();
         UUID ratingId = UUID.randomUUID();
         UUID mediaEntryId = UUID.randomUUID();
 
+        //Create rating to pass to createRating()
         Rating rating = new Rating(null, mediaEntryId, 4, "Test comment", null);
 
         when(ratingRepository.save(any(Rating.class))).thenReturn(ratingId);
@@ -63,9 +66,10 @@ class RatingServiceTest {
 
         assertEquals(userId, result.get("userId"));
         assertEquals("Rating created successfully", result.get("message"));
-        verify(ratingRepository).save(any(Rating.class));
+        verify(ratingRepository).save(any(Rating.class)); //save() got called
     }
 
+    //3.) Update - Only creator can edit -> should throw exception
     @Test
     void updateRating_ShouldThrowForbiddenException_WhenNotCreator() throws Exception {
         UUID userId = UUID.randomUUID();
@@ -75,15 +79,16 @@ class RatingServiceTest {
         Rating rating = new Rating();
         rating.setStars_ct(3);
 
-        when(ratingRepository.getCreatorObject(ratingId)).thenReturn(creatorId);
+        when(ratingRepository.getCreatorObject(ratingId)).thenReturn(creatorId); //mock creatorId to be owner (not userId)
 
         ForbiddenException exception = assertThrows(
                 ForbiddenException.class,
                 () -> ratingService.updateRating(rating, userId, ratingId)
-        );
+        ); //.updateRating() -> userId should be creatorId to be successful
         assertEquals("Only the creator can edit this rating", exception.getMessage());
     }
 
+    //4.) Delete - Only creator can delete -> should throw exception
     @Test
     void deleteRating_ShouldThrowForbiddenException_WhenNotCreator() throws Exception {
         UUID userId = UUID.randomUUID();
@@ -99,13 +104,14 @@ class RatingServiceTest {
         assertEquals("Only the creator can edit this rating", exception.getMessage());
     }
 
+    //5.) Like - Should throw exception if user likes rating twice
     @Test
     void likeRating_ShouldThrowException_WhenAlreadyLiked() throws Exception {
         UUID userId = UUID.randomUUID();
         UUID ratingId = UUID.randomUUID();
 
-        when(ratingRepository.getRatingObject(ratingId)).thenReturn(new Object());
-        when(ratingRepository.isAlreadyLikedByUser(userId, ratingId)).thenReturn(true);
+        when(ratingRepository.getRatingObject(ratingId)).thenReturn(new Object()); //mock rating exists
+        when(ratingRepository.isAlreadyLikedByUser(userId, ratingId)).thenReturn(true); //mock already liked by user
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -114,13 +120,14 @@ class RatingServiceTest {
         assertEquals("User already liked the rating", exception.getMessage());
     }
 
+    //6.) Unlike - Only unlike when already liked -> should throw exception
     @Test
     void unlikeRating_ShouldThrowException_WhenNotLiked() throws Exception {
         UUID userId = UUID.randomUUID();
         UUID ratingId = UUID.randomUUID();
 
-        when(ratingRepository.getRatingObject(ratingId)).thenReturn(new Object());
-        when(ratingRepository.isAlreadyLikedByUser(userId, ratingId)).thenReturn(false);
+        when(ratingRepository.getRatingObject(ratingId)).thenReturn(new Object()); //mock rating exists
+        when(ratingRepository.isAlreadyLikedByUser(userId, ratingId)).thenReturn(false); //mock not liked by user
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
