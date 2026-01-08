@@ -1,81 +1,12 @@
 {
 	"info": {
-		"_postman_id": "dbb4d9ac-113b-4d16-84fd-6b543ac783bd",
+		"_postman_id": "507c7737-5b2c-4de1-ad65-27b04e0466bf",
 		"name": "MRP-IntegrationTests",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "48874562",
-		"_collection_link": "https://if24b009-7017893.postman.co/workspace/L's-Workspace~ce232350-0779-47bb-88d9-5cf028d4942d/collection/48874562-dbb4d9ac-113b-4d16-84fd-6b543ac783bd?action=share&source=collection_link&creator=48874562"
+		"_collection_link": "https://if24b009-7017893.postman.co/workspace/L's-Workspace~ce232350-0779-47bb-88d9-5cf028d4942d/collection/48874562-507c7737-5b2c-4de1-ad65-27b04e0466bf?action=share&source=collection_link&creator=48874562"
 	},
 	"item": [
-		{
-			"name": "00_API_Info",
-			"item": [
-				{
-					"name": "API Info - successful",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200 for API info\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Response body is valid JSON\", function () {",
-									"    var isValidJson = true;",
-									"    try {",
-									"        JSON.parse(pm.response.text());",
-									"    } catch (e) {",
-									"        isValidJson = false;",
-									"    }",
-									"    pm.expect(isValidJson).to.be.true;",
-									"});",
-									"",
-									"pm.test(\"Response contains status property\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('status');",
-									"});",
-									"",
-									"pm.test(\"Response contains service property\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('service');",
-									"});",
-									"",
-									"pm.test(\"Response contains version property\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('version');",
-									"});",
-									"",
-									"pm.test(\"No error property in response\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.not.have.property('error');",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8000/",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8000",
-							"path": [
-								""
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
 		{
 			"name": "01_Authentication",
 			"item": [
@@ -1376,7 +1307,8 @@
 									"        \"releaseYear\",",
 									"        \"ageRestriction\",",
 									"        \"genres\",",
-									"        \"creatorId\"",
+									"        \"creatorId\",",
+									"        \"avgRating\"",
 									"    ];",
 									"    expectedKeys.forEach(function(key) {",
 									"        pm.expect(jsonData.mediaentry).to.have.property(key);",
@@ -1501,7 +1433,8 @@
 									"        \"releaseYear\",",
 									"        \"ageRestriction\",",
 									"        \"genres\",",
-									"        \"creatorId\"",
+									"        \"creatorId\",",
+									"        \"avgRating\"",
 									"    ];",
 									"    expectedKeys.forEach(function(key) {",
 									"        pm.expect(jsonData.mediaentry).to.have.property(key);",
@@ -1619,7 +1552,8 @@
 									"        \"releaseYear\",",
 									"        \"ageRestriction\",",
 									"        \"genres\",",
-									"        \"creatorId\"",
+									"        \"creatorId\",",
+									"        \"avgRating\"",
 									"    ];",
 									"    expectedKeys.forEach(function(key) {",
 									"        pm.expect(jsonData.mediaentry).to.have.property(key);",
@@ -1826,7 +1760,8 @@
 									"        \"releaseYear\",",
 									"        \"ageRestriction\",",
 									"        \"genres\",",
-									"        \"creatorId\"",
+									"        \"creatorId\",",
+									"        \"avgRating\"",
 									"    ];",
 									"    jsonData.mediaentries.forEach(function(item, idx) {",
 									"        expectedKeys.forEach(function(key) {",
@@ -2817,10 +2752,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 200",
 									"pm.test(\"Status code is 200 for genre filter\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
+									"//2.) Response body is in JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -2831,17 +2768,20 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response body must be an array",
 									"pm.test(\"Response contains mediaentries array\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('mediaentries');",
 									"    pm.expect(jsonData.mediaentries).to.be.an('array');",
 									"});",
 									"",
+									"//4.) Response must contain filters property",
 									"pm.test(\"Response contains filters property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('filters');",
 									"});",
 									"",
+									"//5.) Response shoudln't contain 'error' property",
 									"pm.test(\"No error property in response\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.not.have.property('error');",
@@ -2889,10 +2829,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 200",
 									"pm.test(\"Status code is 200 for type filter\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -2903,12 +2845,14 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response body must be an array",
 									"pm.test(\"Response contains mediaentries array\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('mediaentries');",
 									"    pm.expect(jsonData.mediaentries).to.be.an('array');",
 									"});",
 									"",
+									"//4.) Response shoudln't contain 'error' property",
 									"pm.test(\"No error property in response\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.not.have.property('error');",
@@ -2956,10 +2900,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 200",
 									"pm.test(\"Status code is 200 for releaseYear filter\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -2970,12 +2916,14 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response body must be an array",
 									"pm.test(\"Response contains mediaentries array\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('mediaentries');",
 									"    pm.expect(jsonData.mediaentries).to.be.an('array');",
 									"});",
 									"",
+									"//4.) Response shoudln't contain 'error' property",
 									"pm.test(\"No error property in response\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.not.have.property('error');",
@@ -3023,10 +2971,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 200",
 									"pm.test(\"Status code is 200 for ageRestriction filter\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -3037,12 +2987,14 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response body must be an array",
 									"pm.test(\"Response contains mediaentries array\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('mediaentries');",
 									"    pm.expect(jsonData.mediaentries).to.be.an('array');",
 									"});",
 									"",
+									"//4.) Response shoudln't contain 'error' property",
 									"pm.test(\"No error property in response\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.not.have.property('error');",
@@ -3090,10 +3042,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 200",
 									"pm.test(\"Status code is 200 for rating filter\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -3104,12 +3058,14 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response body must be an array",
 									"pm.test(\"Response contains mediaentries array\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('mediaentries');",
 									"    pm.expect(jsonData.mediaentries).to.be.an('array');",
 									"});",
 									"",
+									"//4.) Response shoudln't contain 'error' property",
 									"pm.test(\"No error property in response\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.not.have.property('error');",
@@ -3157,10 +3113,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 200",
 									"pm.test(\"Status code is 200 for sort by title\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -3171,18 +3129,21 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response body must be an array",
 									"pm.test(\"Response contains mediaentries array\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('mediaentries');",
 									"    pm.expect(jsonData.mediaentries).to.be.an('array');",
 									"});",
 									"",
+									"//4.) Response must contain sortedBy property",
 									"pm.test(\"Response contains sortedBy property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('sortedBy');",
 									"    pm.expect(jsonData.sortedBy).to.eql('title');",
 									"});",
 									"",
+									"//5.) Response shoudln't contain 'error' property",
 									"pm.test(\"No error property in response\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.not.have.property('error');",
@@ -3230,10 +3191,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 200",
 									"pm.test(\"Status code is 200 for sort by year\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -3244,18 +3207,21 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response body must be an array",
 									"pm.test(\"Response contains mediaentries array\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('mediaentries');",
 									"    pm.expect(jsonData.mediaentries).to.be.an('array');",
 									"});",
 									"",
+									"//4.) Response must contain sortedBy property",
 									"pm.test(\"Response contains sortedBy property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('sortedBy');",
 									"    pm.expect(jsonData.sortedBy).to.eql('year');",
 									"});",
 									"",
+									"//5.) Response shoudln't contain 'error' property",
 									"pm.test(\"No error property in response\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.not.have.property('error');",
@@ -3303,10 +3269,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 200",
 									"pm.test(\"Status code is 200 for sort by score\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -3317,18 +3285,21 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response body must be an array",
 									"pm.test(\"Response contains mediaentries array\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('mediaentries');",
 									"    pm.expect(jsonData.mediaentries).to.be.an('array');",
 									"});",
 									"",
+									"//4.) Response must contain sortedBy property",
 									"pm.test(\"Response contains sortedBy property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('sortedBy');",
 									"    pm.expect(jsonData.sortedBy).to.eql('score');",
 									"});",
 									"",
+									"//5.) Response shoudln't contain 'error' property",
 									"pm.test(\"No error property in response\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.not.have.property('error');",
@@ -3376,10 +3347,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 400 for invalid filter param",
 									"pm.test(\"Status code is 400 for invalid filter param\", function () {",
 									"    pm.response.to.have.status(400);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -3390,6 +3363,7 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response must contain 'error' property -> return error",
 									"pm.test(\"Response contains error property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('error');",
@@ -3437,10 +3411,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 400 for invalid filter value-type",
 									"pm.test(\"Status code is 400 for invalid filter value type\", function () {",
 									"    pm.response.to.have.status(400);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -3451,6 +3427,7 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response must contain 'error' property -> return error",
 									"pm.test(\"Response contains error property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('error');",
@@ -3498,10 +3475,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 200",
 									"pm.test(\"Status code is 200 for successful media entry ratings retrieval\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -3512,17 +3491,20 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response body must be an array",
 									"pm.test(\"Response contains ratings array\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('ratings');",
 									"    pm.expect(jsonData.ratings).to.be.an('array');",
 									"});",
 									"",
+									"//4.) Response must contain message property",
 									"pm.test(\"Response contains message property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('message');",
 									"});",
 									"",
+									"//5.) Response shoudln't contain 'error' property",
 									"pm.test(\"No error property in response\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.not.have.property('error');",
@@ -3566,6 +3548,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 401 for invalid authentication",
 									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
 									"    pm.response.to.have.status(401);",
 									"});"
@@ -3608,10 +3591,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 404",
 									"pm.test(\"Status code is 404 for non-existing media entry\", function () {",
 									"    pm.response.to.have.status(404);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -3622,6 +3607,7 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response must contain 'error' property -> return error",
 									"pm.test(\"Response contains error property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('error');",
@@ -3670,10 +3656,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 200",
 									"pm.test(\"Status code is 200 for successful favorite add\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
+									"//2.) Response is in JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -3684,14 +3672,80 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response must contain message property",
 									"pm.test(\"Response contains message property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('message');",
 									"});",
 									"",
+									"//4.) Response shoudln't contain 'error' property",
 									"pm.test(\"No error property in response\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.not.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8000/mediaEntry/{{mediaEntryId}}/favorite",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"mediaEntry",
+								"{{mediaEntryId}}",
+								"favorite"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add - already favorited",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//1.) Status code should be 409",
+									"pm.test(\"Status code is 409 for already favorited\", function () {",
+									"    pm.response.to.have.status(409);",
+									"});",
+									"",
+									"//2.) Response is in JSON",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"//3.) Response body should contain 'error' property",
+									"pm.test(\"Response contains error property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
 									"});"
 								],
 								"type": "text/javascript",
@@ -3736,10 +3790,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 200",
 									"pm.test(\"Status code is 200 for successful favorite delete\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
+									"//2.) Response is in JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -3750,11 +3806,13 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response must contain message property",
 									"pm.test(\"Response contains message property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('message');",
 									"});",
 									"",
+									"//4.) Response shoudln't contain 'error' property",
 									"pm.test(\"No error property in response\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.not.have.property('error');",
@@ -3802,10 +3860,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 200",
 									"pm.test(\"Status code is 200 for successful favorites retrieval\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -3816,17 +3876,20 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response body must be an array",
 									"pm.test(\"Response contains favorites array\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('favorites');",
 									"    pm.expect(jsonData.favorites).to.be.an('array');",
 									"});",
 									"",
+									"//4.) Response must contain message property",
 									"pm.test(\"Response contains message property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('message');",
 									"});",
 									"",
+									"//5.) Response shoudln't contain 'error' property",
 									"pm.test(\"No error property in response\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.not.have.property('error');",
@@ -3877,6 +3940,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 401 for invalid authentication",
 									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
 									"    pm.response.to.have.status(401);",
 									"});"
@@ -3923,10 +3987,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 404",
 									"pm.test(\"Status code is 404 for non-existing media entry\", function () {",
 									"    pm.response.to.have.status(404);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -3937,6 +4003,7 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response must contain 'error' property",
 									"pm.test(\"Response contains error property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('error');",
@@ -3978,73 +4045,13 @@
 					"response": []
 				},
 				{
-					"name": "add - already favorited",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 409 for already favorited\", function () {",
-									"    pm.response.to.have.status(409);",
-									"});",
-									"",
-									"pm.test(\"Response body is valid JSON\", function () {",
-									"    var isValidJson = true;",
-									"    try {",
-									"        JSON.parse(pm.response.text());",
-									"    } catch (e) {",
-									"        isValidJson = false;",
-									"    }",
-									"    pm.expect(isValidJson).to.be.true;",
-									"});",
-									"",
-									"pm.test(\"Response contains error property\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('error');",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{authToken}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "http://localhost:8000/mediaEntry/{{mediaEntryId}}/favorite",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8000",
-							"path": [
-								"mediaEntry",
-								"{{mediaEntryId}}",
-								"favorite"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "delete - invalid Authentication",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 401",
 									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
 									"    pm.response.to.have.status(401);",
 									"});"
@@ -4091,10 +4098,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 404",
 									"pm.test(\"Status code is 404 for not in favorites\", function () {",
 									"    pm.response.to.have.status(404);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -4105,6 +4114,7 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response must contain 'error' property",
 									"pm.test(\"Response contains error property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('error');",
@@ -4130,7 +4140,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "http://localhost:8000/mediaEntry/{{mediaEntryId}}/favorite",
+							"raw": "http://localhost:8000/mediaEntry/00000000-0000-0000-0000-000000000000/favorite",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -4138,7 +4148,7 @@
 							"port": "8000",
 							"path": [
 								"mediaEntry",
-								"{{mediaEntryId}}",
+								"00000000-0000-0000-0000-000000000000",
 								"favorite"
 							]
 						}
@@ -4152,6 +4162,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 401 for invalid authentication",
 									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
 									"    pm.response.to.have.status(401);",
 									"});"
@@ -4206,10 +4217,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 201",
 									"pm.test(\"Status code is 201 for successful registration\", function () {",
 									"    pm.response.to.have.status(201);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -4270,16 +4283,18 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 201",
 									"pm.test(\"Status code is 201 for successful login\", function () {",
 									"    pm.response.to.have.status(201);",
 									"});",
 									"",
+									"//2.) Response must contain token property",
 									"pm.test(\"Response contains token\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('token');",
 									"});",
 									"",
-									"// Save second user's token",
+									"//Save second user's token",
 									"const jsonData = pm.response.json();",
 									"if (jsonData.token) {",
 									"    pm.collectionVariables.set(\"second_authToken\", jsonData.token);",
@@ -4327,10 +4342,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 200",
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -4341,12 +4358,14 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response body must contain rating objet",
 									"pm.test(\"Response contains rating object\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('rating');",
 									"    pm.expect(jsonData).to.have.property('message');",
 									"});",
 									"",
+									"//4.) Response must contain following properties",
 									"pm.test(\"Rating has expected properties\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.rating).to.have.property('id');",
@@ -4354,12 +4373,13 @@
 									"    pm.expect(jsonData.rating).to.have.property('stars_ct');",
 									"});",
 									"",
+									"//5.) Response message must be correct",
 									"pm.test(\"Message is correct\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.message).to.eql('Rating created successfully');",
 									"});",
 									"",
-									"// Save rating_id for later tests",
+									"//Save rating_id for later tests",
 									"const jsonData = pm.response.json();",
 									"if (jsonData.rating?.id) {",
 									"    pm.collectionVariables.set(\"rating_id\", jsonData.rating.id);",
@@ -4410,10 +4430,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 409",
 									"pm.test(\"Status code is 409 for duplicate rating\", function () {",
 									"    pm.response.to.have.status(409);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -4424,6 +4446,7 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Error message must contain the word \"Duplicate\"",
 									"pm.test(\"Error message indicates duplicate\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.error).to.include('Duplicate');",
@@ -4474,6 +4497,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 401 for invalid authentication",
 									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
 									"    pm.response.to.have.status(401);",
 									"});"
@@ -4523,6 +4547,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 400 for missing body",
 									"pm.test(\"Status code is 400 for missing body\", function () {",
 									"    pm.response.to.have.status(400);",
 									"});"
@@ -4572,10 +4597,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 400",
 									"pm.test(\"Status code is 400 for invalid stars\", function () {",
 									"    pm.response.to.have.status(400);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -4586,6 +4613,7 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response must contain error property",
 									"pm.test(\"Response contains error property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('error');",
@@ -4636,10 +4664,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 400",
 									"pm.test(\"Status code is 400 for invalid stars\", function () {",
 									"    pm.response.to.have.status(400);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -4650,6 +4680,7 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response must contain error property",
 									"pm.test(\"Response contains error property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('error');",
@@ -4700,10 +4731,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 400",
 									"pm.test(\"Status code is 400 for missing mediaEntryId\", function () {",
 									"    pm.response.to.have.status(400);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -4714,6 +4747,7 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response must contain error property",
 									"pm.test(\"Response contains error property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('error');",
@@ -4764,10 +4798,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 404",
 									"pm.test(\"Status code is 404 for non-existing mediaEntryId\", function () {",
 									"    pm.response.to.have.status(404);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -4778,6 +4814,7 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response must contain error property",
 									"pm.test(\"Response contains error property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('error');",
@@ -4828,10 +4865,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 200",
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -4842,12 +4881,14 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response body must contain updated rating",
 									"pm.test(\"Response contains updated rating\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('rating');",
 									"    pm.expect(jsonData).to.have.property('message');",
 									"});",
 									"",
+									"//4.) Response message must be correct",
 									"pm.test(\"Message is correct\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.message).to.eql('Rating updated successfully');",
@@ -4899,10 +4940,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 400 or 403",
 									"pm.test(\"Status code is 400 or 403 for not creator\", function () {",
 									"    pm.expect(pm.response.code).to.be.oneOf([400, 403]);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -4913,6 +4956,7 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response must contain error property -> not creator",
 									"pm.test(\"Error message indicates not creator\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.error).to.include('creator');",
@@ -4964,6 +5008,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 401 for invalid authentication",
 									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
 									"    pm.response.to.have.status(401);",
 									"});"
@@ -5014,6 +5059,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 404 for a not existing rating",
 									"pm.test(\"Status code is 404 for non-existing rating\", function () {",
 									"    pm.response.to.have.status(404);",
 									"});"
@@ -5064,10 +5110,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 200",
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -5078,6 +5126,7 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response message must be correct",
 									"pm.test(\"Message is correct\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.message).to.include('confirmed');",
@@ -5130,10 +5179,23 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 400 or 403",
 									"pm.test(\"Status code is 400 or 403 for not creator\", function () {",
 									"    pm.expect(pm.response.code).to.be.oneOf([400, 403]);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"//3.) Error message must indicate user is not creator",
 									"pm.test(\"Error message indicates not creator\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.error).to.include('creator');",
@@ -5186,6 +5248,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 401 for invalid authentication",
 									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
 									"    pm.response.to.have.status(401);",
 									"});"
@@ -5237,10 +5300,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 200",
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -5251,12 +5316,14 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response body must contain rating object",
 									"pm.test(\"Response contains rating object\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('rating');",
 									"    pm.expect(jsonData).to.have.property('message');",
 									"});",
 									"",
+									"//4.) Response message must be correct",
 									"pm.test(\"Message is correct\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.message).to.eql('Rating liked successfully');",
@@ -5309,10 +5376,23 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 400",
 									"pm.test(\"Status code is 400 for already liked\", function () {",
 									"    pm.response.to.have.status(400);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"//3.) Error message must indicate rating already liked",
 									"pm.test(\"Error message indicates already liked\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.error).to.include('already liked');",
@@ -5365,6 +5445,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 401 for invalid authentication",
 									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
 									"    pm.response.to.have.status(401);",
 									"});"
@@ -5416,6 +5497,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 4ß4 for a not existing rating",
 									"pm.test(\"Status code is 404 for non-existing rating\", function () {",
 									"    pm.response.to.have.status(404);",
 									"});"
@@ -5467,10 +5549,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 200",
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -5481,12 +5565,14 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response body must contain rating object",
 									"pm.test(\"Response contains rating object\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('rating');",
 									"    pm.expect(jsonData).to.have.property('message');",
 									"});",
 									"",
+									"//4.) Response message must be correct",
 									"pm.test(\"Message is correct\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.message).to.eql('Rating unliked successfully');",
@@ -5539,10 +5625,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 200",
 									"pm.test(\"Status code is 400 for not liked yet\", function () {",
 									"    pm.response.to.have.status(400);",
 									"});",
 									"",
+									"//2.) Error message must indicate rating not liked yet",
 									"pm.test(\"Error message indicates not liked\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.error).to.include('not liked');",
@@ -5595,6 +5683,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 401 for invalid authentication",
 									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
 									"    pm.response.to.have.status(401);",
 									"});"
@@ -5646,10 +5735,23 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 400 or 403",
 									"pm.test(\"Status code is 400 or 403 for not creator\", function () {",
 									"    pm.expect(pm.response.code).to.be.oneOf([400, 403]);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"//3.) Error message must indicate user is not creator",
 									"pm.test(\"Error message indicates not creator\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.error).to.include('creator');",
@@ -5701,6 +5803,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 401 for invalid authentication",
 									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
 									"    pm.response.to.have.status(401);",
 									"});"
@@ -5751,10 +5854,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 200",
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -5765,6 +5870,7 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response message must be correct",
 									"pm.test(\"Message is correct\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.message).to.eql('Rating deleted successfully');",
@@ -5816,6 +5922,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 404 a not existing rating",
 									"pm.test(\"Status code is 404 for non-existing rating\", function () {",
 									"    pm.response.to.have.status(404);",
 									"});"
@@ -5866,10 +5973,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 200",
 									"pm.test(\"Status code is 200 for successful ratings retrieval\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -5880,17 +5989,20 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response body must be array",
 									"pm.test(\"Response contains ratings array\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('ratings');",
 									"    pm.expect(jsonData.ratings).to.be.an('array');",
 									"});",
 									"",
+									"//4.) Response must contain message property",
 									"pm.test(\"Response contains message property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('message');",
 									"});",
 									"",
+									"//5.) Response shouldn't contain error property",
 									"pm.test(\"No error property in response\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.not.have.property('error');",
@@ -5925,6 +6037,107 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "get user's ratings - invalid Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//1.) Status code should be 401 for invalid authentication",
+									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer invalidToken123",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/users/ratings",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"users",
+								"ratings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user's ratings - incorrect path",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//1.) Status code should be 400",
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"//2.) Rresponse body contains 'Endpoint not found'",
+									"pm.test(\"Response body contains error message with 'Endpoint not found'\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Endpoint not found\");",
+									"});",
+									"",
+									"//3.) Response does NOT include 'userId' property",
+									"pm.test(\"Response does NOT include userId property\", function () {",
+									"    let jsonData;",
+									"    try {",
+									"        jsonData = pm.response.json();",
+									"    } catch (e) {",
+									"        jsonData = {};",
+									"    }",
+									"    pm.expect(jsonData).to.not.have.property('userId');",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/users/ratings123",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"users",
+								"ratings123"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -5938,10 +6151,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 200",
 									"pm.test(\"Status code is 200 for successful leaderboard retrieval\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -5952,11 +6167,13 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response body must be array",
 									"pm.test(\"Response is an array (leaderboard entries)\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.be.an('array');",
 									"});",
 									"",
+									"//4.) Each leaderboard entry must have the expected properties",
 									"pm.test(\"Leaderboard entries have expected properties\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    if (jsonData.length > 0) {",
@@ -6010,6 +6227,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 401 for invalid authentication",
 									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
 									"    pm.response.to.have.status(401);",
 									"});"
@@ -6063,10 +6281,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 200",
 									"pm.test(\"Status code is 200 for successful profile retrieval\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -6077,22 +6297,26 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response must contain user property",
 									"pm.test(\"Response contains user property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('user');",
 									"});",
 									"",
+									"//4.) User have the expected properties",
 									"pm.test(\"User has expected profile properties\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.user).to.have.property('username');",
 									"    pm.expect(jsonData.user).to.have.property('userId');",
 									"});",
 									"",
+									"//5.) Response must contain message property",
 									"pm.test(\"Response contains message property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('message');",
 									"});",
 									"",
+									"//6.) Response shouldn't contain error property",
 									"pm.test(\"No error property in response\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.not.have.property('error');",
@@ -6136,10 +6360,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 200",
 									"pm.test(\"Status code is 200 for successful profile update\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -6150,16 +6376,19 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response must contain profile property",
 									"pm.test(\"Response contains profile property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('profile');",
 									"});",
 									"",
+									"//4.) Response must contain message property",
 									"pm.test(\"Response contains message property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('message');",
 									"});",
 									"",
+									"//5.) Response shouldn't contain error property",
 									"pm.test(\"No error property in response\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.not.have.property('error');",
@@ -6182,7 +6411,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"username\": \"neuerUsername\"\r\n}",
+							"raw": "{}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6190,7 +6419,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8000/users/neuerUsername123/profile",
+							"raw": "http://localhost:8000/users/{{username}}/profile",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -6198,7 +6427,7 @@
 							"port": "8000",
 							"path": [
 								"users",
-								"neuerUsername123",
+								"{{username}}",
 								"profile"
 							]
 						}
@@ -6212,6 +6441,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 401 for invalid authentication",
 									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
 									"    pm.response.to.have.status(401);",
 									"});"
@@ -6254,10 +6484,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 404 a not existing rating",
 									"pm.test(\"Status code is 404 for non-existing user\", function () {",
 									"    pm.response.to.have.status(404);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -6268,6 +6500,7 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response must contain error property",
 									"pm.test(\"Response contains error property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('error');",
@@ -6311,6 +6544,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 401 for invalid authentication",
 									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
 									"    pm.response.to.have.status(401);",
 									"});"
@@ -6362,10 +6596,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 403",
 									"pm.test(\"Status code is 403 for not owner\", function () {",
 									"    pm.response.to.have.status(403);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -6376,6 +6612,7 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response must contain error property",
 									"pm.test(\"Response contains error property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('error');",
@@ -6428,10 +6665,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 409",
 									"pm.test(\"Status code is 409 for duplicate username\", function () {",
 									"    pm.response.to.have.status(409);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -6442,6 +6681,7 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response must contain error property",
 									"pm.test(\"Response contains error property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('error');",
@@ -6494,10 +6734,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 400",
 									"pm.test(\"Status code is 400 for too short username\", function () {",
 									"    pm.response.to.have.status(400);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -6508,6 +6750,7 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response must contain error property",
 									"pm.test(\"Response contains error property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('error');",
@@ -6560,10 +6803,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 400",
 									"pm.test(\"Status code is 400 for too long username\", function () {",
 									"    pm.response.to.have.status(400);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -6574,6 +6819,7 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response must contain error property",
 									"pm.test(\"Response contains error property\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('error');",
@@ -6631,10 +6877,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 200",
 									"pm.test(\"Status code is 200 for successful recommendations retrieval\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
+									"//2.) Response body should be valid JSON",
 									"pm.test(\"Response body is valid JSON\", function () {",
 									"    var isValidJson = true;",
 									"    try {",
@@ -6645,12 +6893,14 @@
 									"    pm.expect(isValidJson).to.be.true;",
 									"});",
 									"",
+									"//3.) Response body must be array",
 									"pm.test(\"Response contains recommendations array\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('recommendations');",
 									"    pm.expect(jsonData.recommendations).to.be.an('array');",
 									"});",
 									"",
+									"//4.) Response must contain criteria property",
 									"pm.test(\"Response contains criteria properties\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('criteriaGenres');",
@@ -6695,6 +6945,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"//1.) Status code should be 401 for invalid authentication",
 									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
 									"    pm.response.to.have.status(401);",
 									"});"
