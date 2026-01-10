@@ -32,7 +32,6 @@ public class Main {
             System.out.println("Server is running on http://localhost:8000");
         } catch (IOException e) {
             System.err.println("Failed to start server: " + e.getMessage());
-            e.printStackTrace();
             System.exit(1);
         }
 

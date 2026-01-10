@@ -3,6 +3,7 @@ package org.mrp.serverHandler;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import org.mrp.exceptions.DuplicateResourceException;
 import org.mrp.service.AuthService;
 import org.mrp.utils.JsonHelper;
 
@@ -37,6 +38,8 @@ public class AuthHandler implements HttpHandler {
             } else {
                 JsonHelper.sendError(exchange, 404, "Endpoint not found");
             }
+        } catch (DuplicateResourceException e) {
+            JsonHelper.sendError(exchange, 409, e.getMessage());
         } catch (IllegalArgumentException e) {
             JsonHelper.sendError(exchange, 400, e.getMessage());
         } catch (Exception e) {
@@ -45,7 +48,7 @@ public class AuthHandler implements HttpHandler {
     }
 
     private void handleRegister(HttpExchange exchange) throws IOException, SQLException {
-        Map.Entry<String, String> credentials = extractCredentials(exchange);
+        Map.Entry<String, String> credentials = extractCredentials(exchange); //Map.Entry -> single key-value pair from map
         if (credentials == null) return;
 
         try {

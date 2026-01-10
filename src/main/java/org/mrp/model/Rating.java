@@ -57,6 +57,10 @@ public class Rating {
         return mediaEntryId;
     }
 
+    public void setMediaEntryId(UUID mediaEntryId) {
+        this.mediaEntryId = mediaEntryId;
+    }
+
     public String getComment() {
         return comment;
     }

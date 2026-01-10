@@ -15,19 +15,15 @@ public class JsonHelper {
     private static final ObjectMapper mapper = new ObjectMapper();
 
     static {
-        // Konfigurieren des ObjectMappers für die Jackson Java Time Unterstützung
+        //Configure ObjectMapper for Jackson Java Time Support (Timestamp)
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        // Registrieren des JavaTimeModuls für LocalDateTime und andere Java 8 Zeittypen
+        //Register JavaTimeModul for LocalDateTime and other Java 8 Time-Types
         mapper.registerModule(new JavaTimeModule());
-        // Optional: Verhindern, dass Dattums-Objekte als Timestamps geschrieben werden
+        //Prevent write Date-Objects as Timestamps
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
     // Parse JSON from request body
-    /*public static <T> T parseRequest(HttpExchange exchange, Class<T> clazz) throws IOException {
-        InputStream is = exchange.getRequestBody();
-        return mapper.readValue(is, clazz);
-    }*/
     public static <T> T parseRequest(HttpExchange exchange, Class<T> clazz) throws IOException {
         byte[] body = exchange.getRequestBody().readAllBytes();
 
@@ -38,19 +34,11 @@ public class JsonHelper {
         return mapper.readValue(body, clazz);
     }
 
-
-
-    // Parse JSON from string
-    public static <T> T parseJson(String json, Class<T> clazz) throws IOException {
-        return mapper.readValue(json, clazz);
-    }
-
     // Convert object to JSON string
     public static String toJson(Object object) {
         try {
             return mapper.writeValueAsString(object);
         } catch (Exception e) {
-            e.printStackTrace();
             return "{}";
         }
     }
@@ -97,13 +85,5 @@ public class JsonHelper {
             }
         }
         return params;
-    }
-
-    // Get path segments from URI
-    public static String[] getPathSegments(String path) {
-        if (path.startsWith("/")) {
-            path = path.substring(1);
-        }
-        return path.split("/");
     }
 }

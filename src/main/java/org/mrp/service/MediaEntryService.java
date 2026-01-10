@@ -32,7 +32,7 @@ public class MediaEntryService {
         this.ratingRepository = ratingRepository;
     }
 
-    //Filters & Sort (getMediaEntries)
+    //Filters & Sort (for getMediaEntries)
     private Set<String> allowedFilters = Set.of(
             "genre",
             "type",
@@ -42,6 +42,7 @@ public class MediaEntryService {
     );
     private Set<String> allowedSorts = Set.of("title", "year", "score");
 
+    //Helperfunction: checks if media entry type is not valid
     private boolean isInvalidType(MediaEntry mediaEntry) {
         return mediaEntry.getType() == null ||
                 (!mediaEntry.getType().equals(MediaEntryType.MOVIE)
@@ -60,10 +61,10 @@ public class MediaEntryService {
             throw new IllegalArgumentException("Media entry type must be 'movie', 'series', or 'game'");
         }
 
-        //Insert MediaEntry with UUID in DB
+        //Insert MediaEntry in DB
         UUID mediaEntryId = mediaEntryRepository.save(new MediaEntry(null, mediaEntry.getTitle(), mediaEntry.getDescription(), mediaEntry.getType(), mediaEntry.getReleaseYear(), mediaEntry.getAgeRestriction(), mediaEntry.getGenres(), userId));
 
-        //Update MediaEntry with id, creator and timestamp
+        //Update (response) MediaEntry with id, creator and timestamp
         mediaEntry.setId(mediaEntryId);
         mediaEntry.setCreator(userId);
         ResultSet resultSet = mediaEntryRepository.getCreated_at(mediaEntryId);
@@ -85,12 +86,7 @@ public class MediaEntryService {
 
     public Map<String, Object> updateMediaEntry(MediaEntry mediaEntry, UUID userId, UUID mediaEntryId) throws IOException, SQLException {
         //Check if user = creator
-        Object creatorId_object = mediaEntryRepository.getCreatorObject(mediaEntryId);
-        if (creatorId_object == null) {
-            throw new NoSuchElementException("Media entry not found");
-        }
-        UUID creatorId = (UUID) creatorId_object;
-        if (!creatorId.equals(userId)) {
+        if (!isUserCreator(mediaEntryId, userId)) {
             throw new ForbiddenException("Only the creator can edit this media");
         }
 
@@ -111,7 +107,7 @@ public class MediaEntryService {
     }
 
     private void validateFilters(Map<String, String> filters) {
-        for (Map.Entry<String, String> entry : filters.entrySet()) {
+        for (Map.Entry<String, String> entry : filters.entrySet()) { //.entrySet() -> returns Set of all map-entries (Set<Map.Entry<String, String>>)
             String key = entry.getKey();
             String value = entry.getValue();
 
@@ -195,13 +191,8 @@ public class MediaEntryService {
 
     public String deleteMediaEntry(UUID userId, UUID mediaEntryId) throws IOException, SQLException {
         //Check if user = creator
-        Object creatorId_object = mediaEntryRepository.getCreatorObject(mediaEntryId);
-        if (creatorId_object == null) {
-            throw new NoSuchElementException("Media entry not found");
-        }
-        UUID creatorId = (UUID) creatorId_object;
-        if (!creatorId.equals(userId)) {
-            throw new ForbiddenException("Only the creator can delete this media entry");
+        if (!isUserCreator(mediaEntryId, userId)) {
+            throw new ForbiddenException("Only the creator can edit this media");
         }
 
         //Delete mediaEntry (cascades to ratings, favorites, ...)
@@ -219,9 +210,8 @@ public class MediaEntryService {
     //Favorites
 
     public String addFavorite(UUID userId, UUID mediaEntryId) throws IOException, SQLException {
-        //Check if media exists
-        Object mediaExists = mediaEntryRepository.getCreatorObject(mediaEntryId);
-        if (mediaExists == null) {
+        //Check if media exists (if creator exists -> media Entry exists)
+        if (mediaEntryRepository.getCreatorObject(mediaEntryId) == null) {
             throw new NoSuchElementException("Media not found");
         }
 
@@ -245,12 +235,12 @@ public class MediaEntryService {
     }
 
     public Map<String, Object> getMediaEntryRatings(UUID mediaEntryId) throws IOException, SQLException {
-        //Check if media entry exists
+        //Check if media entry exists (if creator exists -> media Entry exists)
         if (mediaEntryRepository.getCreatorObject(mediaEntryId) == null) {
             throw new NoSuchElementException("Media entry not found");
         }
 
-        //Query all ratings for the given media entry
+        //All ratings for given media entry
         ResultSet resultSet = ratingRepository.findByMediaEntryId(mediaEntryId);
         List<Rating> ratings = new ArrayList<>();
 
@@ -273,7 +263,7 @@ public class MediaEntryService {
         UUID userId = resultSet.getObject("user_id", UUID.class);
         UUID mediaEntryId = resultSet.getObject("media_entry_id", UUID.class);
         boolean isCommentVisible = resultSet.getBoolean("is_comment_visible");
-        String comment = isCommentVisible ? resultSet.getString("comment") : "";
+        String comment = isCommentVisible ? resultSet.getString("comment") : ""; //only show comment if set visible
         int starsCt = resultSet.getInt("stars_ct");
 
         LocalDateTime timestamp = null;
@@ -282,10 +272,8 @@ public class MediaEntryService {
             timestamp = ts.toLocalDateTime();
         }
 
-        //Create Rating object using your constructor
-        Rating rating = new Rating(userId, mediaEntryId, starsCt, comment, timestamp);
-        rating.setId(id);
-        rating.setStars_ct(starsCt);
+        //Create Rating object using constructor
+        Rating rating = new Rating(id, userId, mediaEntryId, starsCt, comment, timestamp);
 
         if (isCommentVisible) {
             rating.setCommentVisible();
@@ -295,6 +283,20 @@ public class MediaEntryService {
         rating.setLikedBy(new ArrayList<>());
 
         return rating;
+    }
+
+
+    //Helper function: Check if user = creator
+    private boolean isUserCreator(UUID id, UUID userId) throws SQLException {
+        Object creatorId_object = mediaEntryRepository.getCreatorObject(id);
+        if (creatorId_object == null) {
+            throw new NoSuchElementException("Media entry not found");
+        }
+        UUID creatorId = (UUID) creatorId_object; //Parse to UUID
+        if (!creatorId.equals(userId)) {
+            return false;
+        }
+        return true;
     }
 
 }

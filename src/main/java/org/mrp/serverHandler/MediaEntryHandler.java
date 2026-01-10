@@ -2,6 +2,7 @@ package org.mrp.serverHandler;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import org.mrp.exceptions.AuthenticationException;
 import org.mrp.exceptions.DuplicateResourceException;
 import org.mrp.exceptions.ForbiddenException;
 import org.mrp.exceptions.InvalidQueryParameterException;
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+//Path "/mediaEntry"
 public class MediaEntryHandler implements HttpHandler {
     MediaEntryService mediaEntryService = new MediaEntryService();
     TokenValidation tokenValidation = new TokenValidation();
@@ -78,6 +80,8 @@ public class MediaEntryHandler implements HttpHandler {
             JsonHelper.sendError(exchange, 403, e.getMessage());
         } catch (DuplicateResourceException e) {
             JsonHelper.sendError(exchange, 409, e.getMessage());
+        } catch (AuthenticationException e) {
+            JsonHelper.sendError(exchange, 401, e.getMessage());
         } catch (InvalidQueryParameterException | IllegalArgumentException e) {
             JsonHelper.sendError(exchange, 400, e.getMessage());
         } catch (Exception e) {
@@ -115,6 +119,7 @@ public class MediaEntryHandler implements HttpHandler {
         try {
             String sortBy = parameters.getOrDefault("sortBy", "title"); //default sorted by title (sortBy != null)
             parameters.remove("sortBy"); //remove sortBy from filters -> avoid validation errors
+
             Map<String, Object> response = mediaEntryService.getMediaEntries(parameters, sortBy);
             JsonHelper.sendResponse(exchange, 200, response);
         } catch (Exception e) {

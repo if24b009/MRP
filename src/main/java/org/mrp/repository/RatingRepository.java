@@ -30,7 +30,7 @@ public class RatingRepository implements Repository<Rating> {
     public UUID save(Rating object) throws SQLException {
         UUID ratingId = insertRating(object);
 
-        //Insert User likes in die Zwischentabelle
+        //Insert User likes in linking table (Zwischentabelle)
         for (User user : object.getLikedBy()) {
             db.insertWithoutUUID(
                     "INSERT INTO rating_likes (rating_id, user_id) VALUES (?, ?)",
@@ -42,24 +42,20 @@ public class RatingRepository implements Repository<Rating> {
         return ratingId;
     }
 
+    //Helperfunction to update likes for specific rating (in linking table)
     private void updateRatingLikes(UUID ratingId, List<User> likedBy) throws SQLException {
-        // Remove all existing likes for this rating
-        db.update(
-                "DELETE FROM rating_likes WHERE rating_id = ?",
-                ratingId
-        );
+        //Remove all existing likes
+        db.update("DELETE FROM rating_likes WHERE rating_id = ?", ratingId);
 
-        // Insert new likes
+        //Insert new likes
         for (User user : likedBy) {
             db.insertWithoutUUID(
                     "INSERT INTO rating_likes (rating_id, user_id) VALUES (?, ?)",
                     ratingId,
-                    user.getUserId() // or getId(), depending on your User class
+                    user.getUserId()
             );
         }
     }
-
-
 
     public int update(Rating object) throws SQLException {
         int rowsAffected = db.update(
@@ -71,11 +67,8 @@ public class RatingRepository implements Repository<Rating> {
                 object.getId()
         );
 
-        //Update Zwischentabelle Rating-Links
-        updateRatingLikes(
-                object.getId(),
-                object.getLikedBy()
-        );
+        //Update linking table (Zwischentabelle) Rating-Links
+        updateRatingLikes(object.getId(), object.getLikedBy());
 
         return rowsAffected;
     }
@@ -88,10 +81,7 @@ public class RatingRepository implements Repository<Rating> {
 
     @Override
     public int delete(UUID id) throws SQLException {
-        return db.update(
-                "DELETE FROM rating WHERE id = ?",
-                id
-        );
+        return db.update("DELETE FROM rating WHERE id = ?", id);
     }
 
     @Override
@@ -120,12 +110,15 @@ public class RatingRepository implements Repository<Rating> {
                 userId,
                 ratingId
         );
-        return result != null;
+        return result != null; //result == null -> true -> not liked yet
     }
 
     public void addUserLike(UUID userId, UUID ratingId) throws SQLException {
-        String sql = "INSERT INTO rating_likes (rating_id, user_id) VALUES (?, ?)";
-        db.insertWithoutUUID(sql, ratingId, userId);
+        db.insertWithoutUUID(
+                "INSERT INTO rating_likes (rating_id, user_id) VALUES (?, ?)",
+                ratingId,
+                userId
+        );
     }
 
     public void removeUserLike(UUID userId, UUID ratingId) throws SQLException {
@@ -136,8 +129,7 @@ public class RatingRepository implements Repository<Rating> {
         );
     }
 
-
-    //All Ratings of a User (only visible comments)
+    //All Ratings of a user
     public ResultSet findByUserId(UUID userId) throws SQLException {
         return db.query(
                 "SELECT r.*, COUNT(rl.user_id) AS like_count " +
@@ -150,16 +142,13 @@ public class RatingRepository implements Repository<Rating> {
         );
     }
 
-
-
-    //All ratings of a Media Entry (only visible comments)
+    //All ratings of a media entry
     public ResultSet findByMediaEntryId(UUID mediaEntryId) throws SQLException {
         return db.query(
                 "SELECT r.*, COUNT(rl.user_id) AS like_count " +
                         "FROM rating r " +
                         "LEFT JOIN rating_likes rl ON r.id = rl.rating_id " +
                         "WHERE r.media_entry_id = ? " +
-                        "AND r.is_comment_visible = TRUE " +
                         "GROUP BY r.id " +
                         "ORDER BY r.timestamp DESC",
                 mediaEntryId

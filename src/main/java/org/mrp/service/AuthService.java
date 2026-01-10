@@ -1,6 +1,7 @@
 package org.mrp.service;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
+import org.mrp.exceptions.DuplicateResourceException;
 import org.mrp.model.User;
 import org.mrp.repository.UserRepository;
 import org.mrp.utils.UUIDGenerator;
@@ -18,6 +19,7 @@ public class AuthService {
     public AuthService() {
         this.userRepository = new UserRepository();
     }
+
     //Unit Testing: Constructor for testing with mocked repository
     AuthService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -40,8 +42,8 @@ public class AuthService {
         //Password hashing
         String passwordHash = BCrypt.withDefaults().hashToString(12, password.toCharArray());
 
-        if (userRepository.userAlreadyExists(username)) {
-            throw new IllegalArgumentException("Username already exists");
+        if (userRepository.isExistingUsername(username)) {
+            throw new DuplicateResourceException("Username already exists");
         }
 
         //userId gets generated while inserting user in database
@@ -83,7 +85,6 @@ public class AuthService {
         if (!passwordIsVerified.verified) {
             throw new IllegalArgumentException("Invalid password");
         }
-
 
         //Response - Token
         String token = username + "-" + UUIDGenerator.generateUUIDv7(); //generate token

@@ -22,10 +22,11 @@ public class RatingService {
     }
 
     //Unit Tests: Constructor for testing with mocked repository
-    RatingService(RatingRepository ratingRepository) {
+    RatingService(RatingRepository ratingRepository, MediaEntryRepository mediaEntryRepository) {
         this.ratingRepository = ratingRepository;
-        this.mediaEntryRepository = new MediaEntryRepository();
+        this.mediaEntryRepository = mediaEntryRepository;
     }
+
     public String confirmComment(UUID userId, UUID ratingId) throws IOException, SQLException {
         //Check if user = creator
         if (!isUserCreator(ratingId, userId)) {
@@ -59,6 +60,7 @@ public class RatingService {
         //Response
         Map<String, Object> response = new HashMap<>();
         response.put("rating", rating);
+        response.put("userId", userId);
         response.put("message", "Rating liked successfully");
 
         return response;
@@ -71,7 +73,7 @@ public class RatingService {
             throw new NoSuchElementException("Rating not found");
         }
 
-        //Check if already liked by user
+        //Check if not liked by user yet
         if (!ratingRepository.isAlreadyLikedByUser(userId, ratingId)) {
             throw new IllegalArgumentException("User has not liked the rating yet");
         }
@@ -82,6 +84,7 @@ public class RatingService {
         //Response
         Map<String, Object> response = new HashMap<>();
         response.put("rating", rating);
+        response.put("userId", userId);
         response.put("message", "Rating unliked successfully");
 
         return response;
@@ -106,8 +109,9 @@ public class RatingService {
             //Insert Rating with UUID in DB
             UUID ratingId = ratingRepository.save(new Rating(userId, rating.getMediaEntryId(), rating.getStars_ct(), rating.getComment(), rating.getTimestamp()));
 
-            //Update Rating with id
+            //Update Rating with id and creator
             rating.setId(ratingId);
+            rating.setUserId(userId);
 
             //Response
             Map<String, Object> response = new HashMap<>();
@@ -142,6 +146,7 @@ public class RatingService {
             throw new RuntimeException("Failed to update rating");
         }
         rating.setId(ratingId);
+        rating.setUserId(userId);
 
         //Response
         Map<String, Object> response = new HashMap<>();
@@ -155,7 +160,7 @@ public class RatingService {
     public String deleteRating(UUID userId, UUID ratingId) throws IOException, SQLException {
         //Check if user = creator
         if (!isUserCreator(ratingId, userId)) {
-            throw new ForbiddenException("Only the creator can edit this rating");
+            throw new ForbiddenException("Only the creator can delete this rating");
         }
 
         //Delete rating

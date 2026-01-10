@@ -2,6 +2,7 @@ package org.mrp.serverHandler;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import org.mrp.exceptions.AuthenticationException;
 import org.mrp.exceptions.ForbiddenException;
 import org.mrp.model.Rating;
 import org.mrp.service.RatingService;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+//Path "/rating"
 public class RatingHandler implements HttpHandler {
     RatingService ratingService = new RatingService();
     TokenValidation tokenValidation = new TokenValidation();
@@ -73,6 +75,8 @@ public class RatingHandler implements HttpHandler {
             JsonHelper.sendError(exchange, 400, e.getMessage());
         } catch (ForbiddenException | SecurityException e) {
             JsonHelper.sendError(exchange, 403, e.getMessage());
+        } catch (AuthenticationException e) {
+            JsonHelper.sendError(exchange, 401, e.getMessage());
         } catch (SQLException e) {
             JsonHelper.sendError(exchange, 409, e.getMessage());
         } catch (Exception e) {

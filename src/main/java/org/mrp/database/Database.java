@@ -149,35 +149,4 @@ public class Database {
         }
         return null;
     }
-
-    //Get list of values
-    public List<Object> getValues(String sql, Object... params) throws SQLException {
-        List<Object> values = new ArrayList<>();
-        try (ResultSet rs = query(sql, params)) {
-            while (rs.next()) {
-                values.add(rs.getObject(1));
-            }
-        }
-        return values;
-    }
-
-    //Transaction support - begins new transaction by disabling auto-commit
-    //Use this when you need multiple operations to succeed or fail as unit
-    public void beginTransaction() throws SQLException {
-        getConnection().setAutoCommit(false);
-    }
-
-    //Commits current transaction, making all changes permanent
-    //Re-enables auto-commit for future non-transactional operations
-    public void commit() throws SQLException {
-        getConnection().commit();
-        getConnection().setAutoCommit(true);
-    }
-
-    //Rolls back current transaction, undoing all changes since beginTransaction()
-    //Use this in catch blocks when error occurs during transaction
-    public void rollback() throws SQLException {
-        getConnection().rollback();
-        getConnection().setAutoCommit(true);
-    }
 }

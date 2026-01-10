@@ -1,6 +1,7 @@
 package org.mrp.utils;
 
 import com.sun.net.httpserver.HttpExchange;
+import org.mrp.exceptions.AuthenticationException;
 import org.mrp.repository.UserRepository;
 
 import java.sql.ResultSet;
@@ -25,7 +26,7 @@ public class TokenValidation {
                 return userRepository.getUUID(resultSet, "user_id");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new AuthenticationException("Token validation failed", e);
         }
 
         return null;

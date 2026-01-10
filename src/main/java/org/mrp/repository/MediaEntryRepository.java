@@ -33,7 +33,7 @@ public class MediaEntryRepository implements Repository<MediaEntry> {
     public UUID save(MediaEntry object) throws SQLException {
         UUID mediaEntryId = insertMediaEntry(object);
 
-        //Insert Genres in die Zwischentabelle
+        //Insert Genres in link table (Zwischentabelle)
         for (Genre genre : object.getGenres()) {
             db.insertWithoutUUID(
                     "INSERT INTO media_entry_genre (media_entry_id, genre) VALUES (?, ?)",
@@ -85,6 +85,7 @@ public class MediaEntryRepository implements Repository<MediaEntry> {
 
     //findAll() with Filters & Sort
     public ResultSet findAll(Map<String, String> filters, String sortBy) throws SQLException {
+        //String-Builder: efficiently build & modify strings, mutable (change string without creating new objects), building dynamic sql query (filter)
         StringBuilder sql = new StringBuilder(
                 "SELECT me.*, u.username AS creator_username, " +
                         "COALESCE(AVG(r.stars_ct), 0) AS avg_rating, " +
@@ -198,7 +199,7 @@ public class MediaEntryRepository implements Repository<MediaEntry> {
                 object.getId()
         );
 
-        //Update genres
+        //Update genres in linking table (Zwischentabelle)
         updateGenres(object.getId(), object.getGenres());
 
         return rowsAffected;
@@ -216,8 +217,8 @@ public class MediaEntryRepository implements Repository<MediaEntry> {
 
     //Add media entry to favorites
     public UUID addFavorite(UUID userId, UUID mediaEntryId) throws SQLException {
-        String sql = "INSERT INTO favorite (id, user_id, media_entry_id) VALUES (?, ?, ?)";
-        return db.insert(sql, userId, mediaEntryId); //UUID is generated inside db.insert
+        //UUID is generated inside db.insert
+        return db.insert("INSERT INTO favorite (id, user_id, media_entry_id) VALUES (?, ?, ?)", userId, mediaEntryId);
     }
 
     //Remove media entry from favorites

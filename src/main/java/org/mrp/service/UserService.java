@@ -28,6 +28,7 @@ public class UserService {
         this.ratingRepository = ratingRepository;
     }
 
+    //Helperfunction: create/get user from username
     private User getUserFromUsername(String username) throws IOException, SQLException {
         //Find user
         ResultSet rs = userRepository.findByUsername(username);
@@ -47,7 +48,7 @@ public class UserService {
         //Create user
         User user = getUserFromUsername(username);
 
-        //Load Statistics
+        //Load/Evaluate Statistics
         UUID userId = user.getUserId();
         user.setRatings_total(userRepository.getRatings_total(userId));
         user.setFavorites_total(userRepository.getFavorites_total(userId));
@@ -110,7 +111,7 @@ public class UserService {
         UUID userId = userRepository.getUUID(rs, "user_id");
 
         ResultSet favoritesRS = userRepository.getFavoriteMediaEntries(userId);
-        if (favoritesRS == null) {
+        if (favoritesRS == null) { //does favoritesRS exist in general?
             throw new NoSuchElementException("No favorites for this user found");
         }
 
@@ -124,13 +125,14 @@ public class UserService {
         //Response
         Map<String, Object> response = new HashMap<>();
         response.put("favorites", favorites);
+        response.put("userId", userId);
         response.put("message", "User's favorites read successfully");
 
         return response;
     }
 
     public Map<String, Object> getUserRatings(UUID userId) throws IOException, SQLException {
-        //Query all ratings for the given user
+        //Get all ratings for the given user
         ResultSet resultSet = ratingRepository.findByUserId(userId);
         List<Rating> ratings = new ArrayList<>();
 
@@ -146,7 +148,6 @@ public class UserService {
 
         return response;
     }
-
 
     public Rating mapResultSetToRating(ResultSet resultSet) throws SQLException {
         //Extract columns from ResultSet
@@ -164,9 +165,7 @@ public class UserService {
         }
 
         //Create Rating object using your constructor
-        Rating rating = new Rating(userId, mediaEntryId, starsCt, comment, timestamp);
-        rating.setId(id);
-        rating.setStars_ct(starsCt);
+        Rating rating = new Rating(id, userId, mediaEntryId, starsCt, comment, timestamp);
 
         if (isCommentVisible) {
             rating.setCommentVisible();
@@ -177,7 +176,6 @@ public class UserService {
 
         return rating;
     }
-
 
     public List<Map<String, Object>> getLeaderboard() throws IOException, SQLException {
         ResultSet rs = userRepository.getLeaderboard();
@@ -204,7 +202,7 @@ public class UserService {
 
     public Map<String, Object> getRecommendations(UUID userId) throws IOException, SQLException {
 
-        // Get user's preferences from highly rated media (4+ stars)
+        //Get user's preferences from highly rated media (4+ stars)
         ResultSet preferences = userRepository.getUserTopRatedMediaEntries(userId);
 
         EnumMap<Genre, Integer> genre_ct = new EnumMap<>(Genre.class);
@@ -218,6 +216,7 @@ public class UserService {
             response.put("criteriaGenres", new ArrayList<Genre>());
             response.put("criteriaMediaTypes", new ArrayList<MediaEntryType>());
             response.put("criteriaAgeRestrictions", new ArrayList<Integer>());
+            response.put("userId", userId);
             response.put("message", "No top-rated media entries found to base recommendations on");
             return response;
         }
@@ -254,17 +253,18 @@ public class UserService {
         response.put("criteriaGenres", favoriteGenres);
         response.put("criteriaMediaTypes", favoriteMediaTypes);
         response.put("criteriaAgeRestrictions", preferredAgeRestrictions);
+        response.put("userId", userId);
 
         return response;
     }
 
     //Helper method
-    private static <K> List<K> getTopKeys(Map<K, Integer> map, int topN) {
+    private <K> List<K> getTopKeys(Map<K, Integer> map, int topN) {
         return map.entrySet().stream()
-                .sorted(Map.Entry.<K, Integer>comparingByValue().reversed())
+                .sorted(Map.Entry.<K, Integer>comparingByValue().reversed()) //sort highest to lowest count
                 .limit(topN)
-                .map(Map.Entry::getKey)
-                .toList();
+                .map(Map.Entry::getKey) //only extract keys
+                .toList(); //cast to List<>
     }
 
     //Helper methode

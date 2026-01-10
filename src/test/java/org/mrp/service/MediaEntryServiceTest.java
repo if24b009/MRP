@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mrp.exceptions.DuplicateResourceException;
 import org.mrp.exceptions.ForbiddenException;
 import org.mrp.exceptions.InvalidQueryParameterException;
 import org.mrp.model.MediaEntry;
@@ -124,8 +125,8 @@ class MediaEntryServiceTest {
         when(mediaEntryRepository.getCreatorObject(mediaEntryId)).thenReturn(UUID.randomUUID()); //mock creatorId = randomUUID()
         when(mediaEntryRepository.isFavorite(userId, mediaEntryId)).thenReturn(true); //mock already marked as favorite
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        DuplicateResourceException exception = assertThrows(
+                DuplicateResourceException.class,
                 () -> mediaEntryService.addFavorite(userId, mediaEntryId)
         );
         assertEquals("Already in favorites", exception.getMessage());

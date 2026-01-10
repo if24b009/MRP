@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class PathParameterExtraction {
+
     //Helperfunction to get the id from the path and parse it safely to a UUID
     public UUID extractId(HttpExchange exchange, String path) throws IOException {
         //Extract id from paths like /rating/{id}

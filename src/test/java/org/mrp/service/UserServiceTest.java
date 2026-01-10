@@ -11,10 +11,7 @@ import org.mrp.repository.RatingRepository;
 import org.mrp.repository.UserRepository;
 
 import java.sql.ResultSet;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -124,10 +121,8 @@ class UserServiceTest {
         when(userRepository.getUserTopRatedMediaEntries(userId)).thenReturn(mockResultSet);
         when(mockResultSet.isBeforeFirst()).thenReturn(false); //mock no top-rated media entries
 
-        NoSuchElementException exception = assertThrows(
-                NoSuchElementException.class,
-                () -> userService.getRecommendations(userId)
-        );
-        assertEquals("No top-rated media entries from the user", exception.getMessage());
+        Map<String, Object> response = userService.getRecommendations(userId);
+
+        assertEquals("No top-rated media entries found to base recommendations on", response.get("message"));
     }
 }

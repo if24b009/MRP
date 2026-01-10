@@ -115,9 +115,9 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"//1. Status code should be 400",
-									"pm.test(\"Status code is 400 for duplicate user\", function () {",
-									"    pm.response.to.have.status(400);",
+									"//1. Status code should be 409",
+									"pm.test(\"Status code is 409 for duplicate user\", function () {",
+									"    pm.response.to.have.status(409);",
 									"});",
 									"",
 									"//2. Response body should contain an error property",
@@ -3720,6 +3720,86 @@
 					"response": []
 				},
 				{
+					"name": "get user's favorites - successful",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//1.) Status code should be 200",
+									"pm.test(\"Status code is 200 for successful favorites retrieval\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"//2.) Response body should be valid JSON",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"//3.) Response body must be an array",
+									"pm.test(\"Response contains favorites array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('favorites');",
+									"    pm.expect(jsonData.favorites).to.be.an('array');",
+									"});",
+									"",
+									"//4.) Response must contain message property",
+									"pm.test(\"Response contains message property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});",
+									"",
+									"//5.) Response shoudln't contain 'error' property",
+									"pm.test(\"No error property in response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.not.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8000/users/{{username}}/favorites",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"users",
+								"{{username}}",
+								"favorites"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "add - already favorited",
 					"event": [
 						{
@@ -3848,86 +3928,6 @@
 								"mediaEntry",
 								"{{mediaEntryId}}",
 								"favorite"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "get user's favorites - successful",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"//1.) Status code should be 200",
-									"pm.test(\"Status code is 200 for successful favorites retrieval\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"//2.) Response body should be valid JSON",
-									"pm.test(\"Response body is valid JSON\", function () {",
-									"    var isValidJson = true;",
-									"    try {",
-									"        JSON.parse(pm.response.text());",
-									"    } catch (e) {",
-									"        isValidJson = false;",
-									"    }",
-									"    pm.expect(isValidJson).to.be.true;",
-									"});",
-									"",
-									"//3.) Response body must be an array",
-									"pm.test(\"Response contains favorites array\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('favorites');",
-									"    pm.expect(jsonData.favorites).to.be.an('array');",
-									"});",
-									"",
-									"//4.) Response must contain message property",
-									"pm.test(\"Response contains message property\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('message');",
-									"});",
-									"",
-									"//5.) Response shoudln't contain 'error' property",
-									"pm.test(\"No error property in response\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.not.have.property('error');",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{authToken}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "http://localhost:8000/users/{{username}}/favorites",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8000",
-							"path": [
-								"users",
-								"{{username}}",
-								"favorites"
 							]
 						}
 					},
@@ -4853,6 +4853,179 @@
 							"port": "8000",
 							"path": [
 								"rating"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user's ratings - successful",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//1.) Status code should be 200",
+									"pm.test(\"Status code is 200 for successful ratings retrieval\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"//2.) Response body should be valid JSON",
+									"pm.test(\"Response body is valid JSON\", function () {",
+									"    var isValidJson = true;",
+									"    try {",
+									"        JSON.parse(pm.response.text());",
+									"    } catch (e) {",
+									"        isValidJson = false;",
+									"    }",
+									"    pm.expect(isValidJson).to.be.true;",
+									"});",
+									"",
+									"//3.) Response body must be array",
+									"pm.test(\"Response contains ratings array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('ratings');",
+									"    pm.expect(jsonData.ratings).to.be.an('array');",
+									"});",
+									"",
+									"//4.) Response must contain message property",
+									"pm.test(\"Response contains message property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});",
+									"",
+									"//5.) Response shouldn't contain error property",
+									"pm.test(\"No error property in response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.not.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/users/ratings",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"users",
+								"ratings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user's ratings - invalid Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//1.) Status code should be 401 for invalid authentication",
+									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer invalidToken123",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/users/ratings",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"users",
+								"ratings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user's ratings - incorrect path",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//1.) Status code should be 400",
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"//2.) Rresponse body contains 'Endpoint not found'",
+									"pm.test(\"Response body contains error message with 'Endpoint not found'\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Endpoint not found\");",
+									"});",
+									"",
+									"//3.) Response does NOT include 'userId' property",
+									"pm.test(\"Response does NOT include userId property\", function () {",
+									"    let jsonData;",
+									"    try {",
+									"        jsonData = pm.response.json();",
+									"    } catch (e) {",
+									"        jsonData = {};",
+									"    }",
+									"    pm.expect(jsonData).to.not.have.property('userId');",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/users/ratings123",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"users",
+								"ratings123"
 							]
 						}
 					},
@@ -5965,179 +6138,6 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "get user's ratings - successful",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"//1.) Status code should be 200",
-									"pm.test(\"Status code is 200 for successful ratings retrieval\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"//2.) Response body should be valid JSON",
-									"pm.test(\"Response body is valid JSON\", function () {",
-									"    var isValidJson = true;",
-									"    try {",
-									"        JSON.parse(pm.response.text());",
-									"    } catch (e) {",
-									"        isValidJson = false;",
-									"    }",
-									"    pm.expect(isValidJson).to.be.true;",
-									"});",
-									"",
-									"//3.) Response body must be array",
-									"pm.test(\"Response contains ratings array\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('ratings');",
-									"    pm.expect(jsonData.ratings).to.be.an('array');",
-									"});",
-									"",
-									"//4.) Response must contain message property",
-									"pm.test(\"Response contains message property\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('message');",
-									"});",
-									"",
-									"//5.) Response shouldn't contain error property",
-									"pm.test(\"No error property in response\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.not.have.property('error');",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{authToken}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:8000/users/ratings",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8000",
-							"path": [
-								"users",
-								"ratings"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "get user's ratings - invalid Authentication",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"//1.) Status code should be 401 for invalid authentication",
-									"pm.test(\"Status code is 401 for invalid authentication\", function () {",
-									"    pm.response.to.have.status(401);",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer invalidToken123",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:8000/users/ratings",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8000",
-							"path": [
-								"users",
-								"ratings"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "get user's ratings - incorrect path",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"//1.) Status code should be 400",
-									"pm.test(\"Status code is 404\", function () {",
-									"    pm.response.to.have.status(404);",
-									"});",
-									"",
-									"//2.) Rresponse body contains 'Endpoint not found'",
-									"pm.test(\"Response body contains error message with 'Endpoint not found'\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"Endpoint not found\");",
-									"});",
-									"",
-									"//3.) Response does NOT include 'userId' property",
-									"pm.test(\"Response does NOT include userId property\", function () {",
-									"    let jsonData;",
-									"    try {",
-									"        jsonData = pm.response.json();",
-									"    } catch (e) {",
-									"        jsonData = {};",
-									"    }",
-									"    pm.expect(jsonData).to.not.have.property('userId');",
-									"});",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{authToken}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:8000/users/ratings123",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8000",
-							"path": [
-								"users",
-								"ratings123"
-							]
-						}
-					},
-					"response": []
 				}
 			]
 		},
@@ -6177,9 +6177,12 @@
 									"pm.test(\"Leaderboard entries have expected properties\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    if (jsonData.length > 0) {",
+									"        pm.expect(jsonData[0]).to.have.property('likesGiven');",
 									"        pm.expect(jsonData[0]).to.have.property('rank');",
-									"        pm.expect(jsonData[0]).to.have.property('username');",
+									"        pm.expect(jsonData[0]).to.have.property('ratingCount');",
+									"        pm.expect(jsonData[0]).to.have.property('mediaCreated');",
 									"        pm.expect(jsonData[0]).to.have.property('totalActivity');",
+									"        pm.expect(jsonData[0]).to.have.property('username');",
 									"    }",
 									"});"
 								],

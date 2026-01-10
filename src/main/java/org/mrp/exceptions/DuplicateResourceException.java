@@ -5,3 +5,5 @@ public class DuplicateResourceException extends RuntimeException {
         super(message);
     }
 }
+
+//Usage: Resource exists already

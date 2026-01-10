@@ -2,6 +2,7 @@ package org.mrp.serverHandler;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import org.mrp.exceptions.AuthenticationException;
 import org.mrp.exceptions.DuplicateResourceException;
 import org.mrp.exceptions.ForbiddenException;
 import org.mrp.service.UserService;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 
+//Path "/users"
 public class UserHandler implements HttpHandler {
     UserService userService = new UserService();
     TokenValidation tokenValidation = new TokenValidation();
@@ -75,6 +77,8 @@ public class UserHandler implements HttpHandler {
             JsonHelper.sendError(exchange, 400, e.getMessage());
         } catch (ForbiddenException | SecurityException e) {
             JsonHelper.sendError(exchange, 403, e.getMessage());
+        } catch (AuthenticationException e) {
+            JsonHelper.sendError(exchange, 401, e.getMessage());
         } catch (DuplicateResourceException e) {
             JsonHelper.sendError(exchange, 409, e.getMessage());
         } catch (Exception e) {

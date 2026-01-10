@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mrp.exceptions.DuplicateResourceException;
 import org.mrp.model.User;
 import org.mrp.repository.UserRepository;
 
@@ -15,6 +16,8 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+
+//Services = Business-Logik -> Main-Component -> nothing works without them
 
 @ExtendWith(MockitoExtension.class) //Mockito used
 class AuthServiceTest {
@@ -55,10 +58,10 @@ class AuthServiceTest {
     //3.) Register - Exception should be thrown if username already taken
     @Test
     void register_ShouldThrowException_WhenUsernameAlreadyExists() throws Exception {
-        when(userRepository.userAlreadyExists("existingUser")).thenReturn(true); //mocked to return true -> pretends username exists
+        when(userRepository.isExistingUsername("existingUser")).thenReturn(true); //mocked to return true -> pretends username exists
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        DuplicateResourceException exception = assertThrows(
+                DuplicateResourceException.class,
                 () -> authService.register("existingUser", "password123")
         );
         assertEquals("Username already exists", exception.getMessage());
@@ -68,7 +71,7 @@ class AuthServiceTest {
     @Test
     void register_ShouldReturnUserId_WhenValidCredentials() throws Exception {
         UUID expectedUserId = UUID.randomUUID();
-        when(userRepository.userAlreadyExists("validUser")).thenReturn(false);
+        when(userRepository.isExistingUsername("validUser")).thenReturn(false);
         when(userRepository.save(any(User.class))).thenReturn(expectedUserId); //Regardless of which user saved, always expectedUserId returned
 
         Map<String, Object> result = authService.register("validUser", "password123");

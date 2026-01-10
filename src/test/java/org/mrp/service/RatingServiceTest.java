@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mrp.exceptions.ForbiddenException;
 import org.mrp.model.Rating;
+import org.mrp.repository.MediaEntryRepository;
 import org.mrp.repository.RatingRepository;
 
 import java.util.Map;
@@ -22,19 +23,27 @@ class RatingServiceTest {
     @Mock
     private RatingRepository ratingRepository;
 
+    @Mock
+    private MediaEntryRepository mediaEntryRepository;
+
     private RatingService ratingService;
 
     @BeforeEach
     void setUp() {
-        ratingService = new RatingService(ratingRepository);
+        ratingService = new RatingService(ratingRepository, mediaEntryRepository);
     }
 
     //1.) Create - Stars only 1-5 -> should throw exception if out of range
     @Test
-    void createRating_ShouldThrowException_WhenStarsOutOfRange() {
-        Rating rating = new Rating();
-        rating.setStars_ct(0); //mock stars 0 (< 1)
+    void createRating_ShouldThrowException_WhenStarsOutOfRange() throws Exception {
         UUID userId = UUID.randomUUID();
+        UUID mediaEntryId = UUID.randomUUID();
+
+        //mock stars 0 (< 1)
+        Rating rating = new Rating(null, mediaEntryId, 0, null, null);
+
+        //Mock media entry exists
+        when(mediaEntryRepository.getCreatorObject(mediaEntryId)).thenReturn(UUID.randomUUID());
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -42,10 +51,11 @@ class RatingServiceTest {
         );
         assertEquals("Stars can only be between 1 and 5", exception.getMessage());
 
-        rating.setStars_ct(6); //mock stars 6 (> 5)
+        //mock stars 6 (> 5)
+        Rating rating2 = new Rating(null, mediaEntryId, 6, null, null);
         IllegalArgumentException exception2 = assertThrows(
                 IllegalArgumentException.class,
-                () -> ratingService.createRating(rating, userId)
+                () -> ratingService.createRating(rating2, userId)
         );
         assertEquals("Stars can only be between 1 and 5", exception2.getMessage());
     }
@@ -59,6 +69,9 @@ class RatingServiceTest {
 
         //Create rating to pass to createRating()
         Rating rating = new Rating(null, mediaEntryId, 4, "Test comment", null);
+
+        //Mock media entry exists
+        when(mediaEntryRepository.getCreatorObject(mediaEntryId)).thenReturn(UUID.randomUUID());
 
         when(ratingRepository.save(any(Rating.class))).thenReturn(ratingId);
 
@@ -101,7 +114,7 @@ class RatingServiceTest {
                 ForbiddenException.class,
                 () -> ratingService.deleteRating(userId, ratingId)
         );
-        assertEquals("Only the creator can edit this rating", exception.getMessage());
+        assertEquals("Only the creator can delete this rating", exception.getMessage());
     }
 
     //5.) Like - Should throw exception if user likes rating twice
