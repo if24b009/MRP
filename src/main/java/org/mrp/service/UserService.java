@@ -136,8 +136,9 @@ public class UserService {
         ResultSet resultSet = ratingRepository.findByUserId(userId);
         List<Rating> ratings = new ArrayList<>();
 
+        MediaEntryService mediaEntryService = new MediaEntryService(); //helper -> reuse maping function to get rating
         while (resultSet.next()) {
-            Rating rating = mapResultSetToRating(resultSet);
+            Rating rating = mediaEntryService.mapResultSetToRating(resultSet);
             ratings.add(rating);
         }
 
@@ -147,34 +148,6 @@ public class UserService {
         response.put("message", "Ratings for user read successfully");
 
         return response;
-    }
-
-    public Rating mapResultSetToRating(ResultSet resultSet) throws SQLException {
-        //Extract columns from ResultSet
-        UUID id = resultSet.getObject("id", UUID.class);
-        UUID userId = resultSet.getObject("user_id", UUID.class);
-        UUID mediaEntryId = resultSet.getObject("media_entry_id", UUID.class);
-        boolean isCommentVisible = resultSet.getBoolean("is_comment_visible");
-        String comment = isCommentVisible ? resultSet.getString("comment") : "";
-        int starsCt = resultSet.getInt("stars_ct");
-
-        LocalDateTime timestamp = null;
-        Timestamp ts = resultSet.getTimestamp("timestamp");
-        if (ts != null) {
-            timestamp = ts.toLocalDateTime();
-        }
-
-        //Create Rating object using your constructor
-        Rating rating = new Rating(id, userId, mediaEntryId, starsCt, comment, timestamp);
-
-        if (isCommentVisible) {
-            rating.setCommentVisible();
-        }
-
-        //Initialize likedBy as empty list using the setter
-        rating.setLikedBy(new ArrayList<>());
-
-        return rating;
     }
 
     public List<Map<String, Object>> getLeaderboard() throws IOException, SQLException {
