@@ -14,16 +14,6 @@ class org.mrp.serverHandler.AuthHandler {
 }
 
 
-class org.mrp.model.Token {
-- String token
-- UUID userId
-- Timestamp createdAt
-+ String getToken()
-+ UUID getUserId()
-+ Timestamp getCreatedAt()
-}
-
-
 class org.mrp.exceptions.InvalidQueryParameterException {
 }
 class org.mrp.serverHandler.RatingHandler {
@@ -84,7 +74,6 @@ class org.mrp.repository.UserRepository {
 + ResultSet findByToken(String)
 + ResultSet findAll()
 + int delete(UUID)
-+ boolean userAlreadyExists(String)
 + ResultSet getFavoriteMediaEntries(UUID)
 + ResultSet getLeaderboard()
 + boolean isExistingUsername(String)
@@ -95,8 +84,8 @@ class org.mrp.repository.UserRepository {
 + double getAvgScore(UUID)
 + ResultSet getUserTopRatedMediaEntries(UUID)
 + List<MediaEntry> findRecommendations(UUID,List<Genre>,List<MediaEntryType>,List<Integer>)
-- ResultSet getRecommendationsBasedOnConditions(StringBuilder,List<Object>)
 - void appendINClause(String,List<T>,StringBuilder,List<Object>)
+- ResultSet getRecommendationsBasedOnConditions(StringBuilder,List<Object>)
 }
 
 
@@ -114,6 +103,7 @@ class org.mrp.model.Rating {
 + void setUserId(UUID)
 + UUID getUserId()
 + UUID getMediaEntryId()
++ void setMediaEntryId(UUID)
 + String getComment()
 + int getStars_ct()
 + void setStars_ct(int)
@@ -137,6 +127,7 @@ class org.mrp.model.MediaEntry {
 - List<Genre> genres
 - UUID creatorId
 - LocalDateTime createdAt
+- double avgRating
 + UUID getId()
 + String getTitle()
 + String getDescription()
@@ -146,6 +137,7 @@ class org.mrp.model.MediaEntry {
 + List<Genre> getGenres()
 + UUID getCreatorId()
 + LocalDateTime getCreatedAt()
++ double getAvgRating()
 + void setCreator(UUID)
 + void setId(UUID)
 + void setTitle(String)
@@ -155,11 +147,15 @@ class org.mrp.model.MediaEntry {
 + void setAgeRestriction(int)
 + void setGenres(List<Genre>)
 + void setCreatedAt(LocalDateTime)
++ void setAvgRating(double)
 }
 
 
+class org.mrp.exceptions.AuthenticationException {
+}
 class org.mrp.service.RatingService {
 - RatingRepository ratingRepository
+- MediaEntryRepository mediaEntryRepository
 + String confirmComment(UUID,UUID)
 + Map<String,Object> likeRating(UUID,UUID)
 + Map<String,Object> unlikeRating(UUID,UUID)
@@ -291,6 +287,7 @@ class org.mrp.service.MediaEntryService {
 + String removeFavorite(UUID,UUID)
 + Map<String,Object> getMediaEntryRatings(UUID)
 + Rating mapResultSetToRating(ResultSet)
+- boolean isUserCreator(UUID,UUID)
 }
 
 
@@ -305,7 +302,7 @@ class org.mrp.service.UserService {
 + Rating mapResultSetToRating(ResultSet)
 + List<Map<String,Object>> getLeaderboard()
 + Map<String,Object> getRecommendations(UUID)
-- {static} List<K> getTopKeys(Map<K,Integer>,int)
+- List<K> getTopKeys(Map<K,Integer>,int)
 - void incrementCount(Map<K,Integer>,K)
 - E toEnum(String,Class<E>)
 }
@@ -314,13 +311,11 @@ class org.mrp.service.UserService {
 class org.mrp.utils.JsonHelper {
 - {static} ObjectMapper mapper
 + {static} T parseRequest(HttpExchange,Class<T>)
-+ {static} T parseJson(String,Class<T>)
 + {static} String toJson(Object)
 + {static} void sendResponse(HttpExchange,int,Object)
 + {static} void sendError(HttpExchange,int,String)
 + {static} void sendSuccess(HttpExchange,String)
 + {static} Map<String,String> parseQueryParams(String)
-+ {static} String[] getPathSegments(String)
 }
 
 
@@ -341,10 +336,6 @@ class org.mrp.database.Database {
 + UUID getUUID(ResultSet,String)
 + void close()
 + Object getValue(String,Object)
-+ List<Object> getValues(String,Object)
-+ void beginTransaction()
-+ void commit()
-+ void rollback()
 }
 
 
@@ -355,6 +346,7 @@ org.mrp.exceptions.RuntimeException <|-- org.mrp.exceptions.InvalidQueryParamete
 com.sun.net.httpserver.HttpHandler <|.. org.mrp.serverHandler.RatingHandler
 org.mrp.repository.Repository <|.. org.mrp.repository.UserRepository
 org.mrp.exceptions.RuntimeException <|-- org.mrp.exceptions.ForbiddenException
+org.mrp.exceptions.RuntimeException <|-- org.mrp.exceptions.AuthenticationException
 org.mrp.repository.Repository <|.. org.mrp.repository.MediaEntryRepository
 org.mrp.exceptions.RuntimeException <|-- org.mrp.exceptions.DuplicateResourceException
 org.mrp.repository.Repository <|.. org.mrp.repository.RatingRepository
