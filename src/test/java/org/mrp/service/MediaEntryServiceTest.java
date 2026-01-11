@@ -122,7 +122,7 @@ class MediaEntryServiceTest {
         UUID userId = UUID.randomUUID();
         UUID mediaEntryId = UUID.randomUUID();
 
-        when(mediaEntryRepository.getCreatorObject(mediaEntryId)).thenReturn(UUID.randomUUID()); //mock creatorId = randomUUID()
+        when(mediaEntryRepository.getCreatorObject(mediaEntryId)).thenReturn(UUID.randomUUID()); //mock creatorId = randomUUID() -> don't test creator = user
         when(mediaEntryRepository.isFavorite(userId, mediaEntryId)).thenReturn(true); //mock already marked as favorite
 
         DuplicateResourceException exception = assertThrows(
@@ -132,7 +132,7 @@ class MediaEntryServiceTest {
         assertEquals("Already in favorites", exception.getMessage());
     }
 
-    //6.) AddFavorite - Should throw exception if invalid filters set
+    //6.) getMediaEntries - Should throw exception if invalid filters set
     @Test
     void getMediaEntries_ShouldThrowException_WhenInvalidFilterKey() {
         Map<String, String> filters = new HashMap<>();
