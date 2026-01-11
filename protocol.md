@@ -30,8 +30,9 @@ erstellen, zu bewerten und zu verwalten.
 ```plaintext
 📦 src/
 ├── 📁 database/          → Verwaltung PostgreSQL-Datenbankverbindung
+├── 📁 exceptions/        → Benutzerdefinierte Exceptions
 ├── 📁 model/             → Datenmodelle (User, MediaEntry, Rating)
-├── 📁 repository/        → Datenbankzugriffe (DAO/Repository Pattern)
+├── 📁 repository/        → Datenbankzugriffe (Repository Pattern)
 ├── 📁 serverHandler/     → HTTP-Endpunkte & Request-Routing
 ├── 📁 service/           → Business-Logik
 ├── 📁 utils/             → Helferklassen
@@ -47,18 +48,18 @@ Die Anwendung folgt der **Schichten-Architektur** mit folgenden Layern zur Trenn
 - **Handler-Schicht:**  
   Zuständig für die Verarbeitung eingehender HTTP-Anfragen.  
   Die Schicht enthält das Bereitstellen der Endpoints der Anwendung, Auswerten der Anfrage (z. B. HTTP-Methode und Pfad)
-  aus und Aufrufen der passende Service-Methode.
+  und Aufrufen der passende Service-Methode.
   Außerdem kümmert sie sich um das Senden von HTTP-Antworten (z. B. JSON-Ausgaben, Fehlercodes) – die direkte Arbeit mit
   dem HttpExchange findet ausschließlich hier statt.
   Sie enthält keine Business-Logik, sondern dient als Vermittler zwischen HTTP-Interface und Service-Schicht.  
   Beispiele: `AuthHandler`, `MediaEntryHandler`.
 
 - **Service-Schicht:**  
-  Enthält die Kernlogik (Business-Logik). Führt Validierungen durch, steuert den Ablauf und verarbeitet Daten.  
+  Enthält die Kernlogik (Business-Logik). Führt Validierungen durch, steuert den Ablauf und verarbeitet die Daten.  
   Beispiele: `UserService`, `AuthService`.
 
 - **Model-Schicht:**  
-  Repräsentiert Datenbank-Entitäten. Wird von der Repository-Schicht verwendet.
+  Repräsentiert die Datenbank-Entitäten. Wird von der Repository-Schicht verwendet.
   Beispiele: `User`, `MediaEntry`, `Rating`.
 
 - **Repository-Schicht:**  
@@ -79,11 +80,16 @@ Zudem gibt es ebenfalls Packages für:
 - **Utils**  
   Das `utils`-Package enthält **Hilfsklassen**, die allgemeine, wiederverwendbare Funktionen bereitstellen und **nicht
   direkt zur Geschäftslogik** gehören. Diese Klassen unterstützen andere Schichten (Handler, Service, Repository) und
-  sorgen für sauberen, wartbaren Code.
+  sorgen für sauberen, wartbaren Code.  
+  Zum Beispiel: `PathParameterExtraction`
 
 - **Database**  
   Das `database`-Package enthält die zentrale Datenbankklasse, die für die **Verwaltung der Verbindung zur
   PostgreSQL-Datenbank** verantwortlich ist.
+
+- **Exceptions**  
+  Das `exceptions`-Package beinhaltet alle für den Ablauf relevanten benutzerdefinierten Exceptions.  
+  Zum Beispiel: `DuplicateResourceException`
 
 ### 3. SOLID Prinzipien
 
@@ -208,7 +214,7 @@ Folgend eine Liste aller im Projekt relevanten Endpoints:
 ## Testing
 
 Das Projekt verwendet eine **zweistufige Teststrategie** mit Unit-Tests für die Business-Logik und Integrationstests
-mittels Postman für End-to-End-Szenarien.
+mittels Postman für End-to-End-Szenarien (API-Tests).
 
 ### Unit-Tests
 
@@ -298,9 +304,6 @@ Die Integrationstests sind mittels Postman umgesetzt und validieren die **komple
 
 ## Zeitaufwand (geschätzt)
 
-*Nachdem es sich hierbei um die Zwischenabgabe handelt, sind ausschließlich bereits erledigte Aufgaben zeitlich
-geschätzt:*
-
 | Aufgabe                                 | Stunden |
 |-----------------------------------------|---------|
 | Setup (Projekt-Grundgerüst, DB, Docker) | 20 h    |
@@ -319,7 +322,7 @@ geschätzt:*
 
 ## Probleme & Lösungen
 
-Im bisherigen Projektverlauf sind keine gravierenden technischen Probleme aufgetreten.
+Im Projektverlauf sind keine gravierenden technischen Probleme aufgetreten.
 Einige Punkte, die potenziell fehleranfällig wären, konnten durch saubere Planung und Strukturierung vermieden werden:
 
 - **Datenbankverbindung:**  
@@ -350,7 +353,7 @@ Im Laufe des Projektes sind folgende wichtige Erkenntnisse gewonnen worden:
 
 ### Optimierungsmöglichkeiten
 
-- **Mehr Exceptions früher definieren:** Custom-Exceptions wie `ForbiddenException` und `DuplicateResourceException` sind erst spät eingeführt worden. Eine frühere Definition hätte die Fehlerbehandlung konsistenter gemacht.
+- **Mehr Exceptions früher definieren:** Benutzerdefinierte Exceptions wie `ForbiddenException` und `DuplicateResourceException` sind leider erst recht spät eingeführt worden. Eine frühere Definition hätte die Fehlerbehandlung konsistenter gemacht.
 
 - **Konfiguration auslagern:** Datenbankverbindungsdaten könnten in eine separate Konfigurationsdatei ausgelagert werden, statt im Code zu stehen.
 
